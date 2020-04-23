@@ -1,3 +1,5 @@
+package iris.playharmony;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 
