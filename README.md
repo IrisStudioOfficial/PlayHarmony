@@ -1,4 +1,4 @@
-### PlayHarmony
+# PlayHarmony
 The best music player!
 
 ## Authors
