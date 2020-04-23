@@ -1,4 +1,4 @@
-# PlayHarmony
+# iris.playharmony.PlayHarmony
 The best music player!
 
 ## Authors
