@@ -2,9 +2,7 @@ package iris.playharmony.view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -20,7 +18,7 @@ public class FooterView extends HBox {
         footerLabel.setFont(new Font("Arial", 15));
         this.getChildren().addAll(footerLabel);
         this.setAlignment(Pos.BASELINE_CENTER);
-        this.setPadding(new Insets(20));
+        this.setPadding(new Insets(15));
         this.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
 
     }
