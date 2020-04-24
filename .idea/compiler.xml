@@ -24,5 +24,6 @@
         <module name="playharmony" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel target="8" />
   </component>
 </project>

@@ -1,5 +1,7 @@
 package iris.playharmony.model;
 
+import iris.playharmony.exceptions.EmailException;
+
 public class Email {
 
     private String name;
@@ -10,7 +12,7 @@ public class Email {
         this.domain = domain;
     }
 
-    public Email(String email) {
+    public Email(String email) throws EmailException {
         this.name = "";
         this.domain = "";
 
@@ -20,6 +22,10 @@ public class Email {
                 this.domain = email.substring(i + 1);
                 break;
             }
+        }
+
+        if(this.name.equals("") || this.domain.equals("")) {
+            throw new EmailException();
         }
     }
 
