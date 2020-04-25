@@ -163,6 +163,8 @@ public class UserView extends BorderPane {
                 try {
                     if(new DatabaseController().addUser(user)) {
                         //Ir a la vista
+                        navController.clear();
+                        navController.pushView(new UserListView().getNavigationView());
                     } else {
                         errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
                     }

@@ -4,6 +4,7 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.CreateUserException;
 import iris.playharmony.exceptions.EmailException;
+import iris.playharmony.exceptions.UpdateUserException;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.Role;
@@ -41,7 +42,7 @@ public class UpdateUserView extends BorderPane {
         this.user = user;
 
         navigationView = new NavigationView();
-        navigationView.setView(new UpdateUserViewNavigation(user));
+        navigationView.setView(new UpdateUserViewNavigation(user, user.getEmail()));
         navController = new NavController(navigationView);
 
         footerView = new FooterView();
@@ -57,7 +58,7 @@ public class UpdateUserView extends BorderPane {
         return navigationView;
     }
 
-    public static class UpdateUserViewNavigation extends VBox {
+    public class UpdateUserViewNavigation extends VBox {
 
         private File photoFile;
 
@@ -68,14 +69,17 @@ public class UpdateUserView extends BorderPane {
         private TextField category = new TextField();
         private ComboBox<Object> role = new ComboBox<>();
         ObservableUser user;
+        String key;
 
-        public UpdateUserViewNavigation(ObservableUser user) {
+        public UpdateUserViewNavigation(ObservableUser user, String key) {
             super(SPACING);
             this.user = user;
+            this.key = key;
             name.setText(user.getName());
             surname.setText(user.getSurname());
             email.setText(user.getEmail());
             category.setText(user.getCategory());
+            photo.setText("");
             add(title("Update User"));
             add(textFieldLabeled(name, "Name"));
             add(textFieldLabeled(surname, "Surname"));
@@ -167,12 +171,13 @@ public class UpdateUserView extends BorderPane {
                 User user = new User(photoFile, name.getText(), surname.getText(),
                         category.getText(), (Role) role.getValue(), new Email(email.getText()));
                 try {
-                    if(new DatabaseController().addUser(user)) {
-//                        navController.pushView(new UserListView.UserListViewNavigation());
+                    if(new DatabaseController().updateUser(user, key)) {
+                        navController.clear();
+                        navController.pushView(new UserListView().getNavigationView());
                     } else {
-                        errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
+                        errorAlert("ERROR! Couldn't update user", "ERROR! Couldn't update user");
                     }
-                } catch (CreateUserException e) {
+                } catch (UpdateUserException e) {
                     errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
                 }
             } catch (EmailException e) {

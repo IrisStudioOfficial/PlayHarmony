@@ -144,7 +144,7 @@ public class UserListView extends BorderPane {
         }
 
         private TableView updateTableViewData() {
-            data = mockUsers();
+            data = getDBData();
             usersTable.setItems(data);
             usersTable.refresh();
             return usersTable;

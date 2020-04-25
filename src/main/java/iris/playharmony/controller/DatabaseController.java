@@ -3,13 +3,12 @@ package iris.playharmony.controller;
 import iris.playharmony.controller.handler.PathHandler;
 import iris.playharmony.exceptions.CreateUserException;
 import iris.playharmony.exceptions.EmailException;
+import iris.playharmony.exceptions.UpdateUserException;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,14 +78,16 @@ public class DatabaseController {
         if(user.getName().equals("") || user.getSurname().equals("") || user.getCategory().equals(""))
             throw new CreateUserException();
 
-        if(getUsers().stream().anyMatch(databaseUser -> databaseUser.getEmail().equals(user.getEmail()))) {
-            return false;
-        } else {
+        if (getUsers().stream().noneMatch(databaseUser -> databaseUser.getEmail().equals(user.getEmail()))) {
             try {
                 String sql = "INSERT INTO USERS (PHOTO, NAME, SURNAME, CATEGORY, USER_ROLE, EMAIL) VALUES (?, ?, ?, ?, ?, ?)";
                 PreparedStatement ps = connection.prepareStatement(sql);
+                try (FileInputStream fis = new FileInputStream(user.getPhoto())) {
+                    ps.setBinaryStream(1, fis, (int)user.getPhoto().length());
 
-                ps.setString(1, user.getPhoto().getAbsolutePath() );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 ps.setString(2, user.getName());
                 ps.setString(3, user.getSurname());
                 ps.setString(4, user.getCategory());
@@ -100,12 +101,37 @@ public class DatabaseController {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            return false;
         }
+        return false;
     }
 
-    public void updateUser(User user) {
+    public boolean updateUser(User user, String key) throws UpdateUserException {
+        if(user.getName().equals("") || user.getSurname().equals("") || user.getCategory().equals(""))
+            throw new UpdateUserException();
 
+        if (getUsers().stream().anyMatch(databaseUser -> databaseUser.getEmail().equals(user.getEmail()))) {
+            try {
+                String sql = "UPDATE USERS SET PHOTO = ?, NAME = ?, SURNAME = ?, CATEGORY = ?, USER_ROLE = ?, EMAIL = ? " +
+                        "WHERE EMAIL = ?";
+                PreparedStatement ps = connection.prepareStatement(sql);
+
+                ps.setString(1, user.getPhoto().getAbsolutePath());
+                ps.setString(2, user.getName());
+                ps.setString(3, user.getSurname());
+                ps.setString(4, user.getCategory());
+                ps.setString(5, user.getRole().toString());
+                ps.setString(6, user.getEmail().toString());
+                ps.setString(7, key);
+
+                ps.executeUpdate();
+
+                close(ps);
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     public void removeUser(String email) {
