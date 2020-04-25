@@ -4,6 +4,7 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.CreateUserException;
 import iris.playharmony.exceptions.EmailException;
+import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.Role;
@@ -23,7 +24,6 @@ import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 
 import java.io.File;
-import java.util.stream.Collectors;
 
 import static iris.playharmony.util.TypeUtils.initSingleton;
 
@@ -121,7 +121,11 @@ public class UserListView extends BorderPane {
             ObservableUser selection = (ObservableUser) usersTable.getSelectionModel().getSelectedItem();
             if(selection == null)
                 return;
-            new DatabaseController().removeUser(selection.getEmail());
+            try {
+                new DatabaseController().removeUser(selection.getEmail());
+            } catch (RemoveUserException e) {
+                errorAlert("ERROR! Couldn't remove user", "ERROR! Couldn't remove user");
+            }
             updateTableViewData();
         }
 

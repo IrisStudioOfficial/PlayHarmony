@@ -3,6 +3,7 @@ package iris.playharmony.controller;
 import iris.playharmony.controller.handler.PathHandler;
 import iris.playharmony.exceptions.CreateUserException;
 import iris.playharmony.exceptions.EmailException;
+import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.exceptions.UpdateUserException;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.Role;
@@ -109,7 +110,6 @@ public class DatabaseController {
     public boolean updateUser(User user, String key) throws UpdateUserException {
         if(user.getName().equals("") || user.getSurname().equals("") || user.getCategory().equals(""))
             throw new UpdateUserException();
-        List<User> users = getUsers();
         if (getUsers().stream().anyMatch(databaseUser -> databaseUser.getEmail().toString().equals(key))) {
             try {
                 String sql = "UPDATE USERS SET PHOTO = ?, NAME = ?, SURNAME = ?, CATEGORY = ?, USER_ROLE = ?, EMAIL = ? " +
@@ -139,7 +139,23 @@ public class DatabaseController {
         return false;
     }
 
-    public void removeUser(String email) {
+    public boolean removeUser(String key) throws RemoveUserException {
+        if(key == "" || key == null)
+            throw new RemoveUserException();
+        if (getUsers().stream().anyMatch(databaseUser -> databaseUser.getEmail().toString().equals(key))) {
+            try {
+                String sql = "DELETE FROM USERS WHERE email = ?";
+                PreparedStatement ps = connection.prepareStatement(sql);
+                ps.setString(1, key);
 
+                ps.executeUpdate();
+
+                close(ps);
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

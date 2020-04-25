@@ -1,4 +1,4 @@
-package iris.playharmony.controller;
+package iris.playharmony.exceptions;
 
-public class RemoveUserException {
+public class RemoveUserException extends Throwable {
 }

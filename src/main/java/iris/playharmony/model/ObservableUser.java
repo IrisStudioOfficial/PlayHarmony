@@ -95,6 +95,6 @@ public class ObservableUser {
                 .email(user.getEmail().toString())
                 .role(user.getRole().name())
                 .category(user.getCategory())
-                .photo(new ImageView(new Image(user.getPhoto().toURI().toString())));
+                .photo(new ImageView(new Image(user.getPhoto().toURI().toString(), 100, 100, false, false)));
     }
 }
