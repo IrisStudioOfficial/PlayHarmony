@@ -79,8 +79,7 @@ public class DatabaseController {
     public boolean addUser(User user) throws CreateUserException {
         if(user.getName().equals("") || user.getSurname().equals("") || user.getCategory().equals(""))
             throw new CreateUserException();
-
-        if (getUsers().stream().noneMatch(databaseUser -> databaseUser.getEmail().equals(user.getEmail()))) {
+        if (getUsers().stream().noneMatch(databaseUser -> databaseUser.getEmail().toString().equals(user.getEmail().toString()))) {
             try {
                 String sql = "INSERT INTO USERS (PHOTO, NAME, SURNAME, CATEGORY, USER_ROLE, EMAIL) VALUES (?, ?, ?, ?, ?, ?)";
                 PreparedStatement ps = connection.prepareStatement(sql);
@@ -110,14 +109,18 @@ public class DatabaseController {
     public boolean updateUser(User user, String key) throws UpdateUserException {
         if(user.getName().equals("") || user.getSurname().equals("") || user.getCategory().equals(""))
             throw new UpdateUserException();
-
-        if (getUsers().stream().anyMatch(databaseUser -> databaseUser.getEmail().equals(user.getEmail()))) {
+        List<User> users = getUsers();
+        if (getUsers().stream().anyMatch(databaseUser -> databaseUser.getEmail().toString().equals(key))) {
             try {
                 String sql = "UPDATE USERS SET PHOTO = ?, NAME = ?, SURNAME = ?, CATEGORY = ?, USER_ROLE = ?, EMAIL = ? " +
                         "WHERE EMAIL = ?";
                 PreparedStatement ps = connection.prepareStatement(sql);
+                try (FileInputStream fis = new FileInputStream(user.getPhoto())) {
+                    ps.setBinaryStream(1, fis, (int)user.getPhoto().length());
 
-                ps.setString(1, user.getPhoto().getAbsolutePath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 ps.setString(2, user.getName());
                 ps.setString(3, user.getSurname());
                 ps.setString(4, user.getCategory());
