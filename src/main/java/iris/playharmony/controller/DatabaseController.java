@@ -104,7 +104,7 @@ public class DatabaseController {
 
     }
 
-    public void removeUser(User user) {
+    public void removeUser(String email) {
 
     }
 }

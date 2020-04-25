@@ -4,12 +4,14 @@ import java.io.File;
 
 public class User {
 
-    private final File photo;
-    private final String name;
-    private final String surname;
-    private final String category;
-    private final Role role;
-    private final Email email;
+    private File photo;
+    private String name;
+    private String surname;
+    private String category;
+    private Role role;
+    private Email email;
+
+    public User() {}
 
     public User(File photo, String name, String surname, String category, Role role, Email email) {
         this.photo = photo;
@@ -42,5 +44,35 @@ public class User {
 
     public Email getEmail() {
         return email;
+    }
+
+    public User photo(File photo) {
+        this.photo = photo;
+        return this;
+    }
+
+    public User name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public User surname(String surname) {
+        this.surname = surname;
+        return this;
+    }
+
+    public User category(String category) {
+        this.category = category;
+        return this;
+    }
+
+    public User role(Role role) {
+        this.role = role;
+        return this;
+    }
+
+    public User mail(Email email) {
+        this.email = email;
+        return this;
     }
 }

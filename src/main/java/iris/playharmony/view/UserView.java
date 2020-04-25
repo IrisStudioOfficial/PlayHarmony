@@ -51,7 +51,7 @@ public class UserView extends BorderPane {
         initSingleton(UserViewNavigation.class, navController);
     }
 
-    public class UserViewNavigation extends VBox {
+    public static class UserViewNavigation extends VBox {
 
         private File photoFile;
 
