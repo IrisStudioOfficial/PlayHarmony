@@ -11,7 +11,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -24,7 +23,7 @@ import java.io.File;
 
 import static iris.playharmony.util.TypeUtils.initSingleton;
 
-public class UserView extends BorderPane {
+public class NewUserView extends BorderPane {
 
     private static int SPACING = 15;
     private static Font TITLE_FONT = new Font("Arial", 18);
@@ -35,7 +34,7 @@ public class UserView extends BorderPane {
     private NavController navController;
     private FooterView footerView;
 
-    public UserView() {
+    public NewUserView() {
         headerView = new HeaderView();
 
         navigationView = new NavigationView();
@@ -162,7 +161,6 @@ public class UserView extends BorderPane {
                         category.getText(), (Role) role.getValue(), new Email(email.getText()));
                 try {
                     if(new DatabaseController().addUser(user)) {
-                        //Ir a la vista
                         navController.clear();
                         navController.pushView(new UserListView().getNavigationView());
                     } else {

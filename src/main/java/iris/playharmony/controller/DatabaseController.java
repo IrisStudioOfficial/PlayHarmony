@@ -73,10 +73,6 @@ public class DatabaseController {
         return userList;
     }
 
-    public void setUsers(List<User> userList) {
-
-    }
-
     public boolean addUser(User user) throws CreateUserException {
         if(user.getName().equals("") || user.getSurname().equals("") || user.getCategory().equals(""))
             throw new CreateUserException();
@@ -115,11 +111,18 @@ public class DatabaseController {
                 String sql = "UPDATE USERS SET PHOTO = ?, NAME = ?, SURNAME = ?, CATEGORY = ?, USER_ROLE = ?, EMAIL = ? " +
                         "WHERE EMAIL = ?";
                 PreparedStatement ps = connection.prepareStatement(sql);
-                try (FileInputStream fis = new FileInputStream(user.getPhoto())) {
-                    ps.setBinaryStream(1, fis, (int)user.getPhoto().length());
-
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(user.getPhoto() != null) {
+                    try (FileInputStream fis = new FileInputStream(user.getPhoto())) {
+                        ps.setBinaryStream(1, fis, (int) user.getPhoto().length());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try (InputStream fis = getClass().getResourceAsStream("/" + PathHandler.DEFAULT_PHOTO_PATH)) {
+                        ps.setBinaryStream(1, fis, fis.available());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 ps.setString(2, user.getName());
                 ps.setString(3, user.getSurname());
@@ -140,7 +143,7 @@ public class DatabaseController {
     }
 
     public boolean removeUser(String key) throws RemoveUserException {
-        if(key == "" || key == null)
+        if(key == null || key.equals(""))
             throw new RemoveUserException();
         if (getUsers().stream().anyMatch(databaseUser -> databaseUser.getEmail().toString().equals(key))) {
             try {

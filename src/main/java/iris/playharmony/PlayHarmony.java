@@ -1,15 +1,9 @@
 package iris.playharmony;
 
-import iris.playharmony.controller.NavController;
-import iris.playharmony.view.MainView;
 import iris.playharmony.view.UserListView;
-import iris.playharmony.view.UserView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.concurrent.atomic.AtomicReference;
