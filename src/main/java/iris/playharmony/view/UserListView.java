@@ -54,6 +54,10 @@ public class UserListView extends BorderPane {
         initSingleton(UserView.UserViewNavigation.class, navController);
     }
 
+    public NavigationView getNavigationView() {
+        return navigationView;
+    }
+
     public class UserListViewNavigation extends VBox {
 
         private TextField name = new TextField();
@@ -87,7 +91,7 @@ public class UserListView extends BorderPane {
             titleRow.getChildren().add(region);
             titleRow.getChildren().add(button("Add User", event -> {
                 navController.clear();
-                navController.pushView(new UserView.UserViewNavigation());
+                navController.pushView(new UserView().getNavigationView());
             }));
 
             return titleRow;
@@ -98,7 +102,12 @@ public class UserListView extends BorderPane {
             padding.setPrefWidth(5);
             HBox bottomButtonPanel = new HBox(button("Remove User", this::removeUser),
                     padding,
-                    button("Update User", event -> event.consume()));
+                    button("Update User", event ->{
+                        navController.clear();
+                        ObservableUser selectedItem = (ObservableUser) usersTable.getSelectionModel().getSelectedItem();
+                        if(selectedItem != null)
+                            navController.pushView(new UpdateUserView(selectedItem).getNavigationView());
+                    }));
             return bottomButtonPanel;
         }
         private Label title(String text) {

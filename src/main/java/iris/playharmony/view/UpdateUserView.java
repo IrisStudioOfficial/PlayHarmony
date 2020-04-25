@@ -5,13 +5,13 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.CreateUserException;
 import iris.playharmony.exceptions.EmailException;
 import iris.playharmony.model.Email;
+import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -24,22 +24,24 @@ import java.io.File;
 
 import static iris.playharmony.util.TypeUtils.initSingleton;
 
-public class UserView extends BorderPane {
+public class UpdateUserView extends BorderPane {
 
     private static int SPACING = 15;
     private static Font TITLE_FONT = new Font("Arial", 18);
     private static Font FIELD_FONT = new Font("Arial", 14);
+    private final ObservableUser user;
 
     private HeaderView headerView;
     private NavigationView navigationView;
-    private NavController navController;
+    protected NavController navController;
     private FooterView footerView;
 
-    public UserView() {
+    public UpdateUserView(ObservableUser user) {
         headerView = new HeaderView();
+        this.user = user;
 
         navigationView = new NavigationView();
-        navigationView.setView(new UserViewNavigation());
+        navigationView.setView(new UpdateUserViewNavigation(user));
         navController = new NavController(navigationView);
 
         footerView = new FooterView();
@@ -48,14 +50,14 @@ public class UserView extends BorderPane {
         setCenter(navigationView);
         setBottom(footerView);
 
-        initSingleton(UserViewNavigation.class, navController);
+        initSingleton(UpdateUserViewNavigation.class, navController);
     }
 
     public NavigationView getNavigationView() {
         return navigationView;
     }
 
-    public class UserViewNavigation extends VBox {
+    public static class UpdateUserViewNavigation extends VBox {
 
         private File photoFile;
 
@@ -65,19 +67,23 @@ public class UserView extends BorderPane {
         private TextField email = new TextField();
         private TextField category = new TextField();
         private ComboBox<Object> role = new ComboBox<>();
+        ObservableUser user;
 
-        public UserViewNavigation() {
+        public UpdateUserViewNavigation(ObservableUser user) {
             super(SPACING);
-
-            add(title("Add User"));
+            this.user = user;
+            name.setText(user.getName());
+            surname.setText(user.getSurname());
+            email.setText(user.getEmail());
+            category.setText(user.getCategory());
+            add(title("Update User"));
             add(textFieldLabeled(name, "Name"));
             add(textFieldLabeled(surname, "Surname"));
             add(textFieldLabeled(email, "Email"));
             add(textFieldLabeled(category, "Category"));
             add(comboBoxLabeled(role, "Role", Role.STUDENT, Role.TEACHER, Role.ADMIN));
             add(buttonWithResult(photo,"Photo", "Upload Image", event -> uploadImage(photo)));
-            add(button("Add User", event -> createUser()));
-
+            add(button("Update User", event -> updateUser()));
             setPadding(new Insets(SPACING));
         }
 
@@ -156,13 +162,13 @@ public class UserView extends BorderPane {
             textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
         }
 
-        private void createUser() {
+        private void updateUser() {
             try {
                 User user = new User(photoFile, name.getText(), surname.getText(),
                         category.getText(), (Role) role.getValue(), new Email(email.getText()));
                 try {
                     if(new DatabaseController().addUser(user)) {
-                        //Ir a la vista
+//                        navController.pushView(new UserListView.UserListViewNavigation());
                     } else {
                         errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
                     }
