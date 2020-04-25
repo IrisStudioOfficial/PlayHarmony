@@ -85,12 +85,16 @@ public class DatabaseController {
             try {
                 String sql = "INSERT INTO USERS (PHOTO, NAME, SURNAME, CATEGORY, USER_ROLE, EMAIL) VALUES (?, ?, ?, ?, ?, ?)";
                 PreparedStatement ps = connection.prepareStatement(sql);
+
                 ps.setString(1, user.getPhoto().getAbsolutePath() );
                 ps.setString(2, user.getName());
                 ps.setString(3, user.getSurname());
                 ps.setString(4, user.getCategory());
                 ps.setString(5, user.getRole().toString());
                 ps.setString(6, user.getEmail().toString());
+
+                ps.executeUpdate();
+
                 close(ps);
                 return true;
             } catch (SQLException e) {
