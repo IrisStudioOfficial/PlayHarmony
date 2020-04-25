@@ -46,15 +46,17 @@ public class DatabaseController {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 try {
-                    Blob blob = rs.getBlob("PHOTO");
-                    byte [] array = blob.getBytes(1, (int) blob.length());
-                    File photo = File.createTempFile("something-", ".binary", new File(blob.toString()));
-                    FileOutputStream out = new FileOutputStream(photo);
-                    out.write(array);
-                    out.close();
+                    File image = File.createTempFile("temp", "img");
+                    try (FileOutputStream fos = new FileOutputStream(image)) {
+                        byte[] buffer = new byte[1024];
+                        InputStream is = rs.getBinaryStream("photo");
+                        while(is.read(buffer) > 0) {
+                            fos.write(buffer);
+                        }
+                    }
 
                     userList.add(new User(
-                            photo,
+                            image.getAbsoluteFile(),
                             rs.getString("NAME"),
                             rs.getString("SURNAME"),
                             rs.getString("CATEGORY"),
