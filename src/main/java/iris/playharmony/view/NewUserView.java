@@ -24,7 +24,7 @@ import java.io.File;
 
 import static iris.playharmony.util.TypeUtils.initSingleton;
 
-public class UserView extends BorderPane {
+class UserView extends BorderPane {
 
     private static int SPACING = 15;
     private static Font TITLE_FONT = new Font("Arial", 18);

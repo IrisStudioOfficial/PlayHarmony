@@ -7,6 +7,7 @@ import iris.playharmony.model.Email;
 import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
+import iris.playharmony.view.user.UpdateUserView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
