@@ -17,24 +17,31 @@ public class Song {
         this.pathFile = pathFile;
     }
 
-    public void setTitle(String title) {
+    public Song() {}
+
+    public Song setTitle(String title) {
         this.title = title;
+        return this;
     }
 
-    public void setAuthor(String author) {
+    public Song setAuthor(String author) {
         this.author = author;
+        return this;
     }
 
-    public void setPhoto(File photo) {
+    public Song setPhoto(File photo) {
         this.photo = photo;
+        return this;
     }
 
-    public void setDate(String date) {
+    public Song setDate(String date) {
         this.date = date;
+        return this;
     }
 
-    public void setPathFile(String pathFile) {
+    public Song setPathFile(String pathFile) {
         this.pathFile = pathFile;
+        return this;
     }
 
     public String getTitle() {

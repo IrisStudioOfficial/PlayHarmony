@@ -1,4 +1,4 @@
-package iris.playharmony.view;
+package iris.playharmony.view.user;
 
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
@@ -7,7 +7,9 @@ import iris.playharmony.model.Email;
 import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
-import iris.playharmony.view.user.UpdateUserView;
+import iris.playharmony.view.FooterView;
+import iris.playharmony.view.HeaderView;
+import iris.playharmony.view.NavigationView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
