@@ -1,11 +1,15 @@
 package iris.playharmony;
 
+import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.model.Song;
 import iris.playharmony.view.user.UserListView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayHarmony extends Application {

@@ -7,6 +7,7 @@ import iris.playharmony.model.ObservableUser;
 import iris.playharmony.view.FooterView;
 import iris.playharmony.view.HeaderView;
 import iris.playharmony.view.NavigationView;
+import iris.playharmony.view.song.NewSongView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -89,6 +90,11 @@ public class UserListView extends BorderPane {
             titleRow.getChildren().add(button("Add User", event -> {
                 navController.clear();
                 navController.pushView(new NewUserView().getNavigationView());
+            }));
+
+            titleRow.getChildren().add(button("Add Song", event -> {
+                navController.clear();
+                navController.pushView(new NewSongView().getNavigationView());
             }));
 
             return titleRow;
