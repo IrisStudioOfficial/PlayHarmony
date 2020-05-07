@@ -23,8 +23,6 @@ import javafx.stage.StageStyle;
 
 import java.io.File;
 
-import static iris.playharmony.util.TypeUtils.initSingleton;
-
 public class UpdateUserView extends BorderPane {
 
     private static int SPACING = 15;
@@ -43,15 +41,12 @@ public class UpdateUserView extends BorderPane {
 
         navigationView = new NavigationView();
         navigationView.setView(new UpdateUserViewNavigation(user, user.getEmail()));
-        navController = new NavController(navigationView);
+        navController = NavController.get();
 
         footerView = new FooterView();
-
         setTop(headerView);
         setCenter(navigationView);
         setBottom(footerView);
-
-        initSingleton(UpdateUserViewNavigation.class, navController);
     }
 
     public NavigationView getNavigationView() {
@@ -172,8 +167,7 @@ public class UpdateUserView extends BorderPane {
                         category.getText(), (Role) role.getValue(), new Email(email.getText()));
                 try {
                     if(new DatabaseController().updateUser(user, key)) {
-                        navController.clear();
-                        navController.pushView(new UserListView().getNavigationView());
+                        NavController.get().popView();
                     } else {
                         errorAlert("ERROR! Couldn't update user", "ERROR! Couldn't update user");
                     }

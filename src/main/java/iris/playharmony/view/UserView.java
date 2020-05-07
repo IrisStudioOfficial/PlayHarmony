@@ -40,15 +40,13 @@ public class UserView extends BorderPane {
 
         navigationView = new NavigationView();
         navigationView.setView(new UserViewNavigation());
-        navController = new NavController(navigationView);
+        navController = NavController.get();
 
         footerView = new FooterView();
 
         setTop(headerView);
         setCenter(navigationView);
         setBottom(footerView);
-
-        initSingleton(UserViewNavigation.class, navController);
     }
 
     public NavigationView getNavigationView() {
@@ -163,8 +161,7 @@ public class UserView extends BorderPane {
                 try {
                     if(new DatabaseController().addUser(user)) {
                         //Ir a la vista
-                        navController.clear();
-                        navController.pushView(new UserListView().getNavigationView());
+                        NavController.get().popView();
                     } else {
                         errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
                     }

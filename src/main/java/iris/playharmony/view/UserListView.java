@@ -2,8 +2,6 @@ package iris.playharmony.view;
 
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
-import iris.playharmony.exceptions.CreateUserException;
-import iris.playharmony.exceptions.EmailException;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.ObservableUser;
@@ -25,8 +23,6 @@ import javafx.stage.StageStyle;
 
 import java.io.File;
 
-import static iris.playharmony.util.TypeUtils.initSingleton;
-
 public class UserListView extends BorderPane {
     private static int SPACING = 15;
     private static Font TITLE_FONT = new Font("Arial", 18);
@@ -43,15 +39,13 @@ public class UserListView extends BorderPane {
 
         navigationView = new NavigationView();
         navigationView.setView(new UserListViewNavigation());
-        navController = new NavController(navigationView);
-
+        navController = NavController.get();
         footerView = new FooterView();
+
 
         setTop(headerView);
         setCenter(navigationView);
         setBottom(footerView);
-
-        initSingleton(UserView.UserViewNavigation.class, navController);
     }
 
     public NavigationView getNavigationView() {
@@ -90,8 +84,7 @@ public class UserListView extends BorderPane {
             HBox.setHgrow(region, Priority.ALWAYS);
             titleRow.getChildren().add(region);
             titleRow.getChildren().add(button("Add User", event -> {
-                navController.clear();
-                navController.pushView(new UserView().getNavigationView());
+                NavController.get().pushView(new UserView().getNavigationView());
             }));
 
             return titleRow;
@@ -99,17 +92,23 @@ public class UserListView extends BorderPane {
 
         private Node getBottomButtonPanel() {
             Region padding = new Region();
+            Region padding2 = new Region();
             padding.setPrefWidth(5);
+            padding2.setPrefWidth(5);
             HBox bottomButtonPanel = new HBox(button("Remove User", this::removeUser),
                     padding,
                     button("Update User", event ->{
-                        navController.clear();
                         ObservableUser selectedItem = (ObservableUser) usersTable.getSelectionModel().getSelectedItem();
                         if(selectedItem != null)
-                            navController.pushView(new UpdateUserView(selectedItem).getNavigationView());
+                            NavController.get().pushView(new UpdateUserView(selectedItem).getNavigationView());
+                    }),
+                    padding2,
+                    button("Refresh", event -> {
+                        updateTableViewData();
                     }));
             return bottomButtonPanel;
         }
+
         private Label title(String text) {
             Label title = new Label(text);
             title.setFont(TITLE_FONT);
