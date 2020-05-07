@@ -1,29 +1,31 @@
-package iris.playharmony.view;
+package iris.playharmony.view.user;
 
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
-import iris.playharmony.exceptions.CreateUserException;
 import iris.playharmony.exceptions.EmailException;
 import iris.playharmony.exceptions.UpdateUserException;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
+import iris.playharmony.view.FooterView;
+import iris.playharmony.view.HeaderView;
+import iris.playharmony.view.NavigationView;
+import iris.playharmony.view.View;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.io.File;
-
-import static iris.playharmony.util.TypeUtils.initSingleton;
 
 public class UpdateUserView extends BorderPane {
 
@@ -38,15 +40,13 @@ public class UpdateUserView extends BorderPane {
 
         NavigationView navigationView = new NavigationView();
         navigationView.setView(new UpdateUserViewNavigation(user, user.getEmail()));
-        navController = new NavController(navigationView);
+        navController = NavController.get();
 
         FooterView footerView = new FooterView();
 
         setTop(headerView);
         setCenter(navigationView);
         setBottom(footerView);
-
-        initSingleton(UpdateUserViewNavigation.class, navController);
     }
 
     public class UpdateUserViewNavigation extends VBox implements View {
@@ -122,8 +122,7 @@ public class UpdateUserView extends BorderPane {
                         category.getText(), (Role) role.getValue(), new Email(email.getText()));
                 try {
                     if(new DatabaseController().updateUser(user, key)) {
-                        navController.clear();
-                        navController.pushView(new UserListView().getNavigationView());
+                        NavController.get().popView();
                     } else {
                         errorAlert("ERROR! Couldn't update user", "ERROR! Couldn't update user");
                     }

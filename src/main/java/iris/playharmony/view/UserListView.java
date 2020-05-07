@@ -3,7 +3,11 @@ package iris.playharmony.view;
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.RemoveUserException;
+import iris.playharmony.model.Email;
 import iris.playharmony.model.ObservableUser;
+import iris.playharmony.model.Role;
+import iris.playharmony.model.User;
+import iris.playharmony.view.user.UpdateUserView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,13 +22,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 
-import java.util.Optional;
-
-import static iris.playharmony.util.TypeUtils.initSingleton;
+import java.io.File;
 
 public class UserListView extends BorderPane {
     private static int SPACING = 15;
     private static Font TITLE_FONT = new Font("Arial", 18);
+    private static Font FIELD_FONT = new Font("Arial", 14);
     private static final int ROWS_PER_PAGE = 20;
 
     private HeaderView headerView;
@@ -37,15 +40,12 @@ public class UserListView extends BorderPane {
 
         navigationView = new NavigationView();
         navigationView.setView(new UserListViewNavigation());
-        navController = new NavController(navigationView);
-
+        navController = NavController.get();
         footerView = new FooterView();
 
         setTop(headerView);
         setCenter(navigationView);
         setBottom(footerView);
-
-        initSingleton(NewUserView.UserViewNavigation.class, navController);
     }
 
     public NavigationView getNavigationView() {
@@ -84,8 +84,7 @@ public class UserListView extends BorderPane {
             HBox.setHgrow(region, Priority.ALWAYS);
             titleRow.getChildren().add(region);
             titleRow.getChildren().add(button("Add User", event -> {
-                navController.clear();
-                //navController.pushView(new NewUserView().getNavigationView());
+                NavController.get().pushView(new NewUserView().getNavigationView());
             }));
 
             return titleRow;
@@ -93,17 +92,23 @@ public class UserListView extends BorderPane {
 
         private Node getBottomButtonPanel() {
             Region padding = new Region();
+            Region padding2 = new Region();
             padding.setPrefWidth(5);
+            padding2.setPrefWidth(5);
             HBox bottomButtonPanel = new HBox(button("Remove User", this::removeUser),
                     padding,
                     button("Update User", event ->{
-                        navController.clear();
                         ObservableUser selectedItem = (ObservableUser) usersTable.getSelectionModel().getSelectedItem();
                         if(selectedItem != null)
-                            navController.pushView(new UpdateUserView(selectedItem).getNavigationView());
+                            NavController.get().pushView(new UpdateUserView(selectedItem).getNavigationView());
+                    }),
+                    padding2,
+                    button("Refresh", event -> {
+                        updateTableViewData();
                     }));
             return bottomButtonPanel;
         }
+
         private Label title(String text) {
             Label title = new Label(text);
             title.setFont(TITLE_FONT);
@@ -116,12 +121,22 @@ public class UserListView extends BorderPane {
             if(selection == null)
                 return;
             try {
-                if(confirmAlert("Remove User", "Do you want to delete the user?"))
-                    new DatabaseController().removeUser(selection.getEmail());
+                new DatabaseController().removeUser(selection.getEmail());
             } catch (RemoveUserException e) {
                 errorAlert("ERROR! Couldn't remove user", "ERROR! Couldn't remove user");
             }
             updateTableViewData();
+        }
+
+        private Node textFieldLabeled(TextField textField, String text) {
+            VBox panel = new VBox();
+
+            Label label = new Label(text);
+            label.setFont(FIELD_FONT);
+
+            panel.getChildren().addAll(label, textField);
+
+            return panel;
         }
 
         private TableView initializeTableView() {
@@ -182,6 +197,52 @@ public class UserListView extends BorderPane {
             return usersTable;
         }
 
+        private ObservableList<ObservableUser> mockUsers() {
+            ObservableList<ObservableUser> users = FXCollections.observableArrayList();
+            users.add(ObservableUser.from(new User().name("test")
+                    .role(Role.STUDENT)
+                    .surname("test2")
+                    .category("testcat")
+                    .mail(new Email("test", "test.test"))
+                    .photo(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))));
+            users.add(ObservableUser.from(new User().name("test")
+                    .role(Role.TEACHER)
+                    .surname("test2")
+                    .category("testcat")
+                    .mail(new Email("test", "test.test"))
+                    .photo(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))));
+            users.add(ObservableUser.from(new User().name("test")
+                    .role(Role.ADMIN)
+                    .surname("test2")
+                    .category("testcat")
+                    .mail(new Email("test", "test.test"))
+                    .photo(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))));
+            users.add(ObservableUser.from(new User().name("test")
+                    .role(Role.STUDENT)
+                    .surname("test2")
+                    .category("testcat")
+                    .mail(new Email("test", "test.test"))
+                    .photo(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))));
+            return users;
+        }
+
+        private Node buttonWithResult(TextField textField, String labelText, String buttonText, EventHandler<ActionEvent> event) {
+            Label photoText = new Label(labelText);
+            photoText.setFont(FIELD_FONT);
+
+            HBox panel = new HBox();
+
+            textField.setDisable(true);
+
+            Button button = new Button(buttonText);
+            button.setOnAction(event);
+            button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
+
+            panel.getChildren().addAll(textField, button);
+
+            return panel;
+        }
+
         private Node button(String text, EventHandler<ActionEvent> event) {
             Button button = new Button(text);
             button.setOnAction(event);
@@ -197,16 +258,6 @@ public class UserListView extends BorderPane {
             emailErrorDialog.initStyle(StageStyle.UTILITY);
             java.awt.Toolkit.getDefaultToolkit().beep();
             emailErrorDialog.showAndWait();
-        }
-
-        private boolean confirmAlert(String title, String text) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(title);
-            alert.setHeaderText(text);
-
-            java.awt.Toolkit.getDefaultToolkit().beep();
-            Optional<ButtonType> result = alert.showAndWait();
-            return result.get() == ButtonType.OK;
         }
     }
 }

@@ -11,10 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -22,27 +19,22 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-import static iris.playharmony.util.TypeUtils.initSingleton;
-
 public class NewUserView extends BorderPane {
 
     private static int SPACING = 15;
-    private NavController navController;
 
     public NewUserView() {
         HeaderView headerView = new HeaderView();
 
         NavigationView navigationView = new NavigationView();
         navigationView.setView(new UserViewNavigation());
-        navController = new NavController(navigationView);
+        NavController navController = NavController.get();
 
         FooterView footerView = new FooterView();
 
         setTop(headerView);
         setCenter(navigationView);
         setBottom(footerView);
-
-        initSingleton(UserViewNavigation.class, navController);
     }
 
     public class UserViewNavigation extends VBox implements View {
@@ -108,8 +100,8 @@ public class NewUserView extends BorderPane {
                         category.getText(), (Role) role.getValue(), new Email(email.getText()));
                 try {
                     if(new DatabaseController().addUser(user)) {
-                        navController.clear();
-                        navController.pushView(new UserListView().getNavigationView());
+                        //Ir a la vista
+                        NavController.get().popView();
                     } else {
                         errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
                     }
