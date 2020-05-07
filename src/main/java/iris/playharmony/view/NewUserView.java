@@ -24,7 +24,7 @@ import java.io.File;
 
 import static iris.playharmony.util.TypeUtils.initSingleton;
 
-class UserView extends BorderPane {
+class NewUserView extends BorderPane {
 
     private static int SPACING = 15;
     private static Font TITLE_FONT = new Font("Arial", 18);
@@ -35,7 +35,7 @@ class UserView extends BorderPane {
     private NavController navController;
     private FooterView footerView;
 
-    public UserView() {
+    public NewUserView() {
         headerView = new HeaderView();
 
         navigationView = new NavigationView();

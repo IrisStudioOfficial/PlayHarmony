@@ -85,7 +85,7 @@ public class UserListView extends BorderPane {
             HBox.setHgrow(region, Priority.ALWAYS);
             titleRow.getChildren().add(region);
             titleRow.getChildren().add(button("Add User", event -> {
-                NavController.get().pushView(new UserView().getNavigationView());
+                NavController.get().pushView(new NewUserView().getNavigationView());
             }));
 
             return titleRow;
