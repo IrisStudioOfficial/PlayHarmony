@@ -11,49 +11,33 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.io.File;
 
-import static iris.playharmony.util.TypeUtils.initSingleton;
-
-class NewUserView extends BorderPane {
+public class NewUserView extends BorderPane {
 
     private static int SPACING = 15;
-    private static Font TITLE_FONT = new Font("Arial", 18);
-    private static Font FIELD_FONT = new Font("Arial", 14);
-
-    private HeaderView headerView;
-    private NavigationView navigationView;
-    private NavController navController;
-    private FooterView footerView;
 
     public NewUserView() {
-        headerView = new HeaderView();
+        HeaderView headerView = new HeaderView();
 
-        navigationView = new NavigationView();
+        NavigationView navigationView = new NavigationView();
         navigationView.setView(new UserViewNavigation());
-        navController = NavController.get();
+        NavController navController = NavController.get();
 
-        footerView = new FooterView();
+        FooterView footerView = new FooterView();
 
         setTop(headerView);
         setCenter(navigationView);
         setBottom(footerView);
     }
 
-    public NavigationView getNavigationView() {
-        return navigationView;
-    }
-
-    public class UserViewNavigation extends VBox {
+    public class UserViewNavigation extends VBox implements View {
 
         private File photoFile;
 
@@ -67,52 +51,16 @@ class NewUserView extends BorderPane {
         public UserViewNavigation() {
             super(SPACING);
 
-            add(title("Add User"));
-            add(textFieldLabeled(name, "Name"));
-            add(textFieldLabeled(surname, "Surname"));
-            add(textFieldLabeled(email, "Email"));
-            add(textFieldLabeled(category, "Category"));
-            add(comboBoxLabeled(role, "Role", Role.STUDENT, Role.TEACHER, Role.ADMIN));
+            title("Add User");
+            textFieldLabeled(name, "Name");
+            textFieldLabeled(surname, "Surname");
+            textFieldLabeled(email, "Email");
+            textFieldLabeled(category, "Category");
+            comboBoxLabeled(role, "Role", Role.STUDENT, Role.TEACHER, Role.ADMIN);
             add(buttonWithResult(photo,"Photo", "Upload Image", event -> uploadImage(photo)));
-            add(button("Add User", event -> createUser()));
+            button("Add User", event -> createUser());
 
             setPadding(new Insets(SPACING));
-        }
-
-        private Node add(Node node) {
-            getChildren().add(node);
-
-            return node;
-        }
-
-        private Label title(String text) {
-            Label title = new Label(text);
-            title.setFont(TITLE_FONT);
-            return title;
-        }
-
-        private Node textFieldLabeled(TextField textField, String text) {
-            VBox panel = new VBox();
-
-            Label label = new Label(text);
-            label.setFont(FIELD_FONT);
-
-            panel.getChildren().addAll(label, textField);
-
-            return panel;
-        }
-
-        private Node comboBoxLabeled(ComboBox<Object> comboBox, String text, Object... objects) {
-            VBox panel = new VBox();
-
-            Label label = new Label(text);
-            label.setFont(FIELD_FONT);
-            comboBox.getItems().addAll(objects);
-            if(objects.length > 0) comboBox.setValue(objects[0]);
-
-            panel.getChildren().addAll(label, comboBox);
-
-            return panel;
         }
 
         private Node buttonWithResult(TextField textField, String labelText, String buttonText, EventHandler<ActionEvent> event) {
@@ -130,14 +78,6 @@ class NewUserView extends BorderPane {
             panel.getChildren().addAll(textField, button);
 
             return panel;
-        }
-
-        private Node button(String text, EventHandler<ActionEvent> event) {
-            Button button = new Button(text);
-            button.setOnAction(event);
-            button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
-
-            return button;
         }
 
         private void uploadImage(TextField textField) {
@@ -171,15 +111,6 @@ class NewUserView extends BorderPane {
             } catch (EmailException e) {
                 errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
             }
-        }
-
-        private void errorAlert(String title, String text) {
-            Alert emailErrorDialog = new Alert(Alert.AlertType.ERROR);
-            emailErrorDialog.setTitle(title);
-            emailErrorDialog.setHeaderText(text);
-            emailErrorDialog.initStyle(StageStyle.UTILITY);
-            java.awt.Toolkit.getDefaultToolkit().beep();
-            emailErrorDialog.showAndWait();
         }
     }
 }

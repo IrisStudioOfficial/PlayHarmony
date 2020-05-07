@@ -46,7 +46,6 @@ public class UserListView extends BorderPane {
         navController = NavController.get();
         footerView = new FooterView();
 
-
         setTop(headerView);
         setCenter(navigationView);
         setBottom(footerView);
@@ -259,7 +258,6 @@ public class UserListView extends BorderPane {
 
             return button;
         }
-
 
         private void errorAlert(String title, String text) {
             Alert emailErrorDialog = new Alert(Alert.AlertType.ERROR);
