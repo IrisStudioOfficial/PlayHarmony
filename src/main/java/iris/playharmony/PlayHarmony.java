@@ -1,6 +1,6 @@
 package iris.playharmony;
 
-import iris.playharmony.view.UserListView;
+import iris.playharmony.view.user.UserListView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;

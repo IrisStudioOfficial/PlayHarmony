@@ -1,4 +1,4 @@
-package iris.playharmony.view;
+package iris.playharmony.view.user;
 
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
@@ -7,6 +7,9 @@ import iris.playharmony.exceptions.EmailException;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
+import iris.playharmony.view.FooterView;
+import iris.playharmony.view.HeaderView;
+import iris.playharmony.view.NavigationView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
