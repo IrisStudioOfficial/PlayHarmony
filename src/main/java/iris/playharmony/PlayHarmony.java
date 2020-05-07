@@ -1,6 +1,6 @@
 package iris.playharmony;
 
-import iris.playharmony.view.UserListView;
+import iris.playharmony.view.NavigationView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
@@ -56,6 +56,6 @@ public class PlayHarmony extends Application {
     }
 
     private void createScene() {
-        scene = new Scene(new UserListView(), DEFAULT_WIDTH, DEFAULT_HEIGHT, false, SceneAntialiasing.BALANCED);
+        scene = new Scene(new NavigationView(), DEFAULT_WIDTH, DEFAULT_HEIGHT, false, SceneAntialiasing.BALANCED);
     }
 }
