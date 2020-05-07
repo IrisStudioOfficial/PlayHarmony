@@ -11,10 +11,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class FooterView extends HBox {
-    private static String footerText = "Copyright ©2020 PlayHarmony.";
+
+    private static final String FOOTER_TEXT = "Copyright ©2020 PlayHarmony.";
 
     public FooterView(){
-        Label footerLabel = new Label(footerText);
+        Label footerLabel = new Label(FOOTER_TEXT);
         footerLabel.setFont(new Font("Arial", 15));
         this.getChildren().addAll(footerLabel);
         this.setAlignment(Pos.BASELINE_CENTER);
