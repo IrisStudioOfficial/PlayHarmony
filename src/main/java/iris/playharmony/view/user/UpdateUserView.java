@@ -8,9 +8,6 @@ import iris.playharmony.model.Email;
 import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
-import iris.playharmony.view.FooterView;
-import iris.playharmony.view.HeaderView;
-import iris.playharmony.view.NavigationView;
 import iris.playharmony.view.View;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,112 +23,90 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+public class UpdateUserView extends VBox implements View {
 
-public class UpdateUserView extends BorderPane {
-
+    private File photoFile;
     private static int SPACING = 15;
     private final ObservableUser user;
 
     protected NavController navController;
 
+    private TextField photo = new TextField();
+    private TextField name = new TextField();
+    private TextField surname = new TextField();
+    private TextField email = new TextField();
+    private TextField category = new TextField();
+    private ComboBox<Object> role = new ComboBox<>();
+    String key;
+
     public UpdateUserView(ObservableUser user) {
-        HeaderView headerView = new HeaderView();
+        super(SPACING);
         this.user = user;
 
-        NavigationView navigationView = new NavigationView();
-        navigationView.setView(new UpdateUserViewNavigation(user, user.getEmail()));
-        navController = NavController.get();
+        name.setText(user.getName());
+        surname.setText(user.getSurname());
+        email.setText(user.getEmail());
+        category.setText(user.getCategory());
+        photo.setText("");
 
-        FooterView footerView = new FooterView();
-
-        setTop(headerView);
-        setCenter(navigationView);
-        setBottom(footerView);
+        title("Update User");
+        textFieldLabeled(name, "Name");
+        textFieldLabeled(surname, "Surname");
+        textFieldLabeled(email, "Email");
+        textFieldLabeled(category, "Category");
+        comboBoxLabeled(role, "Role", Role.STUDENT, Role.TEACHER, Role.ADMIN);
+        add(buttonWithResult(photo,"Photo", "Upload Image", event -> uploadImage(photo)));
+        button("Update User", event -> updateUser());
+        setPadding(new Insets(SPACING));
     }
 
-    public class UpdateUserViewNavigation extends VBox implements View {
 
-        private File photoFile;
+    private Node buttonWithResult(TextField textField, String labelText, String buttonText, EventHandler<ActionEvent> event) {
+        Label photoText = new Label(labelText);
+        photoText.setFont(FIELD_FONT);
 
-        private TextField photo = new TextField();
-        private TextField name = new TextField();
-        private TextField surname = new TextField();
-        private TextField email = new TextField();
-        private TextField category = new TextField();
-        private ComboBox<Object> role = new ComboBox<>();
-        ObservableUser user;
-        String key;
+        HBox panel = new HBox();
 
-        public UpdateUserViewNavigation(ObservableUser user, String key) {
-            super(SPACING);
+        textField.setDisable(true);
 
-            this.user = user;
-            this.key = key;
+        Button button = new Button(buttonText);
+        button.setOnAction(event);
+        button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
 
-            name.setText(user.getName());
-            surname.setText(user.getSurname());
-            email.setText(user.getEmail());
-            category.setText(user.getCategory());
-            photo.setText("");
+        panel.getChildren().addAll(textField, button);
 
-            title("Update User");
-            textFieldLabeled(name, "Name");
-            textFieldLabeled(surname, "Surname");
-            textFieldLabeled(email, "Email");
-            textFieldLabeled(category, "Category");
-            comboBoxLabeled(role, "Role", Role.STUDENT, Role.TEACHER, Role.ADMIN);
-            add(buttonWithResult(photo,"Photo", "Upload Image", event -> uploadImage(photo)));
-            button("Update User", event -> updateUser());
-            setPadding(new Insets(SPACING));
-        }
+        return panel;
+    }
 
-        private Node buttonWithResult(TextField textField, String labelText, String buttonText, EventHandler<ActionEvent> event) {
-            Label photoText = new Label(labelText);
-            photoText.setFont(FIELD_FONT);
+    private void uploadImage(TextField textField) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Search Image");
 
-            HBox panel = new HBox();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("All Images", "*.*"),
+                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+                new FileChooser.ExtensionFilter("PNG", "*.png")
+        );
 
-            textField.setDisable(true);
+        photoFile = fileChooser.showOpenDialog(new Stage());
+        textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
+    }
 
-            Button button = new Button(buttonText);
-            button.setOnAction(event);
-            button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
-
-            panel.getChildren().addAll(textField, button);
-
-            return panel;
-        }
-
-        private void uploadImage(TextField textField) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Search Image");
-
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("All Images", "*.*"),
-                    new FileChooser.ExtensionFilter("JPG", "*.jpg"),
-                    new FileChooser.ExtensionFilter("PNG", "*.png")
-            );
-
-            photoFile = fileChooser.showOpenDialog(new Stage());
-            textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
-        }
-
-        private void updateUser() {
+    private void updateUser() {
+        try {
+            User user = new User(photoFile, name.getText(), surname.getText(),
+                    category.getText(), (Role) role.getValue(), new Email(email.getText()));
             try {
-                User user = new User(photoFile, name.getText(), surname.getText(),
-                        category.getText(), (Role) role.getValue(), new Email(email.getText()));
-                try {
-                    if(new DatabaseController().updateUser(user, key)) {
-                        NavController.get().popView();
-                    } else {
-                        errorAlert("ERROR! Couldn't update user", "ERROR! Couldn't update user");
-                    }
-                } catch (UpdateUserException e) {
-                    errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
+                if(new DatabaseController().updateUser(user, key)) {
+                    NavController.get().popView();
+                } else {
+                    errorAlert("ERROR! Couldn't update user", "ERROR! Couldn't update user");
                 }
-            } catch (EmailException e) {
-                errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
+            } catch (UpdateUserException e) {
+                errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
             }
+        } catch (EmailException e) {
+            errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
         }
     }
 }

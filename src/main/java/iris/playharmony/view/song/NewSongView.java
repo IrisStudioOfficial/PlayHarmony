@@ -27,156 +27,131 @@ import javafx.stage.StageStyle;
 
 import java.io.File;
 
-public class NewSongView extends BorderPane {
+public class NewSongView extends VBox {
     private static int SPACING = 15;
     private static Font TITLE_FONT = new Font("Arial", 18);
     private static Font FIELD_FONT = new Font("Arial", 14);
-    
-    private HeaderView headerView;
-    private NavigationView navigationView;
-    private NavController navController;
-    private FooterView footerView;
+    private TextField title = new TextField();
+    private TextField author = new TextField();
+    private TextField pathPhoto = new TextField();
+    private File photoFile;
+    private TextField dateDay = new TextField();
+    private TextField dateMonth = new TextField();
+    private TextField dateYear = new TextField();
+    private TextField pathFile = new TextField();
+    private File songFile;
 
     public NewSongView() {
-        headerView = new HeaderView();
+        super(SPACING);
 
-        navigationView = new NavigationView();
-        navigationView.setView(new SongViewNavigation());
-        navController = NavController.get();
+        add(title("Add Song"));
+        add(textFieldLabeled(title, "Title"));
+        add(textFieldLabeled(author, "Author"));
 
-        footerView = new FooterView();
+        add(textFieldLabeled(dateDay, "Day"));
+        add(textFieldLabeled(dateMonth, "Month"));
+        add(textFieldLabeled(dateYear, "Year"));
 
-        setTop(headerView);
-        setCenter(navigationView);
-        setBottom(footerView);
+        add(buttonWithResult(pathPhoto,"Photo", "Upload Image", event -> uploadImage(pathPhoto)));
+        add(buttonWithResult(pathFile,"Song File", "Upload Song", event -> uploadSong(pathFile)));
+
+        add(button("Add Song", event -> createSong()));
+
+        setPadding(new Insets(SPACING));
     }
 
-    public NavigationView getNavigationView() {
-        return navigationView;
+    private Node add(Node node) {
+        getChildren().add(node);
+        return node;
     }
 
-    public class SongViewNavigation extends VBox {
-        private TextField title = new TextField();
-        private TextField author = new TextField();
-        private TextField pathPhoto = new TextField();
-        private File photoFile;
-        private TextField dateDay = new TextField();
-        private TextField dateMonth = new TextField();
-        private TextField dateYear = new TextField();
-        private TextField pathFile = new TextField();
-        private File songFile;
+    private Label title(String text) {
+        Label title = new Label(text);
+        title.setFont(TITLE_FONT);
+        return title;
+    }
 
-        public SongViewNavigation() {
-            super(SPACING);
+    private Node textFieldLabeled(TextField textField, String text) {
+        VBox panel = new VBox();
 
-            add(title("Add Song"));
-            add(textFieldLabeled(title, "Title"));
-            add(textFieldLabeled(author, "Author"));
+        Label label = new Label(text);
+        label.setFont(FIELD_FONT);
 
-            add(textFieldLabeled(dateDay, "Day"));
-            add(textFieldLabeled(dateMonth, "Month"));
-            add(textFieldLabeled(dateYear, "Year"));
+        panel.getChildren().addAll(label, textField);
 
-            add(buttonWithResult(pathPhoto,"Photo", "Upload Image", event -> uploadImage(pathPhoto)));
-            add(buttonWithResult(pathFile,"Song File", "Upload Song", event -> uploadSong(pathFile)));
+        return panel;
+    }
 
-            add(button("Add Song", event -> createSong()));
+    private Node buttonWithResult(TextField textField, String labelText, String buttonText, EventHandler<ActionEvent> event) {
+        Label photoText = new Label(labelText);
+        photoText.setFont(FIELD_FONT);
 
-            setPadding(new Insets(SPACING));
+        HBox panel = new HBox();
+
+        textField.setDisable(true);
+
+        Button button = new Button(buttonText);
+        button.setOnAction(event);
+        button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
+
+        panel.getChildren().addAll(textField, button);
+
+        return panel;
+    }
+
+    private Node button(String text, EventHandler<ActionEvent> event) {
+        Button button = new Button(text);
+        button.setOnAction(event);
+        button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
+
+        return button;
+    }
+
+    private void uploadImage(TextField textField) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Search Image");
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("All Images", "*.*"),
+                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+                new FileChooser.ExtensionFilter("PNG", "*.png")
+        );
+
+        photoFile = fileChooser.showOpenDialog(new Stage());
+        textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
+    }
+
+    private void uploadSong(TextField textField) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Search Song");
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("All Images", "*.*"),
+                new FileChooser.ExtensionFilter("MP3", "*.mp3")
+        );
+
+        songFile = fileChooser.showOpenDialog(new Stage());
+        textField.setText((songFile == null) ? "" : songFile.getAbsolutePath());
+    }
+
+
+    private void createSong() {
+        Song song = new Song(title.getText(),author.getText(),photoFile,dateDay.getText() + "-" + dateMonth.getText() +"-" + dateYear.getText(),pathFile.getText());
+        if(new DatabaseController().addSong(song)) {
+            NavController.get().clear();
+            NavController.get().pushView(new UserListView());
+        } else {
+            errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
         }
+    }
 
-        private Node add(Node node) {
-            getChildren().add(node);
-            return node;
-        }
-
-        private Label title(String text) {
-            Label title = new Label(text);
-            title.setFont(TITLE_FONT);
-            return title;
-        }
-
-        private Node textFieldLabeled(TextField textField, String text) {
-            VBox panel = new VBox();
-
-            Label label = new Label(text);
-            label.setFont(FIELD_FONT);
-
-            panel.getChildren().addAll(label, textField);
-
-            return panel;
-        }
-
-        private Node buttonWithResult(TextField textField, String labelText, String buttonText, EventHandler<ActionEvent> event) {
-            Label photoText = new Label(labelText);
-            photoText.setFont(FIELD_FONT);
-
-            HBox panel = new HBox();
-
-            textField.setDisable(true);
-
-            Button button = new Button(buttonText);
-            button.setOnAction(event);
-            button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
-
-            panel.getChildren().addAll(textField, button);
-
-            return panel;
-        }
-
-        private Node button(String text, EventHandler<ActionEvent> event) {
-            Button button = new Button(text);
-            button.setOnAction(event);
-            button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
-
-            return button;
-        }
-
-        private void uploadImage(TextField textField) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Search Image");
-
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("All Images", "*.*"),
-                    new FileChooser.ExtensionFilter("JPG", "*.jpg"),
-                    new FileChooser.ExtensionFilter("PNG", "*.png")
-            );
-
-            photoFile = fileChooser.showOpenDialog(new Stage());
-            textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
-        }
-
-        private void uploadSong(TextField textField) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Search Song");
-
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("All Images", "*.*"),
-                    new FileChooser.ExtensionFilter("MP3", "*.mp3")
-            );
-
-            songFile = fileChooser.showOpenDialog(new Stage());
-            textField.setText((songFile == null) ? "" : songFile.getAbsolutePath());
-        }
-
-
-        private void createSong() {
-            Song song = new Song(title.getText(),author.getText(),photoFile,dateDay.getText() + "-" + dateMonth.getText() +"-" + dateYear.getText(),pathFile.getText());
-            if(new DatabaseController().addSong(song)) {
-                navController.clear();
-                navController.pushView(new UserListView().getNavigationView());
-            } else {
-                errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
-            }
-        }
-
-        private void errorAlert(String title, String text) {
-            Alert emailErrorDialog = new Alert(Alert.AlertType.ERROR);
-            emailErrorDialog.setTitle(title);
-            emailErrorDialog.setHeaderText(text);
-            emailErrorDialog.initStyle(StageStyle.UTILITY);
-            java.awt.Toolkit.getDefaultToolkit().beep();
-            emailErrorDialog.showAndWait();
-        }
+    private void errorAlert(String title, String text) {
+        Alert emailErrorDialog = new Alert(Alert.AlertType.ERROR);
+        emailErrorDialog.setTitle(title);
+        emailErrorDialog.setHeaderText(text);
+        emailErrorDialog.initStyle(StageStyle.UTILITY);
+        java.awt.Toolkit.getDefaultToolkit().beep();
+        emailErrorDialog.showAndWait();
     }
 }
+

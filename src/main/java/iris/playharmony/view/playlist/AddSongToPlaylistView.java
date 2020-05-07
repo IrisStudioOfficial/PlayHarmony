@@ -45,7 +45,7 @@ public class AddSongToPlaylistView extends BorderPane {
         private void initElements() {
             title(playlist.getName());
             for (Song song : playlist.getSongList()) {
-                button(song.getName(), null);
+                button(song.getTitle(), null);
             }
             button("Add Song", event -> addSong());
         }
