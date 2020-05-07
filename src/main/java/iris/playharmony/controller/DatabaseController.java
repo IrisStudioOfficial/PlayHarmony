@@ -1,12 +1,10 @@
 package iris.playharmony.controller;
 
 import iris.playharmony.controller.handler.PathHandler;
-import iris.playharmony.exceptions.CreateUserException;
-import iris.playharmony.exceptions.EmailException;
-import iris.playharmony.exceptions.RemoveUserException;
-import iris.playharmony.exceptions.UpdateUserException;
+import iris.playharmony.exceptions.*;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.Role;
+import iris.playharmony.model.Song;
 import iris.playharmony.model.User;
 
 import java.io.*;
@@ -159,6 +157,29 @@ public class DatabaseController {
                 e.printStackTrace();
             }
         }
+        return false;
+    }
+
+    public boolean addSong(Song song){
+        String sql = "INSERT INTO SONGS (title, author, photo, publication, pathFile) VALUES(?,?,?,?,?)";
+
+        try(PreparedStatement pst = connection.prepareStatement(sql)){
+            pst.setString(1, song.getTitle());
+            pst.setString(2, song.getAuthor());
+
+            try (FileInputStream fis = new FileInputStream(song.getPhoto())) {
+                pst.setBinaryStream(3, fis, (int)song.getPhoto().length());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            pst.setString(4, song.getDate());
+            pst.setString(5, song.getPathFile());
+            return pst.executeUpdate() == 1;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
         return false;
     }
 }

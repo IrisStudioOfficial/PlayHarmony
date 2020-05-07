@@ -4,6 +4,7 @@ import java.io.File;
 
 public class User {
 
+    
     private File photo;
     private String name;
     private String surname;
