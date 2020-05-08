@@ -22,6 +22,7 @@ import javafx.stage.StageStyle;
 
 import javax.xml.crypto.Data;
 import java.io.File;
+import java.util.Comparator;
 
 public class SongListView extends VBox {
     private static int SPACING = 15;
@@ -107,18 +108,24 @@ public class SongListView extends VBox {
     }
 
     private TableView updateTableViewData() {
-        data = getSongs();
+        data = getSongs(new Comparator<ObservableSong>() {
+            @Override
+            public int compare(ObservableSong o1, ObservableSong o2) {
+                return o1.title().get().compareTo(o2.title().get());
+            }
+        });
         songsTable.setItems(data);
         songsTable.refresh();
         return songsTable;
     }
 
-    private ObservableList<ObservableSong> getSongs() {
+    private ObservableList<ObservableSong> getSongs(Comparator<ObservableSong> comparator) {
         data = FXCollections.observableArrayList();
         new DatabaseController()
                 .getSongs()
                 .stream()
                 .map(ObservableSong::from)
+                .sorted(comparator)
                 .forEach(data::add);
         return data;
     }
