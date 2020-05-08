@@ -25,7 +25,11 @@ public class Playlist {
         this.name = name;
     }
 
-    public void addSong(Song song) {
-        songList.add(song);
+    public boolean addSong(Song song) {
+        if(!songList.stream().anyMatch(songPlaylist -> songPlaylist.getTitle().equals(song.getTitle()))) {
+            return songList.add(song);
+        }
+
+        return false;
     }
 }

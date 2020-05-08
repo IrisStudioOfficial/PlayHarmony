@@ -4,7 +4,6 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
 import iris.playharmony.view.View;
-import iris.playharmony.view.user.NewUserView;
 import javafx.geometry.Insets;
 import javafx.scene.layout.VBox;
 
