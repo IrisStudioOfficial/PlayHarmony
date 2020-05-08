@@ -2,11 +2,11 @@ package iris.playharmony.view.player;
 
 import iris.playharmony.view.View;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 
 import static java.util.Objects.requireNonNull;
 
-public class MusicPlayerView extends VBox implements View {
+public class MusicPlayerView extends BorderPane implements View {
 
     private final Label title;
     private final SpectrumView spectrumView;
@@ -26,15 +26,34 @@ public class MusicPlayerView extends VBox implements View {
 
         Label title = new Label();
 
-        title.textProperty().bind(viewModel.);
+        title.textProperty().bind(viewModel.songTitleProperty());
 
+        setTop(title);
+
+        return title;
     }
 
     private SpectrumView createSpectrumView(MusicPlayerViewModel viewModel) {
 
+        SpectrumView spectrumView = new SpectrumView();
+
+        spectrumView.setStyle("-fx-background-color: blue;");
+
+        // TODO...
+
+        setCenter(spectrumView);
+
+        return spectrumView;
     }
 
     private MusicControlPanelView createControlPanelView(MusicPlayerViewModel viewModel) {
 
+        MusicControlPanelView controlPanelView = new MusicControlPanelView(viewModel);
+
+        // TODO...
+
+        setBottom(controlPanelView);
+
+        return controlPanelView;
     }
 }
