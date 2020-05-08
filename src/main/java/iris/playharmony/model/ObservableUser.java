@@ -4,8 +4,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.File;
-
 public class ObservableUser {
     private ImageView photo;
     private SimpleStringProperty name = new SimpleStringProperty();

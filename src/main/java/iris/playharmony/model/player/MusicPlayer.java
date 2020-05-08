@@ -32,6 +32,10 @@ public class MusicPlayer {
         spectrumListener = new SimpleObjectProperty<>();
     }
 
+    public MediaPlayer getCurrentMediaPlayer() {
+        return currentPlayer;
+    }
+
     public void setSong(Media media) {
 
         if(getStatus() == PLAYING) {
