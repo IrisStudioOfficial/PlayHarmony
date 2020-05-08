@@ -4,6 +4,7 @@ import javafx.beans.property.*;
 import javafx.scene.media.AudioSpectrumListener;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
 
 import static javafx.scene.media.MediaPlayer.Status.PLAYING;
@@ -14,22 +15,37 @@ public class MusicPlayer {
     public static final int DEFAULT_SPECTRUM_NUM_BANDS = 128;
     public static final int DEFAULT_SPECTRUM_THRESHOLD = -60; // dB
 
-    private final DoubleProperty spectrumInterval;
-    private final IntegerProperty spectrumNumBands;
-    private final IntegerProperty spectrumThreshold;
-    private final ObjectProperty<AudioSpectrumListener> spectrumListener;
+    // Spectrum
+    private final DoubleProperty spectrumIntervalProperty;
+    private final IntegerProperty spectrumNumBandsProperty;
+    private final IntegerProperty spectrumThresholdProperty;
+    private final ObjectProperty<AudioSpectrumListener> spectrumListenerProperty;
+
+    // MediaPlayer
     private final MediaPlayerCache playerCache;
-    private MediaPlayer currentPlayer;
-    private boolean loop;
+    private final ObjectProperty<MediaPlayer> currentPlayerProperty;
+    private final ObjectProperty<Duration> currentTimeProperty;
+    private final ObjectProperty<Duration> totalDurationProperty;
+    private final ObjectProperty<Status> statusProperty;
+
+    // Other properties
+    private final BooleanProperty loopProperty;
 
     public MusicPlayer() {
 
         playerCache = new MediaPlayerCache();
 
-        spectrumInterval = new SimpleDoubleProperty(DEFAULT_SPECTRUM_INTERVAL);
-        spectrumNumBands = new SimpleIntegerProperty(DEFAULT_SPECTRUM_NUM_BANDS);
-        spectrumThreshold = new SimpleIntegerProperty(DEFAULT_SPECTRUM_THRESHOLD);
-        spectrumListener = new SimpleObjectProperty<>();
+        spectrumIntervalProperty = new SimpleDoubleProperty(DEFAULT_SPECTRUM_INTERVAL);
+        spectrumNumBandsProperty = new SimpleIntegerProperty(DEFAULT_SPECTRUM_NUM_BANDS);
+        spectrumThresholdProperty = new SimpleIntegerProperty(DEFAULT_SPECTRUM_THRESHOLD);
+        spectrumListenerProperty = new SimpleObjectProperty<>();
+
+        currentPlayerProperty = new SimpleObjectProperty<>();
+        currentTimeProperty = new SimpleObjectProperty<>();
+        totalDurationProperty = new SimpleObjectProperty<>();
+        statusProperty = new SimpleObjectProperty<>();
+
+        loopProperty = new SimpleBooleanProperty();
     }
 
     public void setSong(Media media) {
@@ -38,82 +54,147 @@ public class MusicPlayer {
             stop();
         }
 
-        currentPlayer = playerCache.get(media);
+        MediaPlayer currentPlayer = playerCache.get(media);
 
         if(currentPlayer == null) {
             createNewPlayerForMedia(media);
         }
+
+        updateMediaPlayerPropertyBindings(currentPlayer);
+    }
+
+    private void updateMediaPlayerPropertyBindings(MediaPlayer currentPlayer) {
+
+        currentPlayerProperty.set(currentPlayer);
+
+        currentTimeProperty.bind(currentPlayer.currentTimeProperty());
+        totalDurationProperty.bind(currentPlayer.totalDurationProperty());
+        statusProperty.bind(currentPlayer.statusProperty());
     }
 
     public void play() {
-        if(currentPlayer != null) {
-            currentPlayer.play();
+        if(getCurrentPlayer() != null) {
+            getCurrentPlayer().play();
         }
     }
 
     public void play(Media media) {
         setSong(media);
-        currentPlayer.play();
+        getCurrentPlayer().play();
     }
 
     public void pause() {
-        if(currentPlayer != null) {
-            currentPlayer.pause();
+        if(getCurrentPlayer() != null) {
+            getCurrentPlayer().pause();
         }
     }
 
     public void stop() {
-        if(currentPlayer != null) {
-            currentPlayer.stop();
+        if(getCurrentPlayer() != null) {
+            getCurrentPlayer().stop();
         }
     }
 
-    public boolean loop() {
-        return loop;
+    public double getSpectrumIntervalProperty() {
+        return spectrumIntervalProperty.get();
     }
 
-    public void setLoop(boolean loop) {
-        this.loop = loop;
+    public DoubleProperty spectrumIntervalProperty() {
+        return spectrumIntervalProperty;
     }
 
-    public void setSecond(double second) {
-        currentPlayer.seek(Duration.seconds(second));
+    public void setSpectrumIntervalProperty(double spectrumIntervalProperty) {
+        this.spectrumIntervalProperty.set(spectrumIntervalProperty);
     }
 
-    public MediaPlayer.Status getStatus() {
-        return currentPlayer == null ? MediaPlayer.Status.UNKNOWN : currentPlayer.getStatus();
+    public int getSpectrumNumBandsProperty() {
+        return spectrumNumBandsProperty.get();
     }
 
-    public double getSpectrumInterval() {
-        return spectrumInterval.get();
+    public IntegerProperty spectrumNumBandsProperty() {
+        return spectrumNumBandsProperty;
     }
 
-    public void setSpectrumInterval(double interval) {
-        spectrumInterval.set(interval);
+    public void setSpectrumNumBandsProperty(int spectrumNumBandsProperty) {
+        this.spectrumNumBandsProperty.set(spectrumNumBandsProperty);
     }
 
-    public int getSpectrumNumBands() {
-        return spectrumNumBands.get();
+    public int getSpectrumThresholdProperty() {
+        return spectrumThresholdProperty.get();
     }
 
-    public void setSpectrumNumBands(int bands) {
-        spectrumNumBands.set(bands);
+    public IntegerProperty spectrumThresholdProperty() {
+        return spectrumThresholdProperty;
     }
 
-    public int getSpectrumThreshold() {
-        return spectrumThreshold.get();
+    public void setSpectrumThresholdProperty(int spectrumThresholdProperty) {
+        this.spectrumThresholdProperty.set(spectrumThresholdProperty);
     }
 
-    public void setSpectrumThreshold(int threshold) {
-        spectrumThreshold.set(threshold);
+    public AudioSpectrumListener getSpectrumListenerProperty() {
+        return spectrumListenerProperty.get();
     }
 
-    public AudioSpectrumListener getAudioSpectrumListener() {
-        return spectrumListener.get();
+    public ObjectProperty<AudioSpectrumListener> spectrumListenerProperty() {
+        return spectrumListenerProperty;
     }
 
-    public void setAudioSpectrumListener(AudioSpectrumListener listener) {
-        spectrumListener.set(listener);
+    public void setSpectrumListenerProperty(AudioSpectrumListener spectrumListenerProperty) {
+        this.spectrumListenerProperty.set(spectrumListenerProperty);
+    }
+
+    public MediaPlayer getCurrentPlayer() {
+        return currentPlayerProperty.get();
+    }
+
+    public ReadOnlyObjectProperty<MediaPlayer> currentPlayerProperty() {
+        return currentPlayerProperty;
+    }
+
+    public Duration getCurrentTime() {
+        return currentTimeProperty.get();
+    }
+
+    public ReadOnlyObjectProperty<Duration> currentTimeProperty() {
+        return currentTimeProperty;
+    }
+
+    public void setCurrentTime(Duration time) {
+        if(getCurrentPlayer() != null) {
+            getCurrentPlayer().seek(time);
+        }
+    }
+
+    public Duration getTotalDuration() {
+        return totalDurationProperty.get();
+    }
+
+    public ReadOnlyObjectProperty<Duration> totalDurationProperty() {
+        return totalDurationProperty;
+    }
+
+    public Status getStatus() {
+        return statusProperty.get();
+    }
+
+    public ReadOnlyObjectProperty<Status> statusProperty() {
+        return statusProperty;
+    }
+
+    public void setStatus(Status statusProperty) {
+        this.statusProperty.set(statusProperty);
+    }
+
+    public boolean isLoop() {
+        return loopProperty.get();
+    }
+
+    public BooleanProperty loopProperty() {
+        return loopProperty;
+    }
+
+    public void setLoopProperty(boolean loopProperty) {
+        this.loopProperty.set(loopProperty);
     }
 
     public void clearCache() {
@@ -122,12 +203,12 @@ public class MusicPlayer {
 
     private void createNewPlayerForMedia(Media media) {
 
-        currentPlayer = new MediaPlayer(media);
+        MediaPlayer currentPlayer = new MediaPlayer(media);
 
-        currentPlayer.audioSpectrumIntervalProperty().bind(spectrumInterval);
-        currentPlayer.audioSpectrumNumBandsProperty().bind(spectrumNumBands);
-        currentPlayer.audioSpectrumThresholdProperty().bind(spectrumThreshold);
-        currentPlayer.audioSpectrumListenerProperty().bind(spectrumListener);
+        currentPlayer.audioSpectrumIntervalProperty().bind(spectrumIntervalProperty);
+        currentPlayer.audioSpectrumNumBandsProperty().bind(spectrumNumBandsProperty);
+        currentPlayer.audioSpectrumThresholdProperty().bind(spectrumThresholdProperty);
+        currentPlayer.audioSpectrumListenerProperty().bind(spectrumListenerProperty);
 
         currentPlayer.setOnEndOfMedia(this::onMediaEnd);
 
@@ -135,8 +216,8 @@ public class MusicPlayer {
     }
 
     private void onMediaEnd() {
-        if(loop) {
-            currentPlayer.seek(Duration.ZERO);
+        if(loopProperty.get()) {
+            getCurrentPlayer().seek(Duration.ZERO);
         }
     }
 }
