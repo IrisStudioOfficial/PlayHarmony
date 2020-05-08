@@ -6,6 +6,8 @@ import javafx.scene.image.ImageView;
 
 import java.io.File;
 
+//Hola Agustín :)
+
 public class ObservableSong {
     private ImageView photo;
     private SimpleStringProperty title = new SimpleStringProperty();
