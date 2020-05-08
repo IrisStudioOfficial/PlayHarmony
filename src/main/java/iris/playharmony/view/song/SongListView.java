@@ -2,9 +2,7 @@ package iris.playharmony.view.song;
 
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
-import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.ObservableSong;
-import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.Song;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,7 +18,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.util.Comparator;
 
@@ -66,9 +63,9 @@ public class SongListView extends VBox {
     private void removeSong(Event event) {
         event.consume();
         ObservableSong selection = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
-        if(selection == null)
+        if (selection == null)
             return;
-        if(!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
+        if (!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
             errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
         updateTableViewData();
     }
@@ -157,7 +154,7 @@ public class SongListView extends VBox {
         TableColumn pathColumn = new TableColumn("Path");
         pathColumn.setCellValueFactory(new PropertyValueFactory<>("Path"));
         songsTable.getColumns().addAll(imageColumn, titleColumn, authorColumn, dateColumn, pathColumn);
-        songsTable.getColumns().forEach(column -> ((TableColumn)column).setStyle("-fx-alignment: CENTER;"));
+        songsTable.getColumns().forEach(column -> ((TableColumn) column).setStyle("-fx-alignment: CENTER;"));
         songsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         return songsTable;
@@ -195,7 +192,7 @@ public class SongListView extends VBox {
     private Node button(String text, EventHandler<ActionEvent> event) {
         Button button = new Button(text);
         button.setOnAction(event);
-        button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
+        button.setBackground(new Background(new BackgroundFill(Color.rgb(174, 214, 241), CornerRadii.EMPTY, Insets.EMPTY)));
 
         return button;
     }
