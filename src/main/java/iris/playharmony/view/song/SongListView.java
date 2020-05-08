@@ -1,11 +1,15 @@
 package iris.playharmony.view.song;
 
+import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
+import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.ObservableSong;
+import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.Song;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -52,13 +56,20 @@ public class SongListView extends VBox {
             NavController.get().pushView(new NewSongView());
         }));
         titleRow.getChildren().add(padding);
-        titleRow.getChildren().add(button("Delete Song", event -> {
-            NavController.get().pushView(new DeleteSongView(new Song("pacquito", "", null, "","")));
-        }));
+        titleRow.getChildren().add(button("Delete Song", this::removeSong));
 
         return titleRow;
     }
 
+    private void removeSong(Event event) {
+        event.consume();
+        ObservableSong selection = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
+        if(selection == null)
+            return;
+        if(!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
+            errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
+        updateTableViewData();
+    }
     private Node getBottomButtonPanel() {
         Region padding = new Region();
         Region padding2 = new Region();

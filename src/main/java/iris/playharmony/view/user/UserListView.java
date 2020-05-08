@@ -4,8 +4,6 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.*;
-import iris.playharmony.view.song.DeleteSongView;
-import iris.playharmony.view.song.NewSongView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
