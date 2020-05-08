@@ -6,8 +6,6 @@ import javafx.scene.image.ImageView;
 
 import java.io.File;
 
-//Hola Agustín :)
-
 public class ObservableSong {
     private ImageView photo;
     private SimpleStringProperty title = new SimpleStringProperty();
@@ -56,5 +54,33 @@ public class ObservableSong {
                 .author(song.getAuthor())
                 .date(song.getDate())
                 .photo(song.getPhoto());
+    }
+
+    public ImageView getPhoto() {
+        return photo;
+    }
+
+    public String getTitle() {
+        return title.get();
+    }
+
+    public SimpleStringProperty titleProperty() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author.get();
+    }
+
+    public SimpleStringProperty authorProperty() {
+        return author;
+    }
+
+    public String getDate() {
+        return date.get();
+    }
+
+    public SimpleStringProperty dateProperty() {
+        return date;
     }
 }

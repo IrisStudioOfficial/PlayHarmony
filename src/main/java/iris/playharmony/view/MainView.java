@@ -21,7 +21,7 @@ public class MainView extends BorderPane {
         navigationView = new NavigationView();
 
         navController = new NavController(navigationView);
-        navController.setView(new UserListView());
+        navController.setView(new SongListView());
         footerView = new FooterView();
 
         setTop(headerView);
