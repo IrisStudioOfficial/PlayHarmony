@@ -139,9 +139,9 @@ public class NewSongView extends VBox {
         Song song = new Song(title.getText(),author.getText(),photoFile,dateDay.getText() + "-" + dateMonth.getText() +"-" + dateYear.getText(),pathFile.getText());
         if(new DatabaseController().addSong(song)) {
             NavController.get().clear();
-            NavController.get().pushView(new UserListView());
+            NavController.get().pushView(new SongListView());
         } else {
-            errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
+            errorAlert("ERROR! Song is already registered", "ERROR! Song is already registered");
         }
     }
 
@@ -154,4 +154,3 @@ public class NewSongView extends VBox {
         emailErrorDialog.showAndWait();
     }
 }
-

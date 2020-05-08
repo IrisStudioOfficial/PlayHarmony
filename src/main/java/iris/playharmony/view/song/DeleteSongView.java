@@ -35,9 +35,9 @@ public class DeleteSongView extends VBox {
 
     private void deleteSong(Song song){
         if(new DatabaseController().deleteSong(song)) {
-            NavController.get().pushView(new UserListView());
+            NavController.get().pushView(new SongListView());
         } else {
-            errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
+            errorAlert("ERROR! Song couldn't be deleted", "ERROR! Song couldn't be deleted");
         }
     }
 

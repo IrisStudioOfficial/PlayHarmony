@@ -194,4 +194,37 @@ public class DatabaseController {
         }
         return false;
     }
+
+
+    public List<Song> getSongs() {
+        List<Song> songList = new ArrayList<>();
+
+        String sql = "SELECT * FROM SONGS";
+        try {
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                    File image = File.createTempFile("temp", "img");
+                    try (FileOutputStream fos = new FileOutputStream(image)) {
+                        byte[] buffer = new byte[1024];
+                        InputStream is = rs.getBinaryStream("photo");
+                        while(is.read(buffer) > 0) {
+                            fos.write(buffer);
+                        }
+                    }
+
+                    songList.add(new Song()
+                            .setTitle(rs.getString("TITLE"))
+                            .setDate(rs.getString("PUBLICATION"))
+                            .setPathFile(rs.getString("PATHFILE"))
+                            .setAuthor(rs.getString("AUTHOR"))
+                            .setPhoto(image)
+                    );
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return songList;
+    }
 }
