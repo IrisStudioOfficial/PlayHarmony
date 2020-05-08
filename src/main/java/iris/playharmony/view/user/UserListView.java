@@ -3,10 +3,8 @@ package iris.playharmony.view.user;
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.RemoveUserException;
-import iris.playharmony.model.Email;
-import iris.playharmony.model.ObservableUser;
-import iris.playharmony.model.Role;
-import iris.playharmony.model.User;
+import iris.playharmony.model.*;
+import iris.playharmony.view.song.DeleteSongView;
 import iris.playharmony.view.song.NewSongView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -58,13 +56,12 @@ public class UserListView extends VBox {
         }));
 
         titleRow.getChildren().add(button("Add Song", event -> {
-            NavController.get().clear();
             NavController.get().pushView(new NewSongView());
         }));
 
+        // Example to create the delete button.
         titleRow.getChildren().add(button("Delete Song", event -> {
-            NavController.get().clear();
-            NavController.get().pushView(new DeleteSongView());
+            NavController.get().pushView(new DeleteSongView(new Song("pacquito", "", null, "","")));
         }));
 
         return titleRow;

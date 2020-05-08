@@ -182,4 +182,16 @@ public class DatabaseController {
 
         return false;
     }
+
+    public boolean deleteSong(Song song){
+        String sql = "DELETE FROM SONGS WHERE title = ?";
+
+        try(PreparedStatement pst = connection.prepareStatement(sql)){
+            pst.setString(1, song.getTitle());
+            return pst.executeUpdate() == 1;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
