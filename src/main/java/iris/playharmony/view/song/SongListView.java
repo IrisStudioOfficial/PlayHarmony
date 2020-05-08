@@ -3,9 +3,6 @@ package iris.playharmony.view.song;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Song;
-import iris.playharmony.view.FooterView;
-import iris.playharmony.view.HeaderView;
-import iris.playharmony.view.NavigationView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -46,6 +43,19 @@ public class SongListView extends VBox {
 
     private Node getTitleRow() {
         HBox titleRow = new HBox(title("Songs"));
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+        Region padding = new Region();
+        padding.setPrefWidth(5);
+        titleRow.getChildren().add(region);
+        titleRow.getChildren().add(button("Add Song", event -> {
+            NavController.get().pushView(new NewSongView());
+        }));
+        titleRow.getChildren().add(padding);
+        titleRow.getChildren().add(button("Delete Song", event -> {
+            NavController.get().pushView(new DeleteSongView(new Song("pacquito", "", null, "","")));
+        }));
+
         return titleRow;
     }
 

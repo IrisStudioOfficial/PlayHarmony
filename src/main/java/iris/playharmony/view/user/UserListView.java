@@ -55,15 +55,6 @@ public class UserListView extends VBox {
             NavController.get().pushView(new NewUserView());
         }));
 
-        titleRow.getChildren().add(button("Add Song", event -> {
-            NavController.get().pushView(new NewSongView());
-        }));
-
-        // Example to create the delete button.
-        titleRow.getChildren().add(button("Delete Song", event -> {
-            NavController.get().pushView(new DeleteSongView(new Song("pacquito", "", null, "","")));
-        }));
-
         return titleRow;
     }
 
