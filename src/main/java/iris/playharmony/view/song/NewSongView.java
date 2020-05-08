@@ -141,7 +141,7 @@ public class NewSongView extends VBox {
             NavController.get().clear();
             NavController.get().pushView(new SongListView());
         } else {
-            errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
+            errorAlert("ERROR! Song is already registered", "ERROR! Song is already registered");
         }
     }
 
@@ -154,4 +154,3 @@ public class NewSongView extends VBox {
         emailErrorDialog.showAndWait();
     }
 }
-

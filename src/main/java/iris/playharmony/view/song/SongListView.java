@@ -20,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 
 public class SongListView extends VBox {
@@ -70,23 +71,14 @@ public class SongListView extends VBox {
             errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
         updateTableViewData();
     }
+
     private Node getBottomButtonPanel() {
         Region padding = new Region();
-        Region padding2 = new Region();
         padding.setPrefWidth(5);
-        padding2.setPrefWidth(5);
-        HBox bottomButtonPanel = new HBox(button("Button1", event -> {
-            event.consume();
-        }),
-                padding,
-                button("Button2", event ->{
-                    event.consume();
-                }),
-                padding2,
-                button("Button3", event -> {
-                    event.consume();
-                }));
-        return bottomButtonPanel;
+
+        return new HBox(button("Refresh", event -> {
+            updateTableViewData();
+        }));
     }
 
     private Label title(String text) {
@@ -123,8 +115,10 @@ public class SongListView extends VBox {
 
     private ObservableList<ObservableSong> getSongs() {
         data = FXCollections.observableArrayList();
-        mockSongs()
+        new DatabaseController()
+                .getSongs()
                 .stream()
+                .map(ObservableSong::from)
                 .forEach(data::add);
         return data;
     }
@@ -153,8 +147,9 @@ public class SongListView extends VBox {
         authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
         TableColumn dateColumn = new TableColumn("Date");
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-
-        songsTable.getColumns().addAll(imageColumn, titleColumn, authorColumn, dateColumn);
+        TableColumn pathColumn = new TableColumn("Path");
+        pathColumn.setCellValueFactory(new PropertyValueFactory<>("Path"));
+        songsTable.getColumns().addAll(imageColumn, titleColumn, authorColumn, dateColumn, pathColumn);
         songsTable.getColumns().forEach(column -> ((TableColumn)column).setStyle("-fx-alignment: CENTER;"));
         songsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
