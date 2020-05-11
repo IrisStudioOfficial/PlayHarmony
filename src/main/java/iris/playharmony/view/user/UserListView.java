@@ -20,7 +20,7 @@ import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 
 import java.io.File;
-
+//Saludos Agustín :)
 public class UserListView extends VBox {
     private static int SPACING = 15;
     private Font TITLE_FONT = new Font("Arial", 18);
