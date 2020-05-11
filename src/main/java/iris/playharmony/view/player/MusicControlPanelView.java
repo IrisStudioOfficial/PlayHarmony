@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 public class MusicControlPanelView extends VBox implements View {
 
     private static final int SPACING = 30;
+    private static final int MIN_HEIGHT = 120;
 
     private final SongTimeView timeView;
     private final SongButtonPanel buttonPanel;
@@ -14,8 +15,8 @@ public class MusicControlPanelView extends VBox implements View {
     public MusicControlPanelView(MusicPlayerViewModel viewModel) {
 
         setSpacing(SPACING);
-
         setAlignment(Pos.CENTER);
+        setMinHeight(MIN_HEIGHT);
 
         timeView = new SongTimeView(viewModel);
 

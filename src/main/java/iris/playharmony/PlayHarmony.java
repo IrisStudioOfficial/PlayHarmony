@@ -68,7 +68,7 @@ public class PlayHarmony extends Application {
 
         Song song = new Song();
 
-        song.setPathFile("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\Reyko - Spinning Over You (1).mp3");
+        song.setPathFile("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\Slippy - Promise Me [Monstercat Release].mp3");
 
         MusicPlayerViewModel viewModel = new MusicPlayerViewModel(musicPlayer);
 

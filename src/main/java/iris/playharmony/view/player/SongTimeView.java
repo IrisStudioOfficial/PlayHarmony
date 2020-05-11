@@ -2,8 +2,6 @@ package iris.playharmony.view.player;
 
 import iris.playharmony.model.player.MusicPlayer;
 import iris.playharmony.view.View;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
