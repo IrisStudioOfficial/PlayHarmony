@@ -57,7 +57,7 @@ public class MusicPlayer {
         MediaPlayer currentPlayer = playerCache.get(media);
 
         if(currentPlayer == null) {
-            createNewPlayerForMedia(media);
+            currentPlayer = createNewPlayerForMedia(media);
         }
 
         updateMediaPlayerPropertyBindings(currentPlayer);
@@ -201,7 +201,7 @@ public class MusicPlayer {
         playerCache.clear();
     }
 
-    private void createNewPlayerForMedia(Media media) {
+    private MediaPlayer createNewPlayerForMedia(Media media) {
 
         MediaPlayer currentPlayer = new MediaPlayer(media);
 
@@ -213,6 +213,8 @@ public class MusicPlayer {
         currentPlayer.setOnEndOfMedia(this::onMediaEnd);
 
         playerCache.put(media, currentPlayer);
+
+        return currentPlayer;
     }
 
     private void onMediaEnd() {
