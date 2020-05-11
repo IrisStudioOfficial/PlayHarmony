@@ -1,9 +1,9 @@
 package iris.playharmony.view.song;
 
 import iris.playharmony.controller.DatabaseController;
-import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Song;
+import iris.playharmony.view.View;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,14 +20,14 @@ import javafx.stage.StageStyle;
 
 import java.util.Comparator;
 
-public abstract class SongListView extends VBox {
+public abstract class SongListView extends VBox implements View {
     protected TableView songsTable = new TableView<>();
     protected TextField searchField = new TextField();
     ObservableList<ObservableSong> data = FXCollections.observableArrayList();
     protected static final int SPACING = 15;
     protected static final Font TITLE_FONT = new Font("Arial", 18);
-    protected static final Font FIELD_FONT = new Font("Arial", 14);
     protected static final int ROWS_PER_PAGE = 20;
+    protected Pagination pagination;
 
     public SongListView() {
         super(SPACING);
@@ -52,11 +52,6 @@ public abstract class SongListView extends VBox {
         return songsTable;
     }
 
-    protected Node add(Node node) {
-        getChildren().add(node);
-        return node;
-    }
-
     protected ObservableList<ObservableSong> getSongs(Comparator<ObservableSong> comparator) {
         data = FXCollections.observableArrayList();
         new DatabaseController()
@@ -66,20 +61,6 @@ public abstract class SongListView extends VBox {
                 .sorted(comparator)
                 .forEach(data::add);
         return data;
-    }
-
-    protected Pagination getPagination() {
-        Pagination pagination = new Pagination((data.size() / ROWS_PER_PAGE + 1), 0);
-        pagination.setPageFactory(this::createPage);
-        return pagination;
-    }
-
-    protected Node createPage(int pageIndex) {
-        int fromIndex = pageIndex * ROWS_PER_PAGE;
-        int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, data.size());
-        songsTable.setItems(FXCollections.observableArrayList(data.subList(fromIndex, toIndex)));
-
-        return new BorderPane(songsTable);
     }
 
     protected TableView initializeColumns() {
@@ -99,25 +80,6 @@ public abstract class SongListView extends VBox {
         songsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         return songsTable;
-    }
-
-
-    protected Node button(String text, EventHandler<ActionEvent> event) {
-        Button button = new Button(text);
-        button.setOnAction(event);
-        button.setBackground(new Background(new BackgroundFill(Color.rgb(174, 214, 241), CornerRadii.EMPTY, Insets.EMPTY)));
-
-        return button;
-    }
-
-
-    protected void errorAlert(String title, String text) {
-        Alert emailErrorDialog = new Alert(Alert.AlertType.ERROR);
-        emailErrorDialog.setTitle(title);
-        emailErrorDialog.setHeaderText(text);
-        emailErrorDialog.initStyle(StageStyle.UTILITY);
-        java.awt.Toolkit.getDefaultToolkit().beep();
-        emailErrorDialog.showAndWait();
     }
 
     protected Node searchForm() {
@@ -142,6 +104,7 @@ public abstract class SongListView extends VBox {
         data = data.filtered(observableSong -> observableSong.getTitle().toLowerCase().contains(searchField.getText().toLowerCase()));
         songsTable.setItems(data);
         songsTable.refresh();
+        updatePagination(data, songsTable, pagination);
     }
 
     protected void removeSong(Event event) {
@@ -161,11 +124,5 @@ public abstract class SongListView extends VBox {
         return new HBox(button("Refresh", event -> {
             updateTableViewData();
         }));
-    }
-
-    protected Label title(String text) {
-        Label title = new Label(text);
-        title.setFont(TITLE_FONT);
-        return title;
     }
 }

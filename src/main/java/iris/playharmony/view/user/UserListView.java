@@ -4,6 +4,7 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.*;
+import iris.playharmony.view.View;
 import iris.playharmony.view.song.AdminSongListView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,16 +18,16 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.StageStyle;
 
 import java.io.File;
 
-public class UserListView extends VBox {
+public class UserListView extends VBox implements View {
     private static int SPACING = 15;
     private Font TITLE_FONT = new Font("Arial", 18);
     private Font FIELD_FONT = new Font("Arial", 14);
     private static final int ROWS_PER_PAGE = 20;
     private TableView usersTable = new TableView<>();
+    private Pagination pagination;
 
     ObservableList<ObservableUser> data = FXCollections.observableArrayList();
 
@@ -34,15 +35,9 @@ public class UserListView extends VBox {
         super(SPACING);
         add(getTitleRow());
         initializeTableView();
-        add(getPagination());
+        this.pagination = pagination(data, usersTable);
         add(getBottomButtonPanel());
         setPadding(new Insets(SPACING));
-    }
-
-    private Node add(Node node) {
-        getChildren().add(node);
-
-        return node;
     }
 
     private Node getTitleRow() {
@@ -76,15 +71,11 @@ public class UserListView extends VBox {
                 padding2,
                 button("Refresh", event -> {
                     updateTableViewData();
+                    updatePagination(data, usersTable, pagination);
                 }));
         return bottomButtonPanel;
     }
 
-    private Label title(String text) {
-        Label title = new Label(text);
-        title.setFont(TITLE_FONT);
-        return title;
-    }
 
     private void removeUser(Event event) {
         event.consume();
@@ -97,17 +88,6 @@ public class UserListView extends VBox {
             errorAlert("ERROR! Couldn't remove user", "ERROR! Couldn't remove user");
         }
         updateTableViewData();
-    }
-
-    private Node textFieldLabeled(TextField textField, String text) {
-        VBox panel = new VBox();
-
-        Label label = new Label(text);
-        label.setFont(FIELD_FONT);
-
-        panel.getChildren().addAll(label, textField);
-
-        return panel;
     }
 
     private TableView initializeTableView() {
@@ -133,7 +113,7 @@ public class UserListView extends VBox {
     }
 
     private Pagination getPagination() {
-        Pagination pagination = new Pagination((data.size() / ROWS_PER_PAGE + 1), 0);
+        pagination = new Pagination((data.size() / ROWS_PER_PAGE + 1), 0);
         pagination.setPageFactory(this::createPage);
         return pagination;
     }
@@ -212,22 +192,5 @@ public class UserListView extends VBox {
         panel.getChildren().addAll(textField, button);
 
         return panel;
-    }
-
-    private Node button(String text, EventHandler<ActionEvent> event) {
-        Button button = new Button(text);
-        button.setOnAction(event);
-        button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
-
-        return button;
-    }
-
-    private void errorAlert(String title, String text) {
-        Alert emailErrorDialog = new Alert(Alert.AlertType.ERROR);
-        emailErrorDialog.setTitle(title);
-        emailErrorDialog.setHeaderText(text);
-        emailErrorDialog.initStyle(StageStyle.UTILITY);
-        java.awt.Toolkit.getDefaultToolkit().beep();
-        emailErrorDialog.showAndWait();
     }
 }
