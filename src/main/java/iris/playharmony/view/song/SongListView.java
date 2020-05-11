@@ -27,12 +27,14 @@ public class SongListView extends VBox {
     private static Font FIELD_FONT = new Font("Arial", 14);
     private static final int ROWS_PER_PAGE = 20;
     private TableView songsTable = new TableView<>();
+    private TextField searchField = new TextField();
 
     ObservableList<ObservableSong> data = FXCollections.observableArrayList();
 
     public SongListView() {
         super(SPACING);
         add(getTitleRow());
+        add(searchForm());
         initializeTableView();
         add(getPagination());
         add(getBottomButtonPanel());
@@ -44,6 +46,27 @@ public class SongListView extends VBox {
         return node;
     }
 
+    private Node searchForm() {
+        HBox searchRow = new HBox();
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+        Region padding = new Region();
+        padding.setPrefWidth(5);
+        searchRow.getChildren().add(region);
+        searchRow.getChildren().add(searchField);
+        searchField.setText("");
+        searchRow.getChildren().add(button("Search", event -> {
+            if(searchField.getText().isEmpty()) {
+                updateTableViewData();
+                return;
+            }
+            data = data.filtered(observableSong -> observableSong.getTitle().toLowerCase().contains(searchField.getText().toLowerCase()));
+            songsTable.setItems(data);
+            songsTable.refresh();
+        }));
+
+        return searchRow;
+    }
     private Node getTitleRow() {
         HBox titleRow = new HBox(title("Songs"));
         Region region = new Region();

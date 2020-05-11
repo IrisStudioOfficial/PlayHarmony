@@ -2,7 +2,6 @@ package iris.playharmony.view;
 
 import iris.playharmony.controller.NavController;
 import iris.playharmony.view.song.SongListView;
-import iris.playharmony.view.user.UserListView;
 import javafx.scene.layout.BorderPane;
 
 import static iris.playharmony.util.TypeUtils.initSingleton;
@@ -21,7 +20,7 @@ public class MainView extends BorderPane {
         navigationView = new NavigationView();
 
         navController = new NavController(navigationView);
-        navController.setView(new UserListView());
+        navController.setView(new SongListView());
         footerView = new FooterView();
 
         setTop(headerView);
