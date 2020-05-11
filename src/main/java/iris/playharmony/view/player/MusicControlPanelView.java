@@ -6,7 +6,7 @@ import javafx.scene.layout.VBox;
 
 public class MusicControlPanelView extends VBox implements View {
 
-    private static final int SPACING = 10;
+    private static final int SPACING = 30;
 
     private final SongTimeView timeView;
     private final SongButtonPanel buttonPanel;
