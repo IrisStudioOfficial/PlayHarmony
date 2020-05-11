@@ -11,7 +11,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
@@ -23,12 +22,11 @@ public class AddSongToPlaylistView extends VBox implements View {
 
     private Playlist playlist;
     private TableView songsTable;
-    private ObservableList<ObservableSong> songs;
+    private Pagination pagination;
 
     public AddSongToPlaylistView(Playlist playlist) {
         super(SPACING);
         this.playlist = playlist;
-        this.songs = getSongs();
         initElements();
         setPadding(new Insets(SPACING));
     }
@@ -36,15 +34,20 @@ public class AddSongToPlaylistView extends VBox implements View {
     private void initElements() {
         title("Add Song to Playlist");
 
-        songsTable = table(songs,
+        songsTable = table(getSongs(),
                 tableColumnPhoto("Photo", "photo"),
                 tableColumn("Title", "title"),
                 tableColumn("Author", "author"),
                 tableColumn("Date", "date")
         );
+        pagination = pagination(getSongs(), songsTable);
 
-        button("Add Songs", event -> addSongs());
-        button("Return", event -> NavController.get().pushView(new PlaylistView(playlist)));
+        button("Add Song", event -> addSongs());
+        button("Return", event -> {
+            NavController.get().popView();
+            PlaylistView playlistView = NavController.get().getCurrentView();
+            playlistView.update();
+        });
     }
 
     private ObservableList<ObservableSong> getSongs() {
@@ -56,7 +59,6 @@ public class AddSongToPlaylistView extends VBox implements View {
                 data.add(observableSong);
             }
         }
-        System.out.println(data.size());
         return data;
     }
 
@@ -68,8 +70,8 @@ public class AddSongToPlaylistView extends VBox implements View {
                     .collect(Collectors.toList());
             if(songs.size() > 0) {
                 playlist.addSong(songs.get(0));
-                this.songs = getSongs();
-                updateTable(this.songs, songsTable);
+                updateTable(getSongs(), songsTable);
+                updatePagination(getSongs(), songsTable, pagination);
             }
         }
     }
