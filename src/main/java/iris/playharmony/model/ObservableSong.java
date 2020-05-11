@@ -94,32 +94,4 @@ public class ObservableSong {
     public String getPath() {
         return path.get();
     }
-
-    public ImageView getPhoto() {
-        return photo;
-    }
-
-    public String getTitle() {
-        return title.get();
-    }
-
-    public SimpleStringProperty titleProperty() {
-        return title;
-    }
-
-    public String getAuthor() {
-        return author.get();
-    }
-
-    public SimpleStringProperty authorProperty() {
-        return author;
-    }
-
-    public String getDate() {
-        return date.get();
-    }
-
-    public SimpleStringProperty dateProperty() {
-        return date;
-    }
 }
