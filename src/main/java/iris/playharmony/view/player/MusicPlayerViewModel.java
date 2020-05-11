@@ -7,7 +7,7 @@ import iris.playharmony.util.MediaFactory;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
 
-public abstract class MusicPlayerViewModel {
+public class MusicPlayerViewModel {
 
     private final MusicPlayer musicPlayer;
 

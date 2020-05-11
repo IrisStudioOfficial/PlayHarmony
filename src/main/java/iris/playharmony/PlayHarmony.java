@@ -1,6 +1,9 @@
 package iris.playharmony;
 
 
+import iris.playharmony.model.Song;
+import iris.playharmony.model.player.MusicPlayer;
+import iris.playharmony.util.MediaFactory;
 import iris.playharmony.view.MainView;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -54,6 +57,16 @@ public class PlayHarmony extends Application {
         createScene();
 
         primaryStage.setScene(scene);
+
+        MusicPlayer musicPlayer = new MusicPlayer();
+
+        Song song = new Song();
+
+        song.setPathFile("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\Reyko - Spinning Over You (1).mp3");
+
+        musicPlayer.setSong(MediaFactory.getMedia(song.getPathFile()));
+
+        musicPlayer.play();
 
         primaryStage.show();
     }
