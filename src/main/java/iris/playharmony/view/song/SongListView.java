@@ -18,118 +18,29 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 
-import java.io.File;
 import java.util.Comparator;
 
-public class SongListView extends VBox {
-    private static int SPACING = 15;
-    private static Font TITLE_FONT = new Font("Arial", 18);
-    private static Font FIELD_FONT = new Font("Arial", 14);
-    private static final int ROWS_PER_PAGE = 20;
-    private TableView songsTable = new TableView<>();
-    private TextField searchField = new TextField();
-
+public abstract class SongListView extends VBox {
+    protected TableView songsTable = new TableView<>();
+    protected TextField searchField = new TextField();
     ObservableList<ObservableSong> data = FXCollections.observableArrayList();
+    protected static final int SPACING = 15;
+    protected static final Font TITLE_FONT = new Font("Arial", 18);
+    protected static final Font FIELD_FONT = new Font("Arial", 14);
+    protected static final int ROWS_PER_PAGE = 20;
 
     public SongListView() {
         super(SPACING);
-        add(getTitleRow());
-        add(searchForm());
-        initializeTableView();
-        add(getPagination());
-        add(getBottomButtonPanel());
-        setPadding(new Insets(SPACING));
     }
 
-    private Node add(Node node) {
-        getChildren().add(node);
-        return node;
-    }
-
-    private Node searchForm() {
-        HBox searchRow = new HBox();
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-        Region padding = new Region();
-        padding.setPrefWidth(5);
-        searchField.setOnAction(event -> searchCommand());
-        searchRow.getChildren().add(searchField);
-        searchRow.getChildren().add(button("Search", event -> searchCommand()));
-        searchRow.getChildren().add(region);
-
-        return searchRow;
-    }
-
-    private void searchCommand() {
-        updateTableViewData();
-        if(searchField.getText().isEmpty()) {
-            return;
-        }
-        data = data.filtered(observableSong -> observableSong.getTitle().toLowerCase().contains(searchField.getText().toLowerCase()));
-        songsTable.setItems(data);
-        songsTable.refresh();
-    }
-    private Node getTitleRow() {
-        HBox titleRow = new HBox(title("Songs"));
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-        Region padding = new Region();
-        padding.setPrefWidth(5);
-        titleRow.getChildren().add(region);
-        titleRow.getChildren().add(button("Add Song", event -> {
-            NavController.get().pushView(new NewSongView());
-        }));
-        titleRow.getChildren().add(padding);
-        titleRow.getChildren().add(button("Delete Song", this::removeSong));
-
-        return titleRow;
-    }
-
-    private void removeSong(Event event) {
-        event.consume();
-        ObservableSong selection = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
-        if (selection == null)
-            return;
-        if (!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
-            errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
-        updateTableViewData();
-    }
-
-    private Node getBottomButtonPanel() {
-        Region padding = new Region();
-        padding.setPrefWidth(5);
-
-        return new HBox(button("Refresh", event -> {
-            updateTableViewData();
-        }));
-    }
-
-    private Label title(String text) {
-        Label title = new Label(text);
-        title.setFont(TITLE_FONT);
-        return title;
-    }
-
-
-    private Node textFieldLabeled(TextField textField, String text) {
-        VBox panel = new VBox();
-
-        Label label = new Label(text);
-        label.setFont(FIELD_FONT);
-
-        panel.getChildren().addAll(label, textField);
-
-        return panel;
-    }
-
-    private TableView initializeTableView() {
+    protected TableView initializeTableView() {
         songsTable.setEditable(false);
         initializeColumns();
         updateTableViewData();
         return songsTable;
     }
 
-    private TableView updateTableViewData() {
+    protected TableView updateTableViewData() {
         data = getSongs(new Comparator<ObservableSong>() {
             @Override
             public int compare(ObservableSong o1, ObservableSong o2) {
@@ -141,7 +52,12 @@ public class SongListView extends VBox {
         return songsTable;
     }
 
-    private ObservableList<ObservableSong> getSongs(Comparator<ObservableSong> comparator) {
+    protected Node add(Node node) {
+        getChildren().add(node);
+        return node;
+    }
+
+    protected ObservableList<ObservableSong> getSongs(Comparator<ObservableSong> comparator) {
         data = FXCollections.observableArrayList();
         new DatabaseController()
                 .getSongs()
@@ -152,13 +68,13 @@ public class SongListView extends VBox {
         return data;
     }
 
-    private Pagination getPagination() {
+    protected Pagination getPagination() {
         Pagination pagination = new Pagination((data.size() / ROWS_PER_PAGE + 1), 0);
         pagination.setPageFactory(this::createPage);
         return pagination;
     }
 
-    private Node createPage(int pageIndex) {
+    protected Node createPage(int pageIndex) {
         int fromIndex = pageIndex * ROWS_PER_PAGE;
         int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, data.size());
         songsTable.setItems(FXCollections.observableArrayList(data.subList(fromIndex, toIndex)));
@@ -166,7 +82,7 @@ public class SongListView extends VBox {
         return new BorderPane(songsTable);
     }
 
-    private TableView initializeColumns() {
+    protected TableView initializeColumns() {
         TableColumn imageColumn = new TableColumn("Photo");
         imageColumn.setCellValueFactory(new PropertyValueFactory<>("photo"));
         imageColumn.setPrefWidth(100);
@@ -185,36 +101,8 @@ public class SongListView extends VBox {
         return songsTable;
     }
 
-    private ObservableList<ObservableSong> mockSongs() {
-        ObservableList<ObservableSong> users = FXCollections.observableArrayList();
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        return users;
-    }
 
-    private Node button(String text, EventHandler<ActionEvent> event) {
+    protected Node button(String text, EventHandler<ActionEvent> event) {
         Button button = new Button(text);
         button.setOnAction(event);
         button.setBackground(new Background(new BackgroundFill(Color.rgb(174, 214, 241), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -223,7 +111,7 @@ public class SongListView extends VBox {
     }
 
 
-    private void errorAlert(String title, String text) {
+    protected void errorAlert(String title, String text) {
         Alert emailErrorDialog = new Alert(Alert.AlertType.ERROR);
         emailErrorDialog.setTitle(title);
         emailErrorDialog.setHeaderText(text);
@@ -231,6 +119,53 @@ public class SongListView extends VBox {
         java.awt.Toolkit.getDefaultToolkit().beep();
         emailErrorDialog.showAndWait();
     }
+
+    protected Node searchForm() {
+        HBox searchRow = new HBox();
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+        Region padding = new Region();
+        padding.setPrefWidth(5);
+        searchField.setOnAction(event -> searchCommand());
+        searchRow.getChildren().add(region);
+        searchRow.getChildren().add(searchField);
+        searchRow.getChildren().add(button("Search", event -> searchCommand()));
+
+        return searchRow;
+    }
+
+    protected void searchCommand() {
+        updateTableViewData();
+        if(searchField.getText().isEmpty()) {
+            return;
+        }
+        data = data.filtered(observableSong -> observableSong.getTitle().toLowerCase().contains(searchField.getText().toLowerCase()));
+        songsTable.setItems(data);
+        songsTable.refresh();
+    }
+
+    protected void removeSong(Event event) {
+        event.consume();
+        ObservableSong selection = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
+        if (selection == null)
+            return;
+        if (!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
+            errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
+        updateTableViewData();
+    }
+
+    protected Node getBottomButtonPanel() {
+        Region padding = new Region();
+        padding.setPrefWidth(5);
+
+        return new HBox(button("Refresh", event -> {
+            updateTableViewData();
+        }));
+    }
+
+    protected Label title(String text) {
+        Label title = new Label(text);
+        title.setFont(TITLE_FONT);
+        return title;
+    }
 }
-
-

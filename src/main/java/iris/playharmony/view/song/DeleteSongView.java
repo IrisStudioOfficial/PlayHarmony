@@ -3,7 +3,6 @@ package iris.playharmony.view.song;
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Song;
-import iris.playharmony.view.user.UserListView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -35,7 +34,7 @@ public class DeleteSongView extends VBox {
 
     private void deleteSong(Song song){
         if(new DatabaseController().deleteSong(song)) {
-            NavController.get().pushView(new SongListView());
+            NavController.get().pushView(new AdminSongListView());
         } else {
             errorAlert("ERROR! Song couldn't be deleted", "ERROR! Song couldn't be deleted");
         }
