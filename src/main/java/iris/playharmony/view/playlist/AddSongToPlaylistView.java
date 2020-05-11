@@ -1,5 +1,7 @@
 package iris.playharmony.view.playlist;
 
+import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
@@ -7,10 +9,13 @@ import iris.playharmony.view.View;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AddSongToPlaylistView extends VBox implements View {
 
@@ -18,11 +23,12 @@ public class AddSongToPlaylistView extends VBox implements View {
 
     private Playlist playlist;
     private TableView songsTable;
-
+    private ObservableList<ObservableSong> songs;
 
     public AddSongToPlaylistView(Playlist playlist) {
         super(SPACING);
         this.playlist = playlist;
+        this.songs = getSongs();
         initElements();
         setPadding(new Insets(SPACING));
     }
@@ -30,7 +36,7 @@ public class AddSongToPlaylistView extends VBox implements View {
     private void initElements() {
         title("Add Song to Playlist");
 
-        songsTable = table(getSongs(),
+        songsTable = table(songs,
                 tableColumnPhoto("Photo", "photo"),
                 tableColumn("Title", "title"),
                 tableColumn("Author", "author"),
@@ -38,50 +44,33 @@ public class AddSongToPlaylistView extends VBox implements View {
         );
 
         button("Add Songs", event -> addSongs());
+        button("Return", event -> NavController.get().pushView(new PlaylistView(playlist)));
     }
 
     private ObservableList<ObservableSong> getSongs() {
         ObservableList<ObservableSong> data = FXCollections.observableArrayList();
-        mockSongs()
-                .stream()
-                .forEach(data::add);
+        for (Song song : new DatabaseController().getSongs()) {
+            ObservableSong observableSong = new ObservableSong().title(song.getTitle()).author(song.getAuthor())
+                    .photo(song.getPhoto()).date(song.getDate()).path(song.getPathFile());
+            if(playlist.getSongList().stream().noneMatch(s -> s.getTitle().equals(observableSong.getTitle()))) {
+                data.add(observableSong);
+            }
+        }
+        System.out.println(data.size());
         return data;
     }
 
     private void addSongs() {
         ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
-            playlist.addSong(null);
-            updateTable(getSongs(), songsTable);
+            List<Song> songs = new DatabaseController().getSongs().stream()
+                    .filter(s -> s.getTitle().equals(selectedItem.getTitle()))
+                    .collect(Collectors.toList());
+            if(songs.size() > 0) {
+                playlist.addSong(songs.get(0));
+                this.songs = getSongs();
+                updateTable(this.songs, songsTable);
+            }
         }
-    }
-    
-    private ObservableList<ObservableSong> mockSongs() {
-        ObservableList<ObservableSong> users = FXCollections.observableArrayList();
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        return users;
     }
 }

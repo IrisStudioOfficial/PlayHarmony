@@ -78,6 +78,7 @@ public interface View {
         });
 
         add(table);
+        add(pagination);
 
         return table;
     }
