@@ -4,6 +4,7 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.*;
+import iris.playharmony.view.song.SongListView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -51,6 +52,10 @@ public class UserListView extends VBox {
         titleRow.getChildren().add(region);
         titleRow.getChildren().add(button("Add User", event -> {
             NavController.get().pushView(new NewUserView());
+        }));
+
+        titleRow.getChildren().add(button("List Songs", event -> {
+            NavController.get().pushView(new SongListView());
         }));
 
         return titleRow;
