@@ -21,7 +21,7 @@ import javafx.stage.StageStyle;
 import java.io.File;
 import java.util.Comparator;
 
-public class SongListView extends VBox {
+public class UserSongListView extends VBox {
     private static int SPACING = 15;
     private static Font TITLE_FONT = new Font("Arial", 18);
     private static Font FIELD_FONT = new Font("Arial", 14);
@@ -31,9 +31,8 @@ public class SongListView extends VBox {
 
     ObservableList<ObservableSong> data = FXCollections.observableArrayList();
 
-    public SongListView() {
+    public UserSongListView() {
         super(SPACING);
-        add(getTitleRow());
         add(searchForm());
         initializeTableView();
         add(getPagination());
@@ -47,18 +46,19 @@ public class SongListView extends VBox {
     }
 
     private Node searchForm() {
-        HBox searchRow = new HBox();
+        HBox searchRow = new HBox(title("Songs"));
         Region region = new Region();
         HBox.setHgrow(region, Priority.ALWAYS);
         Region padding = new Region();
         padding.setPrefWidth(5);
+        searchRow.getChildren().add(region);
         searchField.setOnAction(event -> searchCommand());
         searchRow.getChildren().add(searchField);
         searchRow.getChildren().add(button("Search", event -> searchCommand()));
-        searchRow.getChildren().add(region);
 
         return searchRow;
     }
+
 
     private void searchCommand() {
         updateTableViewData();
@@ -68,31 +68,6 @@ public class SongListView extends VBox {
         data = data.filtered(observableSong -> observableSong.getTitle().toLowerCase().contains(searchField.getText().toLowerCase()));
         songsTable.setItems(data);
         songsTable.refresh();
-    }
-    private Node getTitleRow() {
-        HBox titleRow = new HBox(title("Songs"));
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-        Region padding = new Region();
-        padding.setPrefWidth(5);
-        titleRow.getChildren().add(region);
-        titleRow.getChildren().add(button("Add Song", event -> {
-            NavController.get().pushView(new NewSongView());
-        }));
-        titleRow.getChildren().add(padding);
-        titleRow.getChildren().add(button("Delete Song", this::removeSong));
-
-        return titleRow;
-    }
-
-    private void removeSong(Event event) {
-        event.consume();
-        ObservableSong selection = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
-        if (selection == null)
-            return;
-        if (!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
-            errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
-        updateTableViewData();
     }
 
     private Node getBottomButtonPanel() {
@@ -108,18 +83,6 @@ public class SongListView extends VBox {
         Label title = new Label(text);
         title.setFont(TITLE_FONT);
         return title;
-    }
-
-
-    private Node textFieldLabeled(TextField textField, String text) {
-        VBox panel = new VBox();
-
-        Label label = new Label(text);
-        label.setFont(FIELD_FONT);
-
-        panel.getChildren().addAll(label, textField);
-
-        return panel;
     }
 
     private TableView initializeTableView() {
@@ -183,35 +146,6 @@ public class SongListView extends VBox {
         songsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         return songsTable;
-    }
-
-    private ObservableList<ObservableSong> mockSongs() {
-        ObservableList<ObservableSong> users = FXCollections.observableArrayList();
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        users.add(ObservableSong.from(new Song()
-                .setPhoto(new File("C:\\Users\\omark\\OneDrive\\Pictures\\eva.jpg"))
-                .setAuthor("Lady Gaga")
-                .setDate("21-10-2010")
-                .setTitle("Poker face")
-        ));
-        return users;
     }
 
     private Node button(String text, EventHandler<ActionEvent> event) {
