@@ -6,17 +6,18 @@ import iris.playharmony.model.Song;
 import iris.playharmony.view.View;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Pagination;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.StageStyle;
 
 import java.util.Comparator;
 
@@ -115,6 +116,7 @@ public abstract class SongListView extends VBox implements View {
         if (!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
             errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
         updateTableViewData();
+        updatePagination(data, songsTable, pagination);
     }
 
     protected Node getBottomButtonPanel() {
@@ -123,6 +125,7 @@ public abstract class SongListView extends VBox implements View {
 
         return new HBox(button("Refresh", event -> {
             updateTableViewData();
+            updatePagination(data, songsTable, pagination);
         }));
     }
 }
