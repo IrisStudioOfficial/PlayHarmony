@@ -39,6 +39,10 @@ public class Playlist {
         return false;
     }
 
+    public int getSize() {
+        return songList.size();
+    }
+
     public void changeSongPlayMode() {
         if(songPlayMode.equals(SongPlayMode.SEQUENTIAL)) {
             songPlayMode = SongPlayMode.RANDOM;

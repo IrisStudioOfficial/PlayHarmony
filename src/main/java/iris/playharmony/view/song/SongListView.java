@@ -119,7 +119,7 @@ public abstract class SongListView extends VBox implements View {
         updatePagination(data, songsTable, pagination);
     }
 
-    protected Node getBottomButtonPanel() {
+    protected HBox getBottomButtonPanel() {
         Region padding = new Region();
         padding.setPrefWidth(5);
 

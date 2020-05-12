@@ -3,7 +3,6 @@ package iris.playharmony.view.song;
 import iris.playharmony.controller.NavController;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Pagination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
