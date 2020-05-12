@@ -1,7 +1,12 @@
 package iris.playharmony.model;
 
 public enum SongPlayMode {
-    RANDOM,
+
     SEQUENTIAL,
-    SELF,
+    RANDOM,
+    SELF;
+
+    public static SongPlayMode getDefault() {
+        return SongPlayMode.values()[0];
+    }
 }

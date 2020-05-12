@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class MultiImageButton extends Button {
 
-    private final Map<String, ImageView> images;
+    private final Map<Object, ImageView> images;
 
     public MultiImageButton(String text) {
         super(text);
@@ -21,23 +21,23 @@ public class MultiImageButton extends Button {
         images = new HashMap<>();
     }
 
-    public void setImage(String name) {
+    public void setImage(Object name) {
         setGraphic(getImageView(name));
     }
 
-    public void addImage(String name, String imagePath) {
-        addImage(name, new Image(new File(imagePath).toURI().toString()));
+    public void addImage(Object name, String imagePath) {
+        addImage(name, new Image(imagePath));
     }
 
-    public void addImage(String name, Image image) {
+    public void addImage(Object name, Image image) {
         images.put(name, new ImageView(image));
     }
 
-    public ImageView getImageView(String name) {
+    public ImageView getImageView(Object name) {
         return images.get(name);
     }
 
-    public Image getImage(String name) {
+    public Image getImage(Object name) {
         return getImageView(name).getImage();
     }
 
