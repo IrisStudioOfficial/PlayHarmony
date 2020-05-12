@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 
+@Deprecated
 public interface View {
 
     int SPACING = 15;
