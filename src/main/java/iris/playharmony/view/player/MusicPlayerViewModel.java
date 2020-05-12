@@ -1,25 +1,27 @@
 package iris.playharmony.view.player;
 
 import iris.playharmony.model.Song;
+import iris.playharmony.model.SongPlayMode;
 import iris.playharmony.model.player.MusicPlayer;
-import iris.playharmony.util.ImageFactory;
 import iris.playharmony.util.MediaFactory;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
 
-public abstract class MusicPlayerViewModel {
+public class MusicPlayerViewModel {
 
     private final MusicPlayer musicPlayer;
 
     private final ObjectProperty<Song> songProperty;
     private final StringProperty songTitleProperty;
     private final ObjectProperty<Image> songImageProperty;
+    private final ObjectProperty<SongPlayMode> songPlayModeProperty;
 
     public MusicPlayerViewModel(MusicPlayer musicPlayer) {
         this.musicPlayer = musicPlayer;
         songProperty = new SimpleObjectProperty<>();
         songTitleProperty = new SimpleStringProperty();
         songImageProperty = new SimpleObjectProperty<>();
+        songPlayModeProperty = new SimpleObjectProperty<>(SongPlayMode.getDefault());
     }
 
     public Song getSong() {
@@ -33,8 +35,9 @@ public abstract class MusicPlayerViewModel {
     public void setSong(Song song) {
         songProperty.set(song);
         songTitleProperty.set(song.getTitle());
-        songImageProperty.set(ImageFactory.loadFromFile(song.getPhoto()));
-        musicPlayer.setSong(MediaFactory.getMediaFromSong(song));
+        // songImageProperty.set(ImageFactory.loadFromFile(song.getPhoto()));
+        // musicPlayer.setSong(MediaFactory.getMediaFromSong(song));
+        musicPlayer.setSong(MediaFactory.getMedia(song.getPathFile()));
     }
 
     public String getSongTitle() {
@@ -51,6 +54,10 @@ public abstract class MusicPlayerViewModel {
 
     public ReadOnlyObjectProperty<Image> songImageProperty() {
         return songImageProperty;
+    }
+
+    public ObjectProperty<SongPlayMode> songPlayModeProperty() {
+        return songPlayModeProperty;
     }
 
     public MusicPlayer getMusicPlayer() {

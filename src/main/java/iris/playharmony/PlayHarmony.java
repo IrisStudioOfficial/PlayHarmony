@@ -1,14 +1,14 @@
 package iris.playharmony;
 
 
+import iris.playharmony.controller.NavController;
 import iris.playharmony.view.MainView;
+import iris.playharmony.view.song.UserSongListView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayHarmony extends Application {
@@ -56,6 +56,7 @@ public class PlayHarmony extends Application {
         primaryStage.setScene(scene);
 
         primaryStage.show();
+        NavController.get().setView(new UserSongListView());
     }
 
     private void createScene() {
