@@ -64,25 +64,28 @@ public class PlayHarmony extends Application {
 
         primaryStage.setScene(scene);
 
+        setMusicPlayerView();
+
+        primaryStage.show();
+    }
+
+    private void setMusicPlayerView() {
+
         MusicPlayer musicPlayer = new MusicPlayer();
 
         Song song = new Song();
-
-        song.setPathFile("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\Slippy - Promise Me [Monstercat Release].mp3");
+        song.setPathFile("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\DJ Snake – A Different Way (Lyrics) ft. Lauv.mp3");
 
         MusicPlayerViewModel viewModel = new MusicPlayerViewModel(musicPlayer);
 
         MusicPlayerView view = new MusicPlayerView(viewModel);
 
+        //
         NavController.get().setView(view);
 
-        // viewModel.setSong(song);
+        viewModel.setSong(song);
 
-        musicPlayer.setSong(MediaFactory.getMedia(song.getPathFile()));
-
-        musicPlayer.play();
-
-        primaryStage.show();
+        viewModel.getMusicPlayer().play();
     }
 
     private void createScene() {

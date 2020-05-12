@@ -69,6 +69,8 @@ public class SongTimeView extends HBox implements View {
             changedByMusicPlayer.set(false);
         });
 
+        slider.setMinWidth(360);
+
         add(slider);
 
         return slider;

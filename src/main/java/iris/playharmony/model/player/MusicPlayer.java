@@ -63,15 +63,6 @@ public class MusicPlayer {
         updateMediaPlayerPropertyBindings(currentPlayer);
     }
 
-    private void updateMediaPlayerPropertyBindings(MediaPlayer currentPlayer) {
-
-        currentPlayerProperty.set(currentPlayer);
-
-        currentTimeProperty.bind(currentPlayer.currentTimeProperty());
-        totalDurationProperty.bind(currentPlayer.totalDurationProperty());
-        statusProperty.bind(currentPlayer.statusProperty());
-    }
-
     public void play() {
         if(getCurrentPlayer() != null) {
             getCurrentPlayer().play();
@@ -199,6 +190,15 @@ public class MusicPlayer {
 
     public void clearCache() {
         playerCache.clear();
+    }
+
+    private void updateMediaPlayerPropertyBindings(MediaPlayer currentPlayer) {
+
+        currentPlayerProperty.set(currentPlayer);
+
+        currentTimeProperty.bind(currentPlayer.currentTimeProperty());
+        totalDurationProperty.bind(currentPlayer.totalDurationProperty());
+        statusProperty.bind(currentPlayer.statusProperty());
     }
 
     private MediaPlayer createNewPlayerForMedia(Media media) {

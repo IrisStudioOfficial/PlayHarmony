@@ -33,8 +33,9 @@ public class MusicPlayerViewModel {
     public void setSong(Song song) {
         songProperty.set(song);
         songTitleProperty.set(song.getTitle());
-        songImageProperty.set(ImageFactory.loadFromFile(song.getPhoto()));
-        musicPlayer.setSong(MediaFactory.getMediaFromSong(song));
+        // songImageProperty.set(ImageFactory.loadFromFile(song.getPhoto()));
+        // musicPlayer.setSong(MediaFactory.getMediaFromSong(song));
+        musicPlayer.setSong(MediaFactory.getMedia(song.getPathFile()));
     }
 
     public String getSongTitle() {
