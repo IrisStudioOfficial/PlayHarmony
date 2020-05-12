@@ -2,7 +2,9 @@ package iris.playharmony;
 
 
 import iris.playharmony.controller.NavController;
+import iris.playharmony.model.Playlist;
 import iris.playharmony.view.MainView;
+import iris.playharmony.view.playlist.PlaylistView;
 import iris.playharmony.view.song.UserSongListView;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -56,7 +58,7 @@ public class PlayHarmony extends Application {
         primaryStage.setScene(scene);
 
         primaryStage.show();
-        NavController.get().setView(new UserSongListView());
+        NavController.get().setView(new PlaylistView(new Playlist("Prueba")));
     }
 
     private void createScene() {

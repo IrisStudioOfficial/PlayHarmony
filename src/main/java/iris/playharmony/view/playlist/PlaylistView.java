@@ -83,7 +83,7 @@ public class PlaylistView extends VBox {
                 Song song = iterator.next();
                 if(song.getTitle().equals(selectedItem.getTitle())) {
                     if(AlertFactory.confirmAlert("Remove Song", "Do you want to delete the song?")) {
-                        playlist.deleteSong(song);
+                        iterator.remove();
                         songs.remove(selectedItem);
                         TableFactory.updateTable(songs, songsTable);
                         TableFactory.updatePagination(songs, songsTable, pagination);
