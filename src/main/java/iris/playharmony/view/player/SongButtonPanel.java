@@ -2,20 +2,19 @@ package iris.playharmony.view.player;
 
 import iris.playharmony.model.player.MusicPlayer;
 import iris.playharmony.view.View;
+import iris.playharmony.view.util.MultiImageButton;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 
 public class SongButtonPanel extends HBox implements View {
 
     private static final int SPACING = 20;
 
-    private final Button changePlayModeButton;
-    private final Button backwardsButton;
-    private final Button playPauseButton;
-    private final Button forwardButton;
+    private final MultiImageButton changePlayModeButton;
+    private final MultiImageButton backwardsButton;
+    private final MultiImageButton playPauseButton;
+    private final MultiImageButton forwardButton;
 
     public SongButtonPanel(MusicPlayerViewModel viewModel) {
 
@@ -23,27 +22,34 @@ public class SongButtonPanel extends HBox implements View {
 
         setAlignment(Pos.CENTER);
 
-        changePlayModeButton = new Button("Change Play Mode");
+        changePlayModeButton = new MultiImageButton("Change Play Mode");
 
-        backwardsButton = new Button("Previous");
+        backwardsButton = new MultiImageButton();
+        backwardsButton.addImage("PREV", "C:\\Users\\naits\\Downloads\\back.png");
+        backwardsButton.setImage("PREV");
 
-        playPauseButton = new Button("Pause");
+        playPauseButton = new MultiImageButton();
+        playPauseButton.addImage("PLAY", "C:\\Users\\naits\\Downloads\\play.png");
+        playPauseButton.addImage("PAUSE", "C:\\Users\\naits\\Downloads\\pause.png");
+        playPauseButton.setImage("PAUSE");
 
         playPauseButton.setOnAction(e -> {
 
             MusicPlayer player = viewModel.getMusicPlayer();
 
-            if(player.getStatus() == Status.PLAYING) {
-                player.pause();
-                playPauseButton.setText("Play ");
-            } else {
+            if(player.getStatus() == Status.PAUSED) {
                 player.play();
-                playPauseButton.setText("Pause");
+                playPauseButton.setImage("PAUSE");
+            } else {
+                player.pause();
+                playPauseButton.setImage("PLAY");
             }
 
         });
 
-        forwardButton = new Button("Next");
+        forwardButton = new MultiImageButton();
+        forwardButton.addImage("NEXT", "C:\\Users\\naits\\Downloads\\next.png");
+        forwardButton.setImage("NEXT");
 
         // TODO bind buttons with properties
 
