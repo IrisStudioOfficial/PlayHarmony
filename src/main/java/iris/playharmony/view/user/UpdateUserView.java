@@ -4,10 +4,7 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.EmailException;
 import iris.playharmony.exceptions.UpdateUserException;
-import iris.playharmony.model.Email;
-import iris.playharmony.model.ObservableUser;
-import iris.playharmony.model.Role;
-import iris.playharmony.model.User;
+import iris.playharmony.model.*;
 import iris.playharmony.view.View;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,6 +20,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.ArrayList;
+
 public class UpdateUserView extends VBox implements View {
 
     private File photoFile;
@@ -95,7 +94,7 @@ public class UpdateUserView extends VBox implements View {
     private void updateUser() {
         try {
             User user = new User(photoFile, name.getText(), surname.getText(),
-                    category.getText(), (Role) role.getValue(), new Email(email.getText()));
+                    category.getText(), (Role) role.getValue(), new Email(email.getText()), new ArrayList<Playlist>());
             try {
                 if(new DatabaseController().updateUser(user, key)) {
                     NavController.get().popView();

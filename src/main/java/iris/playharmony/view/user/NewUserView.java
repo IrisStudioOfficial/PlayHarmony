@@ -5,6 +5,7 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.CreateUserException;
 import iris.playharmony.exceptions.EmailException;
 import iris.playharmony.model.Email;
+import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import iris.playharmony.view.FooterView;
@@ -22,6 +23,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class NewUserView extends VBox implements View {
 
@@ -83,7 +85,7 @@ public class NewUserView extends VBox implements View {
     private void createUser() {
         try {
             User user = new User(photoFile, name.getText(), surname.getText(),
-                    category.getText(), (Role) role.getValue(), new Email(email.getText()));
+                    category.getText(), (Role) role.getValue(), new Email(email.getText()), new ArrayList<Playlist>());
             try {
                 if(new DatabaseController().addUser(user)) {
                     NavController.get().popView();
