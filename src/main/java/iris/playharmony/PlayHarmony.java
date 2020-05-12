@@ -2,22 +2,13 @@ package iris.playharmony;
 
 
 import iris.playharmony.controller.NavController;
-import iris.playharmony.model.Song;
-import iris.playharmony.model.player.MusicPlayer;
-import iris.playharmony.util.MediaFactory;
 import iris.playharmony.view.MainView;
-import iris.playharmony.view.player.MusicPlayerView;
-import iris.playharmony.view.player.MusicPlayerViewModel;
-import javafx.animation.AnimationTimer;
-import javafx.animation.Timeline;
+import iris.playharmony.view.song.UserSongListView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
-import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayHarmony extends Application {
@@ -64,28 +55,8 @@ public class PlayHarmony extends Application {
 
         primaryStage.setScene(scene);
 
-        setMusicPlayerView();
-
         primaryStage.show();
-    }
-
-    private void setMusicPlayerView() {
-
-        MusicPlayer musicPlayer = new MusicPlayer();
-
-        Song song = new Song();
-        song.setPathFile("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\DJ Snake – A Different Way (Lyrics) ft. Lauv.mp3");
-
-        MusicPlayerViewModel viewModel = new MusicPlayerViewModel(musicPlayer);
-
-        MusicPlayerView view = new MusicPlayerView(viewModel);
-
-        //
-        NavController.get().setView(view);
-
-        viewModel.setSong(song);
-
-        viewModel.getMusicPlayer().play();
+        NavController.get().setView(new UserSongListView());
     }
 
     private void createScene() {

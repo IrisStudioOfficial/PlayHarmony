@@ -1,11 +1,10 @@
 package iris.playharmony.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import iris.playharmony.controller.handler.PathHandler;
 import iris.playharmony.exceptions.*;
-import iris.playharmony.model.Email;
-import iris.playharmony.model.Role;
-import iris.playharmony.model.Song;
-import iris.playharmony.model.User;
+import iris.playharmony.model.*;
 
 import java.io.*;
 import java.sql.*;
@@ -54,14 +53,9 @@ public class DatabaseController {
                         }
                     }
 
-                    userList.add(new User(
-                            image.getAbsoluteFile(),
-                            rs.getString("NAME"),
-                            rs.getString("SURNAME"),
-                            rs.getString("CATEGORY"),
-                            Role.getRoleFrom(rs.getString("USER_ROLE")),
-                            new Email(rs.getString("EMAIL"))
-                    ));
+                    ArrayList<Playlist> list = new Gson().fromJson(rs.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
+
+                    userList.add(new User(image.getAbsoluteFile(), rs.getString("NAME"), rs.getString("SURNAME"), rs.getString("CATEGORY"), Role.getRoleFrom(rs.getString("USER_ROLE")), new Email(rs.getString("EMAIL")),list));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -226,5 +220,27 @@ public class DatabaseController {
         }
 
         return songList;
+    }
+
+    public boolean addPlayList(Playlist playlist, User user){
+        for(Playlist i : user.getPlayLists()){
+            if(i.getName().equals(playlist.getName())){
+                return false;
+            }
+        }
+        user.addPlayList(playlist);
+
+        String sql = "UPDATE USERS SET PLAYLIST = ? WHERE EMAIL = ?";
+        String jsonOfPlayList = new Gson().toJson(user.getPlayLists());
+
+        try(PreparedStatement pst = connection.prepareStatement(sql)){
+            pst.setString(1, jsonOfPlayList);
+            pst.setString(2, user.getEmail().toString());
+            return pst.executeUpdate() == 1;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
