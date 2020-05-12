@@ -5,49 +5,56 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
-import iris.playharmony.view.View;
+import iris.playharmony.view.util.ButtonFactory;
+import iris.playharmony.view.util.LabelFactory;
+import iris.playharmony.view.util.TableFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class AddSongToPlaylistView extends VBox implements View {
-
-    private static int SPACING = 15;
+public class AddSongToPlaylistView extends VBox {
 
     private Playlist playlist;
+    private ObservableList<ObservableSong> songs;
+
     private TableView songsTable;
     private Pagination pagination;
+
+    private static int SPACING = 15;
 
     public AddSongToPlaylistView(Playlist playlist) {
         super(SPACING);
         this.playlist = playlist;
+        songs = getSongs();
         initElements();
         setPadding(new Insets(SPACING));
     }
 
     private void initElements() {
-        title("Add Song to Playlist");
+        add(LabelFactory.label("Add Song to Playlist"));
 
-        songsTable = table(getSongs(),
-                tableColumnPhoto("Photo", "photo"),
-                tableColumn("Title", "title"),
-                tableColumn("Author", "author"),
-                tableColumn("Date", "date")
-        );
-        pagination = pagination(getSongs(), songsTable);
+        add(songsTable = TableFactory.table(songs,
+                TableFactory.tableColumnPhoto("Photo", "photo", 100),
+                TableFactory.tableColumn("Title", "title"),
+                TableFactory.tableColumn("Author", "author"),
+                TableFactory.tableColumn("Date", "date")
+        ));
+        add(pagination = TableFactory.pagination(songs, songsTable));
 
-        button("Add Song", event -> addSongs());
-        button("Return", event -> {
+        add(ButtonFactory.button("Add Song", event -> addSongs()));
+        add(ButtonFactory.button("Return", event -> {
             NavController.get().popView();
             PlaylistView playlistView = NavController.get().getCurrentView();
             playlistView.update();
-        });
+        }));
+    }
+
+    private void add(Node node) {
+        getChildren().add(node);
     }
 
     private ObservableList<ObservableSong> getSongs() {
@@ -65,13 +72,13 @@ public class AddSongToPlaylistView extends VBox implements View {
     private void addSongs() {
         ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
-            List<Song> songs = new DatabaseController().getSongs().stream()
-                    .filter(s -> s.getTitle().equals(selectedItem.getTitle()))
-                    .collect(Collectors.toList());
-            if(songs.size() > 0) {
-                playlist.addSong(songs.get(0));
-                updateTable(getSongs(), songsTable);
-                updatePagination(getSongs(), songsTable, pagination);
+            for (Song song : new DatabaseController().getSongs()) {
+                if(song.getTitle().equals(selectedItem.getTitle())) {
+                    playlist.addSong(song);
+                    songs.remove(selectedItem);
+                    TableFactory.updateTable(songs, songsTable);
+                    TableFactory.updatePagination(songs, songsTable, pagination);
+                }
             }
         }
     }
