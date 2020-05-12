@@ -1,6 +1,7 @@
 package iris.playharmony.model;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class User {
 
@@ -11,16 +12,18 @@ public class User {
     private String category;
     private Role role;
     private Email email;
+    private ArrayList<Playlist> playLists;
 
     public User() {}
 
-    public User(File photo, String name, String surname, String category, Role role, Email email) {
+    public User(File photo, String name, String surname, String category, Role role, Email email, ArrayList<Playlist> playLists) {
         this.photo = photo;
         this.name = name;
         this.surname = surname;
         this.category = category;
         this.role = role;
         this.email = email;
+        this.playLists = playLists;
     }
 
     public File getPhoto() {
@@ -75,5 +78,13 @@ public class User {
     public User mail(Email email) {
         this.email = email;
         return this;
+    }
+
+    public ArrayList<Playlist> getPlayLists() {
+        return playLists;
+    }
+
+    public void addPlayList(Playlist playlist){
+        playLists.add(playlist);
     }
 }
