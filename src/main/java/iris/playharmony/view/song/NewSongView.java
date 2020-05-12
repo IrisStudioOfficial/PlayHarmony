@@ -2,17 +2,7 @@ package iris.playharmony.view.song;
 
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
-import iris.playharmony.exceptions.CreateUserException;
-import iris.playharmony.exceptions.EmailException;
-import iris.playharmony.model.Email;
-import iris.playharmony.model.Role;
 import iris.playharmony.model.Song;
-import iris.playharmony.model.User;
-import iris.playharmony.view.FooterView;
-import iris.playharmony.view.HeaderView;
-import iris.playharmony.view.NavigationView;
-import iris.playharmony.view.user.NewUserView;
-import iris.playharmony.view.user.UserListView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -139,9 +129,9 @@ public class NewSongView extends VBox {
         Song song = new Song(title.getText(),author.getText(),photoFile,dateDay.getText() + "-" + dateMonth.getText() +"-" + dateYear.getText(),pathFile.getText());
         if(new DatabaseController().addSong(song)) {
             NavController.get().clear();
-            NavController.get().pushView(new UserListView());
+            NavController.get().pushView(new AdminSongListView());
         } else {
-            errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
+            errorAlert("ERROR! Song is already registered", "ERROR! Song is already registered");
         }
     }
 
@@ -154,4 +144,3 @@ public class NewSongView extends VBox {
         emailErrorDialog.showAndWait();
     }
 }
-

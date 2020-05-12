@@ -11,6 +11,7 @@ public class ObservableSong {
     private SimpleStringProperty title = new SimpleStringProperty();
     private SimpleStringProperty author = new SimpleStringProperty();
     private SimpleStringProperty date = new SimpleStringProperty();
+    private SimpleStringProperty path = new SimpleStringProperty();
 
     public ObservableSong photo(File photo) {
         this.photo = new ImageView(new Image(photo.toURI().toString(), 100, 100, false, false));
@@ -29,6 +30,11 @@ public class ObservableSong {
 
     public ObservableSong date(String date) {
         this.date.set(date);
+        return this;
+    }
+
+    public ObservableSong path(String path) {
+        this.path.set(path);
         return this;
     }
 
@@ -53,6 +59,39 @@ public class ObservableSong {
                 .title(song.getTitle())
                 .author(song.getAuthor())
                 .date(song.getDate())
-                .photo(song.getPhoto());
+                .photo(song.getPhoto())
+                .path(song.getPathFile());
+    }
+
+    public ImageView getPhoto() {
+        return photo;
+    }
+
+    public String getTitle() {
+        return title.get();
+    }
+
+    public SimpleStringProperty titleProperty() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author.get();
+    }
+
+    public SimpleStringProperty authorProperty() {
+        return author;
+    }
+
+    public String getDate() {
+        return date.get();
+    }
+
+    public SimpleStringProperty dateProperty() {
+        return date;
+    }
+
+    public String getPath() {
+        return path.get();
     }
 }
