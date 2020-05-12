@@ -3,7 +3,6 @@ package iris.playharmony.model;
 import java.io.File;
 
 public class User {
-
     
     private File photo;
     private String name;
