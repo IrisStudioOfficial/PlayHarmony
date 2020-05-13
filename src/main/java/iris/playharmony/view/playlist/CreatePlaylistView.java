@@ -24,6 +24,7 @@ public class CreatePlaylistView extends VBox {
     private static Font FIELD_FONT = new Font("Arial", 14);
     private TextField namePlayList = new TextField();
 
+    
     public CreatePlaylistView(){
         super(SPACING);
 
