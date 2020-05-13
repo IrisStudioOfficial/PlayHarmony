@@ -1,10 +1,9 @@
 package iris.playharmony.view.player;
 
-import iris.playharmony.view.View;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 
-public class MusicControlPanelView extends VBox implements View {
+public class MusicControlPanelView extends VBox {
 
     private static final int SPACING = 30;
     private static final int MIN_HEIGHT = 120;
@@ -23,7 +22,6 @@ public class MusicControlPanelView extends VBox implements View {
         buttonPanel = new SongButtonPanel(viewModel);
 
         getChildren().addAll(timeView, buttonPanel);
-
     }
 
 }

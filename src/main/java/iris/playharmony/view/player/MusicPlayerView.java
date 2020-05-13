@@ -1,12 +1,13 @@
 package iris.playharmony.view.player;
 
-import iris.playharmony.view.View;
+import iris.playharmony.view.player.spectrum.SpectrumView;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 
 import static java.util.Objects.requireNonNull;
 
-public class MusicPlayerView extends BorderPane implements View {
+public class MusicPlayerView extends BorderPane {
 
     private final Label title;
     private final SpectrumView spectrumView;
@@ -35,9 +36,9 @@ public class MusicPlayerView extends BorderPane implements View {
 
     private SpectrumView createSpectrumView(MusicPlayerViewModel viewModel) {
 
-        SpectrumView spectrumView = new SpectrumView();
+        SpectrumView spectrumView = new SpectrumView(viewModel);
 
-        spectrumView.setStyle("-fx-background-color: blue;");
+        spectrumView.setStyle("-fx-background-color: black;");
 
         // TODO...
 

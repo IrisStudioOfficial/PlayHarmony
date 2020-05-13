@@ -4,7 +4,6 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 

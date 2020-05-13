@@ -3,6 +3,7 @@ package iris.playharmony.view.player;
 import iris.playharmony.model.Song;
 import iris.playharmony.model.SongPlayMode;
 import iris.playharmony.model.player.MusicPlayer;
+import iris.playharmony.model.player.Spectrum;
 import iris.playharmony.util.MediaFactory;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
@@ -11,13 +12,23 @@ public class MusicPlayerViewModel {
 
     private final MusicPlayer musicPlayer;
 
+    private final Spectrum spectrum;
+
     private final ObjectProperty<Song> songProperty;
     private final StringProperty songTitleProperty;
     private final ObjectProperty<Image> songImageProperty;
     private final ObjectProperty<SongPlayMode> songPlayModeProperty;
 
-    public MusicPlayerViewModel(MusicPlayer musicPlayer) {
+    public MusicPlayerViewModel(MusicPlayer musicPlayer, Spectrum spectrum) {
+
         this.musicPlayer = musicPlayer;
+        this.spectrum = spectrum;
+
+        musicPlayer.setSpectrumListener(spectrum);
+        musicPlayer.setSpectrumNumBands(spectrum.getNumBands());
+        musicPlayer.setSpectrumInterval(spectrum.getInterval());
+        musicPlayer.setSpectrumThreshold(spectrum.getThreshold());
+
         songProperty = new SimpleObjectProperty<>();
         songTitleProperty = new SimpleStringProperty();
         songImageProperty = new SimpleObjectProperty<>();
@@ -62,5 +73,9 @@ public class MusicPlayerViewModel {
 
     public MusicPlayer getMusicPlayer() {
         return musicPlayer;
+    }
+
+    public Spectrum getSpectrum() {
+        return spectrum;
     }
 }
