@@ -23,6 +23,7 @@ public class MusicControlPanelView extends VBox implements View {
         buttonPanel = new SongButtonPanel(viewModel);
 
         getChildren().addAll(timeView, buttonPanel);
+
     }
 
 }

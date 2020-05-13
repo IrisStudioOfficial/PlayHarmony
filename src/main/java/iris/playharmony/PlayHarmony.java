@@ -2,7 +2,12 @@ package iris.playharmony;
 
 
 import iris.playharmony.controller.NavController;
+import iris.playharmony.model.Song;
+import iris.playharmony.model.player.MusicPlayer;
+import iris.playharmony.util.MediaFactory;
 import iris.playharmony.view.MainView;
+import iris.playharmony.view.player.MusicPlayerView;
+import iris.playharmony.view.player.MusicPlayerViewModel;
 import iris.playharmony.view.song.UserSongListView;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -57,7 +62,30 @@ public class PlayHarmony extends Application {
 
         primaryStage.show();
 
-        NavController.get().setView(new UserSongListView());
+        // NavController.get().setView(new UserSongListView());
+
+        showMusicPlayerView();
+    }
+
+    private void showMusicPlayerView() {
+
+        MusicPlayer musicPlayer = new MusicPlayer();
+
+        Song song = new Song();
+
+        song.setPathFile("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\Slippy - Promise Me [Monstercat Release].mp3");
+
+        MusicPlayerViewModel viewModel = new MusicPlayerViewModel(musicPlayer);
+
+        MusicPlayerView view = new MusicPlayerView(viewModel);
+
+        NavController.get().setView(view);
+
+        // viewModel.setSong(song);
+
+        musicPlayer.setSong(MediaFactory.getMedia(song.getPathFile()));
+
+        musicPlayer.play();
     }
 
     private void createScene() {
