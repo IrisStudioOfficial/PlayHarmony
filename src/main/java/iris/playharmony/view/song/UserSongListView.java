@@ -1,13 +1,11 @@
 package iris.playharmony.view.song;
 
 import iris.playharmony.controller.NavController;
-import javafx.collections.ObservableList;
+import iris.playharmony.model.ObservableSong;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 
-//Bienvenido Agustín :)
 public class UserSongListView extends SongListView {
     public UserSongListView() {
         super();
@@ -24,7 +22,9 @@ public class UserSongListView extends SongListView {
         padding.setPrefWidth(5);
         bottomButtonPanel.getChildren().add(padding);
         bottomButtonPanel.getChildren().add(button("Add to playlist", event -> {
-            NavController.get().pushView(new SelectPlaylistView());
+            ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
+            if(selectedItem != null)
+                NavController.get().pushView(new SelectPlaylistView(selectedItem.getTitle()));
         }));
 
         return bottomButtonPanel;

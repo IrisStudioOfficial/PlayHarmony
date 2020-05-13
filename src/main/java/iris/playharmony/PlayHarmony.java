@@ -58,7 +58,7 @@ public class PlayHarmony extends Application {
         primaryStage.setScene(scene);
 
         primaryStage.show();
-        NavController.get().setView(new PlaylistView(new Playlist("Prueba")));
+        NavController.get().setView(new UserSongListView());
     }
 
     private void createScene() {

@@ -1,5 +1,6 @@
 package iris.playharmony.session;
 
+import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.model.User;
 
 public class Session {
@@ -14,9 +15,15 @@ public class Session {
     }
 
     private Session() {
+        this.user = new DatabaseController().getUsers().stream()
+                .filter(user -> user.getName().equals("test"))
+                .findFirst().get();
     }
 
     public User currentUser() {
+        user = new DatabaseController().getUsers().stream()
+                .filter(user -> user.getName().equals(this.user.getName()))
+                .findFirst().get();
         return user;
     }
 
