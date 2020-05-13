@@ -75,7 +75,7 @@ public class CreatePlaylistView extends VBox {
                 user = i;
             }
         }
-        
+
 
         if(new DatabaseController().addPlayList(playlist, user)) {
             NavController.get().clear();
