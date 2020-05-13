@@ -222,13 +222,9 @@ public class DatabaseController {
         return songList;
     }
 
-    public boolean addPlayList(Playlist playlist, User user){
-        for(Playlist i : user.getPlayLists()){
-            if(i.getName().equals(playlist.getName())){
-                return false;
-            }
-        }
-        user.addPlayList(playlist);
+    public boolean addPlayList(Playlist updatedPlaylist, User user){
+        user.getPlayLists().removeIf(playlist -> playlist.getName().equals(updatedPlaylist.getName()));
+        user.addPlayList(updatedPlaylist);
 
         String sql = "UPDATE USERS SET PLAYLIST = ? WHERE EMAIL = ?";
         String jsonOfPlayList = new Gson().toJson(user.getPlayLists());
