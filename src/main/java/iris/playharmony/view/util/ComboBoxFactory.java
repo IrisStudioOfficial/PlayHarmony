@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
+@Deprecated
 public class ComboBoxFactory {
 
     public static ComboBox comboBox(Object... objects) {
@@ -21,7 +22,9 @@ public class ComboBoxFactory {
         Label label = new Label(text);
         ComboBox<Object> comboBox = new ComboBox<>();
         comboBox.getItems().addAll(objects);
-        if(objects.length > 0) comboBox.setValue(objects[0]);
+        if(objects.length > 0) {
+            comboBox.setValue(objects[0]);
+        }
 
         panel.getChildren().addAll(label, comboBox);
 

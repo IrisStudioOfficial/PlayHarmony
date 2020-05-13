@@ -2,10 +2,11 @@ package iris.playharmony.view.util;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-
-import java.io.File;
+import javafx.scene.layout.HBox;
 
 public class ButtonFactory {
 
@@ -13,6 +14,19 @@ public class ButtonFactory {
         Button button = new Button(buttonTitle);
         button.setOnAction(event);
         return button;
+    }
+
+    public static Node buttonWithLabeledResource(TextField textField, String buttonText, EventHandler<ActionEvent> event) {
+        HBox panel = new HBox();
+
+        textField.setDisable(true);
+
+        Button button = new Button(buttonText);
+        button.setOnAction(event);
+
+        panel.getChildren().addAll(textField, button);
+
+        return panel;
     }
 
     public static Button imageButton(String imagePath) {

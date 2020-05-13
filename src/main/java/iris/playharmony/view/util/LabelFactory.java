@@ -2,6 +2,7 @@ package iris.playharmony.view.util;
 
 import javafx.scene.control.Label;
 
+@Deprecated
 public class LabelFactory {
 
     public static Label label(String text) {
