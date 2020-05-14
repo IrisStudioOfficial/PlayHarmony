@@ -92,8 +92,8 @@ public abstract class SongListView extends VBox {
         Region padding = new Region();
         padding.setPrefWidth(5);
         searchField.setOnAction(event -> searchCommand());
-        searchRow.getChildren().add(region);
         searchRow.getChildren().add(searchField);
+        searchRow.getChildren().add(region);
         searchRow.getChildren().add(ButtonFactory.button("Search", event -> searchCommand()));
 
         return searchRow;

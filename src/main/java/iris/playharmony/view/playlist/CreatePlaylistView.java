@@ -4,6 +4,7 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.User;
+import iris.playharmony.session.Session;
 import iris.playharmony.view.song.AdminSongListView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -68,21 +69,12 @@ public class CreatePlaylistView extends VBox {
 
     private void createPlayList() {
         Playlist playlist = new Playlist(namePlayList.getText());
-
-        //Obtengo usuario test de la base de datos, en el futuro se debe coger el usuario actualmente registrado.
-        User user = null;
-        for(User i : new DatabaseController().getUsers()){
-            if(i.getName().equals("test")){
-                user = i;
-            }
-        }
-
+        User user = Session.getSession().currentUser();
 
         if(new DatabaseController().addPlayList(playlist, user)) {
-            NavController.get().clear();
-            NavController.get().pushView(new AdminSongListView());
+            NavController.get().popView();
         } else {
-            errorMessage("ERROR! PlayList is already registered", "ERROR! PlayList is already registered");
+            errorMessage("ERROR! PlayList is already registered", "Please introduce other name.");
         }
     }
 

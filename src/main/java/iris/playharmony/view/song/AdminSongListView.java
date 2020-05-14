@@ -1,6 +1,10 @@
 package iris.playharmony.view.song;
 
 import iris.playharmony.controller.NavController;
+import iris.playharmony.view.util.ButtonFactory;
+import iris.playharmony.view.util.LabelFactory;
+import iris.playharmony.view.util.TableFactory;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
@@ -11,26 +15,28 @@ public class AdminSongListView extends SongListView {
 
     public AdminSongListView() {
         super();
-        add(getTitleRow());
-        add(searchForm());
+        this.getChildren().add(getTitleRow());
+        this.getChildren().add(searchForm());
         initializeTableView();
-        this.pagination = pagination(data, songsTable);
-        add(getBottomButtonPanel());
+        this.pagination = TableFactory.pagination(data, songsTable);
+        this.getChildren().add(getBottomButtonPanel());
         setPadding(new Insets(SPACING));
     }
 
+    private static void addSong(ActionEvent event) {
+        NavController.get().pushView(new NewSongView());
+    }
+
     protected Node getTitleRow() {
-        HBox titleRow = new HBox(title("Songs"));
+        HBox titleRow = new HBox(LabelFactory.label("Songs"));
         Region region = new Region();
         HBox.setHgrow(region, Priority.ALWAYS);
         Region padding = new Region();
         padding.setPrefWidth(5);
         titleRow.getChildren().add(region);
-        titleRow.getChildren().add(button("Add Song", event -> {
-            NavController.get().pushView(new NewSongView());
-        }));
+        titleRow.getChildren().add(ButtonFactory.button("Add Song", AdminSongListView::addSong));
         titleRow.getChildren().add(padding);
-        titleRow.getChildren().add(button("Delete Song", this::removeSong));
+        titleRow.getChildren().add(ButtonFactory.button("Delete Song", this::removeSong));
 
         return titleRow;
     }
