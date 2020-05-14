@@ -55,8 +55,6 @@ public class MusicPlayerView extends BorderPane {
 
         SpectrumView spectrumView = new SpectrumView(viewModel);
 
-        // TODO...
-
         setCenter(spectrumView);
 
         return spectrumView;
@@ -65,8 +63,6 @@ public class MusicPlayerView extends BorderPane {
     private MusicControlPanelView createControlPanelView(MusicPlayerViewModel viewModel) {
 
         MusicControlPanelView controlPanelView = new MusicControlPanelView(viewModel);
-
-        // TODO...
 
         setBottom(controlPanelView);
 

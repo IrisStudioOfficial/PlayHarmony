@@ -43,7 +43,7 @@ public class SongButtonPanel extends HBox {
 
         playPauseButton = createPlayPauseButton(viewModel);
 
-        forwardButton = ButtonFactory.imageButton(ICONS_PLAYER_NEXT);
+        forwardButton = ButtonFactory.imageButton(Resources.get(ICONS_PLAYER_NEXT));
 
         getChildren().addAll(changePlayModeButton, backwardsButton, playPauseButton, forwardButton);
     }
