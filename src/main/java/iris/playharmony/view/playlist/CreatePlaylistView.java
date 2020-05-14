@@ -4,66 +4,37 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.User;
-import iris.playharmony.view.song.AdminSongListView;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import iris.playharmony.view.main.UserView;
+import iris.playharmony.view.util.AlertFactory;
+import iris.playharmony.view.util.ButtonFactory;
+import iris.playharmony.view.util.DefaultStyle;
+import iris.playharmony.view.util.TextFactory;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.stage.StageStyle;
+import javafx.scene.layout.VBox;
 
 public class CreatePlaylistView extends VBox {
-    private static int SPACING = 15;
-    private static Font TITLE_FONT = new Font("Arial", 18);
-    private static Font FIELD_FONT = new Font("Arial", 14);
-    private TextField namePlayList = new TextField();
 
+    private TextField namePlayList;
+
+    private static int SPACING = 15;
     
     public CreatePlaylistView(){
         super(SPACING);
-
-        add(title("Create A PlayList"));
-        add(textFieldLabeled(namePlayList, "Name Of PlayList"));
-
-        add(button("Create", event -> createPlayList()));
-
+        addElements();
         setPadding(new Insets(SPACING));
+    }
+
+    private void addElements() {
+        add(TextFactory.label("Create Playlist", DefaultStyle.title()));
+        add(namePlayList = TextFactory.textField("Name Of PlayList"));
+        add(ButtonFactory.button("Create", e -> createPlayList()));
     }
 
     private Node add(Node node) {
         getChildren().add(node);
         return node;
-    }
-
-    private Label title(String text) {
-        Label title = new Label(text);
-        title.setFont(TITLE_FONT);
-        return title;
-    }
-
-    private Node textFieldLabeled(TextField textField, String text) {
-        VBox panel = new VBox();
-
-        Label label = new Label(text);
-        label.setFont(FIELD_FONT);
-
-        panel.getChildren().addAll(label, textField);
-
-        return panel;
-    }
-
-    private Node button(String text, EventHandler<ActionEvent> event) {
-        Button button = new Button(text);
-        button.setOnAction(event);
-        button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
-
-        return button;
     }
 
     private void createPlayList() {
@@ -74,17 +45,10 @@ public class CreatePlaylistView extends VBox {
 
         if(new DatabaseController().addPlayList(playlist, user)) {
             NavController.get().popView();
+            UserView userView = NavController.get().getCurrentView();
+            userView.refresh();
         } else {
-            errorMessage("ERROR! PlayList is already registered", "Please introduce other name.");
+            AlertFactory.errorAlert("ERROR! PlayList is already registered", "Please introduce other name.");
         }
-    }
-
-    private void errorMessage(String title, String text) {
-        Alert errorDialog = new Alert(Alert.AlertType.ERROR);
-        errorDialog.setTitle(title);
-        errorDialog.setHeaderText(text);
-        errorDialog.initStyle(StageStyle.UTILITY);
-        java.awt.Toolkit.getDefaultToolkit().beep();
-        errorDialog.showAndWait();
     }
 }

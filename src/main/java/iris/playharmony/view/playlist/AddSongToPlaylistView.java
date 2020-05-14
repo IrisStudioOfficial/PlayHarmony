@@ -5,9 +5,7 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
-import iris.playharmony.view.util.ButtonFactory;
-import iris.playharmony.view.util.LabelFactory;
-import iris.playharmony.view.util.TableFactory;
+import iris.playharmony.view.util.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -35,7 +33,7 @@ public class AddSongToPlaylistView extends VBox {
     }
 
     private void initElements() {
-        add(LabelFactory.label("Add Song to Playlist"));
+        add(TextFactory.label("Add Song to Playlist", DefaultStyle.label()));
 
         add(songsTable = TableFactory.table(songs,
                 TableFactory.tableColumnPhoto("Photo", "photo", 100),
@@ -46,11 +44,6 @@ public class AddSongToPlaylistView extends VBox {
         add(pagination = TableFactory.pagination(songs, songsTable));
 
         add(ButtonFactory.button("Add Song", event -> addSongs()));
-        add(ButtonFactory.button("Return", event -> {
-            NavController.get().popView();
-            PlaylistView playlistView = NavController.get().getCurrentView();
-            playlistView.update();
-        }));
     }
 
     private void add(Node node) {

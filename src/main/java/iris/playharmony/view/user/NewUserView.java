@@ -84,7 +84,7 @@ public class NewUserView extends VBox {
                 if(new DatabaseController().addUser(user)) {
                     NavController.get().popView();
                     UserListView userListView = NavController.get().getCurrentView();
-                    userListView.update();
+                    userListView.refresh();
                 } else {
                     AlertFactory.errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
                 }

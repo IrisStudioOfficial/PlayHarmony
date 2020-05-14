@@ -4,15 +4,19 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.session.Session;
-import iris.playharmony.view.View;
+import iris.playharmony.view.util.ButtonFactory;
+import iris.playharmony.view.util.DefaultStyle;
+import iris.playharmony.view.util.TableFactory;
+import iris.playharmony.view.util.TextFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 
-public class SelectPlaylistView extends VBox implements View {
+public class SelectPlaylistView extends VBox {
 
     private static int SPACING = 15;
 
@@ -22,7 +26,6 @@ public class SelectPlaylistView extends VBox implements View {
     private String toBeAddedSong;
 
     public SelectPlaylistView(String songTitle) {
-
         super(SPACING);
         initElements();
         setPadding(new Insets(SPACING));
@@ -30,30 +33,34 @@ public class SelectPlaylistView extends VBox implements View {
     }
 
     private void initElements() {
+        TextFactory.label("Select Playlist", DefaultStyle.title());
 
-        title("Select playlist");
+        add(playlistsTable = TableFactory.table(getPlaylists(),
+                TableFactory.tableColumn("Name", "name"),
+                TableFactory.tableColumn("Nr of songs", "size")
+        ));
 
-        playlistsTable = table(getPlaylists(),
-                tableColumn("Name", "name"),
-                tableColumn("Nr of songs", "size")
-        );
+        add(pagination = TableFactory.pagination(getPlaylists(), playlistsTable));
 
-        pagination = pagination(getPlaylists(), playlistsTable);
+        add(ButtonFactory.button("Add To Playlist", event -> addToPlaylist()));
+    }
 
-        button("Add to playlist", event -> {
-            Playlist selectedPlaylist = (Playlist)playlistsTable.getSelectionModel().getSelectedItem();
-            selectedPlaylist.addSong(new DatabaseController().getSongs().stream()
-                    .filter(song -> song.getTitle().equals(toBeAddedSong))
-                    .findAny().get());
-            new DatabaseController().addPlayList(selectedPlaylist, Session.getSession().currentUser());
+    private Node add(Node node) {
+        getChildren().add(node);
+        return node;
+    }
 
-            NavController.get().popView();
+    private void addToPlaylist() {
+        Playlist selectedPlaylist = (Playlist) playlistsTable.getSelectionModel().getSelectedItem();
+        selectedPlaylist.addSong(new DatabaseController().getSongs().stream()
+                .filter(song -> song.getTitle().equals(toBeAddedSong))
+                .findAny().get());
+        new DatabaseController().addPlayList(selectedPlaylist, Session.getSession().currentUser());
 
-        });
+        NavController.get().popView();
     }
 
     private ObservableList<Playlist> getPlaylists() {
-
         ObservableList<Playlist> data = FXCollections.observableArrayList();
         data.addAll(Session.getSession().currentUser().getPlayLists());
         return data;
