@@ -1,19 +1,22 @@
 package iris.playharmony.view.song;
 
 import iris.playharmony.controller.NavController;
-import javafx.collections.ObservableList;
+import iris.playharmony.model.ObservableSong;
+import iris.playharmony.view.util.ButtonFactory;
+import iris.playharmony.view.util.TableFactory;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+
 
 public class UserSongListView extends SongListView {
     public UserSongListView() {
         super();
-        add(searchForm());
-        initializeTableView();
-        this.pagination = pagination(data, songsTable);
-        add(getBottomButtonPanel());
+        this.getChildren().add(searchForm());
+        this.getChildren().add(initializeTableView());
+        this.pagination = TableFactory.pagination(data, songsTable);
+        this.getChildren().add(getBottomButtonPanel());
         setPadding(new Insets(SPACING));
     }
 
@@ -22,11 +25,15 @@ public class UserSongListView extends SongListView {
         Region padding = new Region();
         padding.setPrefWidth(5);
         bottomButtonPanel.getChildren().add(padding);
-        bottomButtonPanel.getChildren().add(button("Add to playlist", event -> {
-            NavController.get().pushView(new SelectPlaylistView());
-        }));
+        bottomButtonPanel.getChildren().add(ButtonFactory.button("Add to playlist", this::selectPlaylist));
 
         return bottomButtonPanel;
+    }
+
+    private void selectPlaylist(ActionEvent event) {
+        ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
+        if (selectedItem != null)
+            NavController.get().pushView(new SelectPlaylistView(selectedItem.getTitle()));
     }
 }
 

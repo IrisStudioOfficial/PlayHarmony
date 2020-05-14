@@ -24,6 +24,7 @@ public class CreatePlaylistView extends VBox {
     private static Font FIELD_FONT = new Font("Arial", 14);
     private TextField namePlayList = new TextField();
 
+    
     public CreatePlaylistView(){
         super(SPACING);
 
@@ -68,19 +69,13 @@ public class CreatePlaylistView extends VBox {
     private void createPlayList() {
         Playlist playlist = new Playlist(namePlayList.getText());
 
-        //Obtengo usuario test de la base de datos, en el futuro se debe coger el usuario actualmente registrado.
-        User user = null;
-        for(User i : new DatabaseController().getUsers()){
-            if(i.getName().equals("test")){
-                user = i;
-            }
-        }
+        // Use a default user to test the feature:
+        User user = new DatabaseController().getUsers().stream().filter(i -> i.getName().equals("test")).findAny().orElse(null);
 
         if(new DatabaseController().addPlayList(playlist, user)) {
-            NavController.get().clear();
-            NavController.get().pushView(new AdminSongListView());
+            NavController.get().popView();
         } else {
-            errorMessage("ERROR! PlayList is already registered", "ERROR! PlayList is already registered");
+            errorMessage("ERROR! PlayList is already registered", "Please introduce other name.");
         }
     }
 

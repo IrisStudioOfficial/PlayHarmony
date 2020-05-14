@@ -39,6 +39,14 @@ public class Playlist {
         return false;
     }
 
+    public boolean deleteSong(Song song) {
+        if(songList.stream().anyMatch(songPlaylist -> songPlaylist.getTitle().equals(song.getTitle()))) {
+            return songList.remove(song);
+        }
+
+        return false;
+    }
+
     public int getSize() {
         return songList.size();
     }
