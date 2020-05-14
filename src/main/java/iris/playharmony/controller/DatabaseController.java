@@ -3,7 +3,10 @@ package iris.playharmony.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import iris.playharmony.controller.handler.PathHandler;
-import iris.playharmony.exceptions.*;
+import iris.playharmony.exceptions.CreateUserException;
+import iris.playharmony.exceptions.EmailException;
+import iris.playharmony.exceptions.RemoveUserException;
+import iris.playharmony.exceptions.UpdateUserException;
 import iris.playharmony.model.*;
 
 import java.io.*;
@@ -212,7 +215,7 @@ public class DatabaseController {
                             .setDate(rs.getString("PUBLICATION"))
                             .setPathFile(rs.getString("PATHFILE"))
                             .setAuthor(rs.getString("AUTHOR"))
-                            .setPhoto(image)
+                            .setPhoto(image.toString())
                     );
             }
         } catch(Exception e) {

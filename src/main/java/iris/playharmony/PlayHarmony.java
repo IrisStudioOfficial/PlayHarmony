@@ -5,6 +5,8 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Song;
 import iris.playharmony.model.player.MusicPlayer;
 import iris.playharmony.model.player.Spectrum;
+import iris.playharmony.util.Resources;
+import iris.playharmony.util.SongFactory;
 import iris.playharmony.view.MainView;
 import iris.playharmony.view.player.MusicPlayerView;
 import iris.playharmony.view.player.MusicPlayerViewModel;
@@ -14,7 +16,6 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayHarmony extends Application {
@@ -74,9 +75,7 @@ public class PlayHarmony extends Application {
 
         Spectrum spectrum = new Spectrum(Interpolator.EASE_BOTH);
 
-        Song song = new Song();
-        song.setPathFile("C:\\Users\\naits\\Downloads\\saint-jhn-roses-imanbek-remix.mp3");
-        song.setTitle(song.getPathFile().substring(song.getPathFile().lastIndexOf(File.separatorChar)+1));
+        Song song = SongFactory.createSongFromFolder(Resources.get("songs/Roses"));
 
         MusicPlayerViewModel viewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
 
@@ -85,8 +84,6 @@ public class PlayHarmony extends Application {
         NavController.get().setView(view);
 
         viewModel.setSong(song);
-
-        // musicPlayer.setSong(MediaFactory.getMedia(song.getPathFile()));
 
         musicPlayer.play();
     }

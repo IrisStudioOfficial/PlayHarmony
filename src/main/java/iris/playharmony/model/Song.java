@@ -1,15 +1,14 @@
 package iris.playharmony.model;
 
-import java.io.File;
-
 public class Song {
+
     private String title;
     private String author;
-    private File photo;
+    private String photo;
     private String date;
     private String pathFile;
 
-    public Song(String title, String author, File photo, String date, String pathFile) {
+    public Song(String title, String author, String photo, String date, String pathFile) {
         this.title = title;
         this.author = author;
         this.photo = photo;
@@ -29,7 +28,7 @@ public class Song {
         return this;
     }
 
-    public Song setPhoto(File photo) {
+    public Song setPhoto(String photo) {
         this.photo = photo;
         return this;
     }
@@ -52,7 +51,7 @@ public class Song {
         return author;
     }
 
-    public File getPhoto() {
+    public String getPhoto() {
         return photo;
     }
 

@@ -1,11 +1,10 @@
 package iris.playharmony.view.util;
 
+import iris.playharmony.util.ImageFactory;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-
-import java.io.File;
 
 public class ButtonFactory {
 
@@ -17,7 +16,7 @@ public class ButtonFactory {
 
     public static Button imageButton(String imagePath) {
         Button button = new Button();
-        button.setGraphic(new ImageView(imagePath));
+        button.setGraphic(new ImageView(ImageFactory.loadFromFile(imagePath)));
         return button;
     }
 }

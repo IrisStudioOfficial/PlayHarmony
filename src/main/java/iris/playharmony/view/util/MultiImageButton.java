@@ -1,5 +1,6 @@
 package iris.playharmony.view.util;
 
+import iris.playharmony.util.ImageFactory;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,7 +26,7 @@ public class MultiImageButton extends Button {
     }
 
     public void addImage(Object name, String imagePath) {
-        addImage(name, new Image(imagePath));
+        addImage(name, ImageFactory.loadFromFile(imagePath));
     }
 
     public void addImage(Object name, Image image) {

@@ -7,14 +7,15 @@ import javafx.scene.image.ImageView;
 import java.io.File;
 
 public class ObservableSong {
+
     private ImageView photo;
     private SimpleStringProperty title = new SimpleStringProperty();
     private SimpleStringProperty author = new SimpleStringProperty();
     private SimpleStringProperty date = new SimpleStringProperty();
     private SimpleStringProperty path = new SimpleStringProperty();
 
-    public ObservableSong photo(File photo) {
-        this.photo = new ImageView(new Image(photo.toURI().toString(), 100, 100, false, false));
+    public ObservableSong photo(String photo) {
+        this.photo = new ImageView(new Image(new File(photo).toURI().toString(), 100, 100, false, false));
         return this;
     }
 

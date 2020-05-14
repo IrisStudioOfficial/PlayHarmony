@@ -4,6 +4,7 @@ import iris.playharmony.model.Song;
 import iris.playharmony.model.SongPlayMode;
 import iris.playharmony.model.player.MusicPlayer;
 import iris.playharmony.model.player.Spectrum;
+import iris.playharmony.util.ImageFactory;
 import iris.playharmony.util.MediaFactory;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
@@ -46,8 +47,7 @@ public class MusicPlayerViewModel {
     public void setSong(Song song) {
         songProperty.set(song);
         songTitleProperty.set(song.getTitle());
-        // songImageProperty.set(ImageFactory.loadFromFile(song.getPhoto()));
-        // musicPlayer.setSong(MediaFactory.getMediaFromSong(song));
+        songImageProperty.set(ImageFactory.loadFromFile(song.getPhoto()));
         musicPlayer.setSong(MediaFactory.getMedia(song.getPathFile()));
     }
 

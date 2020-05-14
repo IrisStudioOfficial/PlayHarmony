@@ -9,6 +9,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class SpectrumView extends Pane {
@@ -31,7 +32,7 @@ public class SpectrumView extends Pane {
 
         verticalLayout = new VBox(dancerView, barsView);
 
-        String backgroundPath = Resources.get("icons/player/background.jpg");
+        String backgroundPath = new File(Resources.get("icons/player/background.jpg")).toURI().toString();
 
         background = new Pane();
 
