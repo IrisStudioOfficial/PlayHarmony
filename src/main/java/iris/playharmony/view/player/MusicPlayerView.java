@@ -1,12 +1,11 @@
 package iris.playharmony.view.player;
 
-import iris.playharmony.view.View;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
 import static java.util.Objects.requireNonNull;
 
-public class MusicPlayerView extends BorderPane implements View {
+public class MusicPlayerView extends BorderPane {
 
     private final Label title;
     private final SpectrumView spectrumView;

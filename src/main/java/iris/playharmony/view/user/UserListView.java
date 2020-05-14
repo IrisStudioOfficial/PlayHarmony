@@ -4,8 +4,7 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.ObservableUser;
-import iris.playharmony.view.playlist.CreatePlaylistView;
-import iris.playharmony.view.song.AdminSongListView;
+import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.util.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -36,7 +34,7 @@ public class UserListView extends VBox {
     }
 
     private void initElements() {
-        add(getTitleRow());
+        add(TextFactory.label("Users", DefaultStyle.title()));
 
         add(usersTable = TableFactory.table(data,
                 TableFactory.tableColumnPhoto("Photo", "photo", 100),
@@ -56,35 +54,18 @@ public class UserListView extends VBox {
         getChildren().add(node);
     }
 
-    private Node getTitleRow() {
-        HBox titleRow = new HBox(TextFactory.label("Users", DefaultStyle.title()));
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-        titleRow.getChildren().add(region);
-        titleRow.getChildren().add(ButtonFactory.button("Add User", event -> {
-            NavController.get().pushView(new NewUserView());
-        }));
-
-        titleRow.getChildren().add(ButtonFactory.button("List Songs", event -> {
-            NavController.get().pushView(new AdminSongListView());
-        }));
-
-        titleRow.getChildren().add(ButtonFactory.button("Create PlayList", event -> {
-            NavController.get().pushView(new CreatePlaylistView());
-        }));
-
-        return titleRow;
-    }
-
     private Node getBottomButtonPanel() {
         Region padding = new Region();
         padding.setPrefWidth(5);
-        HBox bottomButtonPanel = new HBox(
-                ButtonFactory.button("Remove User", this::removeUser),
+        Region padding2 = new Region();
+        padding2.setPrefWidth(5);
+        return new HBox(
+                ButtonFactory.button("Add User", e -> NavController.get().pushView(new NewUserView())),
                 padding,
+                ButtonFactory.button("Remove User", this::removeUser),
+                padding2,
                 ButtonFactory.button("Update User", event -> updateUser())
         );
-        return bottomButtonPanel;
     }
 
     private void updateUser() {
@@ -101,7 +82,7 @@ public class UserListView extends VBox {
             return;
         try {
             new DatabaseController().removeUser(selection.getEmail());
-            update();
+            refresh();
         } catch (RemoveUserException e) {
             AlertFactory.errorAlert("ERROR! Couldn't remove user", "ERROR! Couldn't remove user");
         }
@@ -115,7 +96,8 @@ public class UserListView extends VBox {
         return data;
     }
 
-    public void update() {
+    @OnRefresh
+    public void refresh() {
         data = getDBData();
         TableFactory.updateTable(data, usersTable);
         TableFactory.updatePagination(data, usersTable, pagination);

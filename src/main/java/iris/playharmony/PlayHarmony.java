@@ -2,10 +2,8 @@ package iris.playharmony;
 
 
 import iris.playharmony.controller.NavController;
-import iris.playharmony.model.Playlist;
 import iris.playharmony.view.MainView;
-import iris.playharmony.view.playlist.PlaylistView;
-import iris.playharmony.view.song.UserSongListView;
+import iris.playharmony.view.main.LobbyView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
@@ -58,7 +56,7 @@ public class PlayHarmony extends Application {
         primaryStage.setScene(scene);
 
         primaryStage.show();
-        NavController.get().setView(new PlaylistView(new Playlist("Prueba")));
+        NavController.get().setView(new LobbyView());
     }
 
     private void createScene() {

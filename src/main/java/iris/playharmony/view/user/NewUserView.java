@@ -8,27 +8,24 @@ import iris.playharmony.model.Email;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
-import iris.playharmony.view.View;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import iris.playharmony.view.util.AlertFactory;
+import iris.playharmony.view.util.ButtonFactory;
+import iris.playharmony.view.util.DefaultStyle;
+import iris.playharmony.view.util.TextFactory;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public class NewUserView extends VBox implements View {
+public class NewUserView extends VBox {
 
     private File photoFile;
-    private static int SPACING = 15;
     private TextField photo = new TextField();
     private TextField name = new TextField();
     private TextField surname = new TextField();
@@ -36,36 +33,33 @@ public class NewUserView extends VBox implements View {
     private TextField category = new TextField();
     private ComboBox<Object> role = new ComboBox<>();
 
+    private static int SPACING = 15;
+
     public NewUserView() {
         super(SPACING);
-
-        title("Add User");
-        textFieldLabeled(name, "Name");
-        textFieldLabeled(surname, "Surname");
-        textFieldLabeled(email, "Email");
-        textFieldLabeled(category, "Category");
-        comboBoxLabeled(role, "Role", Role.STUDENT, Role.TEACHER, Role.ADMIN);
-        add(buttonWithResult(photo,"Photo", "Upload Image", event -> uploadImage(photo)));
-        button("Add User", event -> createUser());
-
+        initElements();
         setPadding(new Insets(SPACING));
     }
 
-    private Node buttonWithResult(TextField textField, String labelText, String buttonText, EventHandler<ActionEvent> event) {
-        Label photoText = new Label(labelText);
-        photoText.setFont(FIELD_FONT);
+    private void initElements() {
+        add(TextFactory.label("Add User", DefaultStyle.title()));
+        add(TextFactory.label("Name", DefaultStyle.label()));
+        add(name = TextFactory.textField(""));
+        add(TextFactory.label("Surname", DefaultStyle.label()));
+        add(surname = TextFactory.textField(""));
+        add(TextFactory.label("Email", DefaultStyle.label()));
+        add(email = TextFactory.textField(""));
+        add(TextFactory.label("Category", DefaultStyle.label()));
+        add(category = TextFactory.textField(""));
+        add(TextFactory.label("Role", DefaultStyle.label()));
+        add(role = TextFactory.comboBox(Role.values()));
+        add(TextFactory.label("Upload Image", DefaultStyle.label()));
+        add(ButtonFactory.buttonWithLabeledResource(photo, "Photo", event -> uploadImage(photo)));
+        add(ButtonFactory.button("Add User", event -> createUser()));
+    }
 
-        HBox panel = new HBox();
-
-        textField.setDisable(true);
-
-        Button button = new Button(buttonText);
-        button.setOnAction(event);
-        button.setBackground(new Background(new BackgroundFill(Color.rgb( 174, 214, 241 ), CornerRadii.EMPTY, Insets.EMPTY)));
-
-        panel.getChildren().addAll(textField, button);
-
-        return panel;
+    private void add(Node node) {
+        getChildren().add(node);
     }
 
     private void uploadImage(TextField textField) {
@@ -89,14 +83,16 @@ public class NewUserView extends VBox implements View {
             try {
                 if(new DatabaseController().addUser(user)) {
                     NavController.get().popView();
+                    UserListView userListView = NavController.get().getCurrentView();
+                    userListView.refresh();
                 } else {
-                    errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
+                    AlertFactory.errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
                 }
             } catch (CreateUserException e) {
-                errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
+                AlertFactory.errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
             }
         } catch (EmailException e) {
-            errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
+            AlertFactory.errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
         }
     }
 }

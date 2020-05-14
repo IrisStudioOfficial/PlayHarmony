@@ -3,45 +3,33 @@ package iris.playharmony.view.song;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.view.util.ButtonFactory;
+import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TableFactory;
+import iris.playharmony.view.util.TextFactory;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-
 
 public class UserSongListView extends SongListView {
+
     public UserSongListView() {
         super();
-        this.getChildren().add(searchForm());
-        this.getChildren().add(initializeTableView());
-        this.pagination = TableFactory.pagination(data, songsTable);
-        this.getChildren().add(getBottomButtonPanel());
-        setPadding(new Insets(SPACING));
     }
 
-    protected HBox getBottomButtonPanel() {
-        HBox bottomButtonPanel = super.getBottomButtonPanel();
-        Region padding = new Region();
-        padding.setPrefWidth(5);
-        bottomButtonPanel.getChildren().add(padding);
-        bottomButtonPanel.getChildren().add(ButtonFactory.button("Play song", this::playSong));
-        padding = new Region();
-        padding.setPrefWidth(5);
-        bottomButtonPanel.getChildren().add(padding);
-        bottomButtonPanel.getChildren().add(ButtonFactory.button("Add to playlist", this::selectPlaylist));
+    @Override
+    public void initElements() {
+        add(TextFactory.label("UserSongListView", DefaultStyle.title()));
+        add(searchForm());
+        add(songsTable = TableFactory.table(data,
+                TableFactory.tableColumnPhoto("Photo", "photo", 100),
+                TableFactory.tableColumn("Title", "title"),
+                TableFactory.tableColumn("Author", "author"),
+                TableFactory.tableColumn("Date", "date")
+        ));
 
-        return bottomButtonPanel;
+        add(pagination = TableFactory.pagination(data, songsTable));
+        add(ButtonFactory.button("Add To Playlist", this::selectPlaylist));
     }
 
     private void selectPlaylist(ActionEvent event) {
-        ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
-        if (selectedItem != null)
-            NavController.get().pushView(new SelectPlaylistView(selectedItem.getTitle()));
-    }
-
-    private void playSong(ActionEvent event) {
-        //TODO integrate with the music player
         ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null)
             NavController.get().pushView(new SelectPlaylistView(selectedItem.getTitle()));

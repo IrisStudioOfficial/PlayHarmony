@@ -86,7 +86,7 @@ public class UpdateUserView extends VBox {
                 if(new DatabaseController().updateUser(user, user.getEmail().toString())) {
                     NavController.get().popView();
                     UserListView userListView = NavController.get().getCurrentView();
-                    userListView.update();
+                    userListView.refresh();
                 } else {
                     AlertFactory.errorAlert("ERROR! Couldn't update user", "ERROR! Couldn't update user");
                 }

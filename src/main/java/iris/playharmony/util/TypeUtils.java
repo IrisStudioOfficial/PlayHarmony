@@ -1,5 +1,7 @@
 package iris.playharmony.util;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -18,6 +20,23 @@ public final class TypeUtils {
                         field.set(null, value);
                     } catch (IllegalAccessException e) {
                         Logger.getGlobal().log(Level.SEVERE, "Cannot access field " + field.getName(), e);
+                    }
+                });
+    }
+
+    public static void callAnnotatedMethod(Object object, Class<? extends Annotation> annotation) {
+        if(object == null) {
+            return;
+        }
+
+        Stream.of(object.getClass().getMethods())
+                .filter(m -> nonNull(m.getAnnotation(annotation)))
+                .findAny()
+                .ifPresent(method -> {
+                    try {
+                        method.invoke(object);
+                    } catch (Exception e) {
+                        Logger.getGlobal().log(Level.SEVERE, "Cannot access field " + method.getName(), e);
                     }
                 });
     }

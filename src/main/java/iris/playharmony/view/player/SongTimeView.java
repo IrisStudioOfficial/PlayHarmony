@@ -1,8 +1,8 @@
 package iris.playharmony.view.player;
 
 import iris.playharmony.model.player.MusicPlayer;
-import iris.playharmony.view.View;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
@@ -10,7 +10,7 @@ import javafx.util.Duration;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class SongTimeView extends HBox implements View {
+public class SongTimeView extends HBox {
 
     private static final int SPACING = 20;
 
@@ -87,6 +87,11 @@ public class SongTimeView extends HBox implements View {
         add(durationLabel);
 
         return durationLabel;
+    }
+
+    private Node add(Node node) {
+        getChildren().add(node);
+        return node;
     }
 
 }

@@ -4,10 +4,7 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
-import iris.playharmony.view.util.AlertFactory;
-import iris.playharmony.view.util.ButtonFactory;
-import iris.playharmony.view.util.LabelFactory;
-import iris.playharmony.view.util.TableFactory;
+import iris.playharmony.view.util.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -49,7 +46,7 @@ public class PlaylistView extends VBox {
     }
 
     private void initElements() {
-        add(LabelFactory.label(playlist.getName()));
+        add(TextFactory.label(playlist.getName(), DefaultStyle.label()));
 
         add(songsTable = TableFactory.table(songs,
                 TableFactory.tableColumnPhoto("Photo", "photo", 100),
@@ -64,7 +61,7 @@ public class PlaylistView extends VBox {
         add(ButtonFactory.button("Delete Song", event -> deleteSong()));
         add(ButtonFactory.button("Change Song Play Mode", event -> changeSongPlayMode()));
 
-        add(playModeLabel = LabelFactory.label("Song Play Mode: " + playlist.getSongPlayMode().toString()));
+        add(playModeLabel = TextFactory.label("Song Play Mode: " + playlist.getSongPlayMode().toString(), DefaultStyle.label()));
     }
 
     private void add(Node node) {
