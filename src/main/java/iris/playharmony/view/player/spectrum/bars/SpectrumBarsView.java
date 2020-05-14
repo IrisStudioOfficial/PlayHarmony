@@ -7,6 +7,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Bounds;
 import javafx.scene.effect.Reflection;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 
 public class SpectrumBarsView extends AnchorPane implements SpectrumUpdatable {
 
@@ -14,7 +15,7 @@ public class SpectrumBarsView extends AnchorPane implements SpectrumUpdatable {
     private static final float BAR_HEIGHT = 1;
     private static final float BAR_SEPARATION = 10.5f;
 
-    private static final double INTERPOLATION_STEP = 0.25;
+    private static final double INTERPOLATION_STEP = 0.35;
 
 
     private final SpectrumBarGroup bars;

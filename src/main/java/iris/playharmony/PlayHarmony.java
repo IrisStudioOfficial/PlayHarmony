@@ -5,6 +5,7 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Song;
 import iris.playharmony.model.player.MusicPlayer;
 import iris.playharmony.model.player.Spectrum;
+import iris.playharmony.util.MediaFactory;
 import iris.playharmony.util.Resources;
 import iris.playharmony.util.SongFactory;
 import iris.playharmony.view.MainView;
@@ -73,7 +74,7 @@ public class PlayHarmony extends Application {
 
         MusicPlayer musicPlayer = new MusicPlayer();
 
-        Spectrum spectrum = new Spectrum(Interpolator.EASE_BOTH);
+        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
 
         Song song = SongFactory.createSongFromFolder(Resources.get("songs/Roses"));
 
@@ -85,10 +86,12 @@ public class PlayHarmony extends Application {
 
         viewModel.setSong(song);
 
-        musicPlayer.play();
+        // musicPlayer.play();
+
+        musicPlayer.play(MediaFactory.getMedia("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\[DnB] - Tristam  Braken - Frame of Mind [Monstercat Release].mp3.crdownload"));
     }
 
     private void createScene() {
-        scene = new Scene(new MainView(), DEFAULT_WIDTH, DEFAULT_HEIGHT, false, SceneAntialiasing.BALANCED);
+        scene = new Scene(new MainView(), DEFAULT_WIDTH, DEFAULT_HEIGHT, true, SceneAntialiasing.BALANCED);
     }
 }
