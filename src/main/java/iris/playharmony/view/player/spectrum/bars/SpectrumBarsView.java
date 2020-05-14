@@ -5,17 +5,16 @@ import iris.playharmony.view.player.spectrum.SpectrumUpdatable;
 import javafx.animation.Interpolator;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Bounds;
+import javafx.scene.effect.Reflection;
 import javafx.scene.layout.AnchorPane;
 
 public class SpectrumBarsView extends AnchorPane implements SpectrumUpdatable {
 
-    private static final float BAR_WIDTH = 12;
+    private static final float BAR_WIDTH = 8.5f;
     private static final float BAR_HEIGHT = 1;
-    private static final float BAR_SEPARATION = 15;
+    private static final float BAR_SEPARATION = 10.5f;
 
     private static final double INTERPOLATION_STEP = 0.25;
-
-    private static final float MAGNITUDE_SCALE = 8.0f;
 
 
     private final SpectrumBarGroup bars;
@@ -35,6 +34,8 @@ public class SpectrumBarsView extends AnchorPane implements SpectrumUpdatable {
 
         final double maxY = getMaxY();
 
+        final double scale = getBarMaxHeight() / 64.0;
+
         for(int i = 0;i < numBands;i++) {
 
             final float magnitude = spectrum.getAudioMagnitude(i);
@@ -43,17 +44,17 @@ public class SpectrumBarsView extends AnchorPane implements SpectrumUpdatable {
 
             double y = bar.getY();
 
-            double newY = maxY - magnitude * MAGNITUDE_SCALE;
+            double newY = maxY - magnitude * scale;
 
             newY = interpolator.interpolate(y, newY, INTERPOLATION_STEP);
 
-            if(newY > maxY * 0.95) {
+            if(newY > maxY * 0.88) {
                 bar.setFalling();
             } else {
                 bar.setRising();
             }
 
-            bar.setHeight(Math.min(getBarMaxHeight(), Math.max(maxY - newY, 1.0)));
+            bar.setHeight(Math.max(maxY - newY, 1.0));
 
             bar.setY(newY - 1.0);
         }
@@ -70,9 +71,15 @@ public class SpectrumBarsView extends AnchorPane implements SpectrumUpdatable {
         bar.setX(bars.size() * BAR_SEPARATION);
         bar.setY(getMaxY());
 
+        bar.setEffect(new Reflection());
+
         getChildren().add(bar);
 
         return bar;
+    }
+
+    private double getMinY() {
+        return boundsProperty.get().getMinY();
     }
 
     private double getMaxY() {
@@ -82,5 +89,4 @@ public class SpectrumBarsView extends AnchorPane implements SpectrumUpdatable {
     private double getBarMaxHeight() {
         return boundsProperty.get().getHeight();
     }
-
 }

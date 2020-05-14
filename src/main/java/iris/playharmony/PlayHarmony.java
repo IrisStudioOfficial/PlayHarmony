@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayHarmony extends Application {
@@ -72,11 +73,11 @@ public class PlayHarmony extends Application {
 
         MusicPlayer musicPlayer = new MusicPlayer();
 
-        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
+        Spectrum spectrum = new Spectrum(Interpolator.EASE_BOTH);
 
         Song song = new Song();
-
-        song.setPathFile("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\Slippy - Promise Me [Monstercat Release].mp3");
+        song.setPathFile("C:\\Users\\naits\\Downloads\\saint-jhn-roses-imanbek-remix.mp3");
+        song.setTitle(song.getPathFile().substring(song.getPathFile().lastIndexOf(File.separatorChar)+1));
 
         MusicPlayerViewModel viewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
 
@@ -84,9 +85,9 @@ public class PlayHarmony extends Application {
 
         NavController.get().setView(view);
 
-        // viewModel.setSong(song);
+        viewModel.setSong(song);
 
-        musicPlayer.setSong(MediaFactory.getMedia(song.getPathFile()));
+        // musicPlayer.setSong(MediaFactory.getMedia(song.getPathFile()));
 
         musicPlayer.play();
     }

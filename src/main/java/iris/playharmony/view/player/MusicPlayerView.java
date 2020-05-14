@@ -1,15 +1,22 @@
 package iris.playharmony.view.player;
 
 import iris.playharmony.view.player.spectrum.SpectrumView;
-import javafx.scene.control.Label;
+import javafx.geometry.Pos;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 import static java.util.Objects.requireNonNull;
 
 public class MusicPlayerView extends BorderPane {
 
-    private final Label title;
+    private static final Font TITLE_FONT = Font.font(36);
+
+
+    private final Text title;
     private final SpectrumView spectrumView;
     private final MusicControlPanelView controlPanelView;
     private final MusicPlayerViewModel viewModel;
@@ -23,13 +30,23 @@ public class MusicPlayerView extends BorderPane {
         controlPanelView = createControlPanelView(viewModel);
     }
 
-    private Label createTitle(MusicPlayerViewModel viewModel) {
+    private Text createTitle(MusicPlayerViewModel viewModel) {
 
-        Label title = new Label();
+        Text title = new Text();
+
+        title.setFont(TITLE_FONT);
+
+        title.setTextAlignment(TextAlignment.CENTER);
 
         title.textProperty().bind(viewModel.songTitleProperty());
 
+        title.setEffect(new InnerShadow());
+
+        title.setFill(Color.DARKORANGE);
+
         setTop(title);
+
+        setAlignment(title, Pos.CENTER);
 
         return title;
     }
@@ -37,8 +54,6 @@ public class MusicPlayerView extends BorderPane {
     private SpectrumView createSpectrumView(MusicPlayerViewModel viewModel) {
 
         SpectrumView spectrumView = new SpectrumView(viewModel);
-
-        spectrumView.setStyle("-fx-background-color: black;");
 
         // TODO...
 

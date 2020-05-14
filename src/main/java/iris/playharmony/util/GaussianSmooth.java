@@ -2,9 +2,9 @@ package iris.playharmony.util;
 
 public class GaussianSmooth {
 
-    public static void gaussianSmooth(float[] src, float[] dest) {
+    public static void gaussianSmooth(float[] src, float[] dest, int count) {
 
-        for(int i = 0;i < src.length;i++) {
+        for(int i = 0;i < count;i++) {
 
             float value = src[i];
 
