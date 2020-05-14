@@ -3,7 +3,6 @@ package iris.playharmony.view.song;
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Song;
-import iris.playharmony.view.View;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.TableFactory;
