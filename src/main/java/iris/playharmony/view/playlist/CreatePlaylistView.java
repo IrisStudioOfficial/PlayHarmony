@@ -4,6 +4,7 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.User;
+import iris.playharmony.session.Session;
 import iris.playharmony.view.song.AdminSongListView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -68,9 +69,7 @@ public class CreatePlaylistView extends VBox {
 
     private void createPlayList() {
         Playlist playlist = new Playlist(namePlayList.getText());
-
-        // Use a default user to test the feature:
-        User user = new DatabaseController().getUsers().stream().filter(i -> i.getName().equals("test")).findAny().orElse(null);
+        User user = Session.getSession().currentUser();
 
         if(new DatabaseController().addPlayList(playlist, user)) {
             NavController.get().popView();
