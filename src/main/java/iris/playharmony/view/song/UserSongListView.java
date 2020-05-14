@@ -25,12 +25,23 @@ public class UserSongListView extends SongListView {
         Region padding = new Region();
         padding.setPrefWidth(5);
         bottomButtonPanel.getChildren().add(padding);
+        bottomButtonPanel.getChildren().add(ButtonFactory.button("Play song", this::playSong));
+        padding = new Region();
+        padding.setPrefWidth(5);
+        bottomButtonPanel.getChildren().add(padding);
         bottomButtonPanel.getChildren().add(ButtonFactory.button("Add to playlist", this::selectPlaylist));
 
         return bottomButtonPanel;
     }
 
     private void selectPlaylist(ActionEvent event) {
+        ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
+        if (selectedItem != null)
+            NavController.get().pushView(new SelectPlaylistView(selectedItem.getTitle()));
+    }
+
+    private void playSong(ActionEvent event) {
+        //TODO integrate with the music player
         ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null)
             NavController.get().pushView(new SelectPlaylistView(selectedItem.getTitle()));
