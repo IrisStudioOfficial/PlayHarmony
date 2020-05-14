@@ -60,6 +60,6 @@ public class PlayHarmony extends Application {
     }
 
     private void createScene() {
-        scene = new Scene(new MainView(), DEFAULT_WIDTH, DEFAULT_HEIGHT, false, SceneAntialiasing.BALANCED);
+        scene = new Scene(new MainView(), DEFAULT_WIDTH, DEFAULT_HEIGHT, true, SceneAntialiasing.BALANCED);
     }
 }
