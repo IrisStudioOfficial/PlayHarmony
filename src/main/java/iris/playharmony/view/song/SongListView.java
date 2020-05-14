@@ -4,9 +4,6 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Song;
 import iris.playharmony.view.View;
-import iris.playharmony.view.util.AlertFactory;
-import iris.playharmony.view.util.ButtonFactory;
-import iris.playharmony.view.util.TableFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -24,7 +21,7 @@ import javafx.scene.text.Font;
 
 import java.util.Comparator;
 
-public abstract class SongListView extends VBox {
+public abstract class SongListView extends VBox implements View {
     protected TableView songsTable = new TableView<>();
     protected TextField searchField = new TextField();
     ObservableList<ObservableSong> data = FXCollections.observableArrayList();
@@ -38,7 +35,6 @@ public abstract class SongListView extends VBox {
     }
 
     protected TableView initializeTableView() {
-
         songsTable.setEditable(false);
         initializeColumns();
         updateTableViewData();
@@ -46,14 +42,18 @@ public abstract class SongListView extends VBox {
     }
 
     protected TableView updateTableViewData() {
-
-        data = getSongs(Comparator.comparing(o -> o.title().get()));
-        TableFactory.updateTable(data, songsTable);
+        data = getSongs(new Comparator<ObservableSong>() {
+            @Override
+            public int compare(ObservableSong o1, ObservableSong o2) {
+                return o1.title().get().compareTo(o2.title().get());
+            }
+        });
+        songsTable.setItems(data);
+        songsTable.refresh();
         return songsTable;
     }
 
     protected ObservableList<ObservableSong> getSongs(Comparator<ObservableSong> comparator) {
-
         data = FXCollections.observableArrayList();
         new DatabaseController()
                 .getSongs()
@@ -65,7 +65,6 @@ public abstract class SongListView extends VBox {
     }
 
     protected TableView initializeColumns() {
-
         TableColumn imageColumn = new TableColumn("Photo");
         imageColumn.setCellValueFactory(new PropertyValueFactory<>("photo"));
         imageColumn.setPrefWidth(100);
@@ -85,7 +84,6 @@ public abstract class SongListView extends VBox {
     }
 
     protected Node searchForm() {
-
         HBox searchRow = new HBox();
         Region region = new Region();
         HBox.setHgrow(region, Priority.ALWAYS);
@@ -94,19 +92,20 @@ public abstract class SongListView extends VBox {
         searchField.setOnAction(event -> searchCommand());
         searchRow.getChildren().add(region);
         searchRow.getChildren().add(searchField);
-        searchRow.getChildren().add(ButtonFactory.button("Search", event -> searchCommand()));
+        searchRow.getChildren().add(button("Search", event -> searchCommand()));
 
         return searchRow;
     }
 
     protected void searchCommand() {
-
         updateTableViewData();
-        if(searchField.getText().isEmpty())
+        if(searchField.getText().isEmpty()) {
             return;
+        }
         data = data.filtered(observableSong -> observableSong.getTitle().toLowerCase().contains(searchField.getText().toLowerCase()));
-        TableFactory.updateTable(data, songsTable);
-        TableFactory.updatePagination(data, songsTable, pagination);
+        songsTable.setItems(data);
+        songsTable.refresh();
+        updatePagination(data, songsTable, pagination);
     }
 
     protected void removeSong(Event event) {
@@ -115,18 +114,18 @@ public abstract class SongListView extends VBox {
         if (selection == null)
             return;
         if (!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
-            AlertFactory.errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
+            errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
         updateTableViewData();
-        TableFactory.updatePagination(data, songsTable, pagination);
+        updatePagination(data, songsTable, pagination);
     }
 
     protected HBox getBottomButtonPanel() {
         Region padding = new Region();
         padding.setPrefWidth(5);
 
-        return new HBox(ButtonFactory.button("Refresh", event -> {
+        return new HBox(button("Refresh", event -> {
             updateTableViewData();
-            TableFactory.updatePagination(data, songsTable, pagination);
+            updatePagination(data, songsTable, pagination);
         }));
     }
 }
