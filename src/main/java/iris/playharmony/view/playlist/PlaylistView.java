@@ -4,6 +4,7 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
+import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.util.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -95,7 +96,8 @@ public class PlaylistView extends VBox {
         playModeLabel.setText("Song Play Mode: " + playlist.getSongPlayMode().toString());
     }
 
-    public void update() {
+    @OnRefresh
+    public void refresh() {
         songs = getSongs();
         TableFactory.updateTable(songs, songsTable);
         TableFactory.updatePagination(songs, songsTable, pagination);
