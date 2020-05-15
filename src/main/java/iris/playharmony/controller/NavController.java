@@ -1,5 +1,6 @@
 package iris.playharmony.controller;
 
+import iris.playharmony.util.OnFinish;
 import iris.playharmony.util.Singleton;
 import iris.playharmony.view.NavigationView;
 import javafx.scene.Parent;
@@ -8,6 +9,8 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
+
+import static iris.playharmony.util.TypeUtils.callAnnotatedMethod;
 
 public class NavController implements Iterable<Parent> {
 
@@ -56,7 +59,11 @@ public class NavController implements Iterable<Parent> {
             navigationView.setView(viewStack.peek());
         }
 
-        return Optional.of(currentView);
+        if(currentView != null) {
+            callAnnotatedMethod(currentView, OnFinish.class);
+        }
+
+        return Optional.ofNullable(currentView);
     }
 
     public void clear() {

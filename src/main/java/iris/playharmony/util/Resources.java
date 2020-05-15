@@ -12,8 +12,8 @@ public class Resources {
         }
 
         try {
-            return Resources.class.getResource(resourceName).toURI().toString();
-        } catch (URISyntaxException e) {
+            return new File(Resources.class.getResource(resourceName).toURI().getPath()).toString();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

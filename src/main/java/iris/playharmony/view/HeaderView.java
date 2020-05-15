@@ -2,7 +2,9 @@ package iris.playharmony.view;
 
 import iris.playharmony.controller.NavController;
 import iris.playharmony.controller.handler.PathHandler;
+import iris.playharmony.util.ImageFactory;
 import iris.playharmony.util.OnRefresh;
+import iris.playharmony.util.Resources;
 import iris.playharmony.util.TypeUtils;
 import iris.playharmony.view.main.LobbyView;
 import iris.playharmony.view.util.ButtonFactory;
@@ -54,7 +56,7 @@ public class HeaderView extends HBox {
     }
 
     private ImageView setImage() {
-        Image image = new Image(PathHandler.DEFAULT_PHOTO_PATH);
+        Image image = ImageFactory.loadFromFile(PathHandler.DEFAULT_PHOTO_PATH);
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(70);
         imageView.setFitHeight(70);

@@ -16,6 +16,9 @@ public class SongTimeView extends HBox {
 
     private static final String SONG_TIME_FORMAT = "%02d:%02d";
 
+    public static final int TIME_SLIDER_MIN_WIDTH = 400;
+
+
     private final Label currentTimeLabel;
     private final Slider timeSlider;
     private final Label totalDurationLabel;
@@ -38,7 +41,7 @@ public class SongTimeView extends HBox {
             timeLabel.setText(String.format(SONG_TIME_FORMAT, (int)newValue.toMinutes() % 60, (int)newValue.toSeconds() % 60));
         });
 
-        add(timeLabel);
+        getChildren().add(timeLabel);
 
         return timeLabel;
     }
@@ -69,9 +72,9 @@ public class SongTimeView extends HBox {
             changedByMusicPlayer.set(false);
         });
 
-        slider.setMinWidth(360);
+        slider.setMinWidth(TIME_SLIDER_MIN_WIDTH);
 
-        add(slider);
+        getChildren().add(slider);
 
         return slider;
     }
@@ -84,7 +87,7 @@ public class SongTimeView extends HBox {
             durationLabel.setText(String.format(SONG_TIME_FORMAT, (int)newValue.toMinutes() % 60, (int)newValue.toSeconds() % 60));
         });
 
-        add(durationLabel);
+        getChildren().add(durationLabel);
 
         return durationLabel;
     }

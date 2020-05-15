@@ -2,9 +2,18 @@ package iris.playharmony;
 
 
 import iris.playharmony.controller.NavController;
+import iris.playharmony.model.Song;
+import iris.playharmony.model.player.MusicPlayer;
+import iris.playharmony.model.player.Spectrum;
+import iris.playharmony.util.Resources;
+import iris.playharmony.util.SongFactory;
 import iris.playharmony.view.MainView;
-import iris.playharmony.view.main.LobbyView;
+import iris.playharmony.view.player.MusicPlayerView;
+import iris.playharmony.view.player.MusicPlayerViewModel;
+import javafx.animation.Interpolator;
 import javafx.application.Application;
+import javafx.scene.DepthTest;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.stage.Stage;
@@ -55,11 +64,17 @@ public class PlayHarmony extends Application {
 
         primaryStage.setScene(scene);
 
+        primaryStage.setMaximized(true);
+
         primaryStage.show();
-        NavController.get().setView(new LobbyView());
     }
 
     private void createScene() {
-        scene = new Scene(new MainView(), DEFAULT_WIDTH, DEFAULT_HEIGHT, true, SceneAntialiasing.BALANCED);
+
+        Parent root = new MainView();
+
+        root.setDepthTest(DepthTest.DISABLE);
+
+        scene = new Scene(root, DEFAULT_WIDTH, DEFAULT_HEIGHT, true, SceneAntialiasing.BALANCED);
     }
 }
