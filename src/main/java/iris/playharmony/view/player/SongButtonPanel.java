@@ -18,6 +18,15 @@ public class SongButtonPanel extends HBox {
 
     private static final int SPACING = 20;
 
+    private static final String ICONS_PLAYER_BACK = "icons/player/back.png";
+    private static final String ICONS_PLAYER_NEXT = "icons/player/next.png";
+    private static final String ICONS_PLAYER_PLAY = "icons/player/play.png";
+    private static final String ICONS_PLAYER_PAUSE = "icons/player/pause.png";
+    private static final String ICONS_PLAYER_SEQUENCE = "icons/player/sequence.png";
+    private static final String ICONS_PLAYER_RANDOM = "icons/player/random.png";
+    private static final String ICONS_PLAYER_LOOP = "icons/player/loop.png";
+
+
     private final Button changePlayModeButton;
     private final Button backwardsButton;
     private final Button playPauseButton;
@@ -30,11 +39,11 @@ public class SongButtonPanel extends HBox {
 
         changePlayModeButton = createChangePlayModeButton(viewModel);
 
-        backwardsButton = ButtonFactory.imageButton(Resources.get("icons/player/back.png"));
+        backwardsButton = ButtonFactory.imageButton(Resources.get(ICONS_PLAYER_BACK));
 
         playPauseButton = createPlayPauseButton(viewModel);
 
-        forwardButton = ButtonFactory.imageButton("icons/player/next.png");
+        forwardButton = ButtonFactory.imageButton(Resources.get(ICONS_PLAYER_NEXT));
 
         getChildren().addAll(changePlayModeButton, backwardsButton, playPauseButton, forwardButton);
     }
@@ -43,8 +52,8 @@ public class SongButtonPanel extends HBox {
 
         MultiImageButton playPauseButton = new MultiImageButton();
 
-        playPauseButton.addImage(Status.PLAYING, Resources.get("icons/player/play.png"));
-        playPauseButton.addImage(Status.PAUSED, Resources.get("icons/player/pause.png"));
+        playPauseButton.addImage(Status.PLAYING, Resources.get(ICONS_PLAYER_PLAY));
+        playPauseButton.addImage(Status.PAUSED, Resources.get(ICONS_PLAYER_PAUSE));
         playPauseButton.setImage(Status.PAUSED);
 
         playPauseButton.setOnAction(e -> {
@@ -69,9 +78,9 @@ public class SongButtonPanel extends HBox {
 
         MultiImageButton changeButton = new MultiImageButton();
 
-        changeButton.addImage(SEQUENTIAL, Resources.get("icons/player/sequence.png"));
-        changeButton.addImage(RANDOM, Resources.get("icons/player/random.png"));
-        changeButton.addImage(SELF, Resources.get("icons/player/loop.png"));
+        changeButton.addImage(SEQUENTIAL, Resources.get(ICONS_PLAYER_SEQUENCE));
+        changeButton.addImage(RANDOM, Resources.get(ICONS_PLAYER_RANDOM));
+        changeButton.addImage(SELF, Resources.get(ICONS_PLAYER_LOOP));
 
         changeButton.setImage(SEQUENTIAL);
 

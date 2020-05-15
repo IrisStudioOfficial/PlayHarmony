@@ -1,6 +1,7 @@
 package iris.playharmony.view.player;
 
 import javafx.geometry.Pos;
+import javafx.scene.DepthTest;
 import javafx.scene.layout.VBox;
 
 public class MusicControlPanelView extends VBox {
@@ -12,6 +13,8 @@ public class MusicControlPanelView extends VBox {
     private final SongButtonPanel buttonPanel;
 
     public MusicControlPanelView(MusicPlayerViewModel viewModel) {
+
+        setTranslateZ(-1);
 
         setSpacing(SPACING);
         setAlignment(Pos.CENTER);

@@ -11,10 +11,6 @@ import static javafx.scene.media.MediaPlayer.Status.PLAYING;
 
 public class MusicPlayer {
 
-    public static final double DEFAULT_SPECTRUM_INTERVAL = 0.1;
-    public static final int DEFAULT_SPECTRUM_NUM_BANDS = 128;
-    public static final int DEFAULT_SPECTRUM_THRESHOLD = -60; // dB
-
     // Spectrum
     private final DoubleProperty spectrumIntervalProperty;
     private final IntegerProperty spectrumNumBandsProperty;
@@ -35,9 +31,9 @@ public class MusicPlayer {
 
         playerCache = new MediaPlayerCache();
 
-        spectrumIntervalProperty = new SimpleDoubleProperty(DEFAULT_SPECTRUM_INTERVAL);
-        spectrumNumBandsProperty = new SimpleIntegerProperty(DEFAULT_SPECTRUM_NUM_BANDS);
-        spectrumThresholdProperty = new SimpleIntegerProperty(DEFAULT_SPECTRUM_THRESHOLD);
+        spectrumIntervalProperty = new SimpleDoubleProperty();
+        spectrumNumBandsProperty = new SimpleIntegerProperty();
+        spectrumThresholdProperty = new SimpleIntegerProperty();
         spectrumListenerProperty = new SimpleObjectProperty<>();
 
         currentPlayerProperty = new SimpleObjectProperty<>();
@@ -86,7 +82,7 @@ public class MusicPlayer {
         }
     }
 
-    public double getSpectrumIntervalProperty() {
+    public double getSpectrumInterval() {
         return spectrumIntervalProperty.get();
     }
 
@@ -94,11 +90,11 @@ public class MusicPlayer {
         return spectrumIntervalProperty;
     }
 
-    public void setSpectrumIntervalProperty(double spectrumIntervalProperty) {
+    public void setSpectrumInterval(double spectrumIntervalProperty) {
         this.spectrumIntervalProperty.set(spectrumIntervalProperty);
     }
 
-    public int getSpectrumNumBandsProperty() {
+    public int getSpectrumNumBands() {
         return spectrumNumBandsProperty.get();
     }
 
@@ -106,23 +102,23 @@ public class MusicPlayer {
         return spectrumNumBandsProperty;
     }
 
-    public void setSpectrumNumBandsProperty(int spectrumNumBandsProperty) {
+    public void setSpectrumNumBands(int spectrumNumBandsProperty) {
         this.spectrumNumBandsProperty.set(spectrumNumBandsProperty);
     }
 
-    public int getSpectrumThresholdProperty() {
+    public int getSpectrumThreshold() {
         return spectrumThresholdProperty.get();
     }
 
-    public IntegerProperty spectrumThresholdProperty() {
+    public IntegerProperty spectrumThreshold() {
         return spectrumThresholdProperty;
     }
 
-    public void setSpectrumThresholdProperty(int spectrumThresholdProperty) {
+    public void setSpectrumThreshold(int spectrumThresholdProperty) {
         this.spectrumThresholdProperty.set(spectrumThresholdProperty);
     }
 
-    public AudioSpectrumListener getSpectrumListenerProperty() {
+    public AudioSpectrumListener getSpectrumListener() {
         return spectrumListenerProperty.get();
     }
 
@@ -130,7 +126,7 @@ public class MusicPlayer {
         return spectrumListenerProperty;
     }
 
-    public void setSpectrumListenerProperty(AudioSpectrumListener spectrumListenerProperty) {
+    public void setSpectrumListener(AudioSpectrumListener spectrumListenerProperty) {
         this.spectrumListenerProperty.set(spectrumListenerProperty);
     }
 

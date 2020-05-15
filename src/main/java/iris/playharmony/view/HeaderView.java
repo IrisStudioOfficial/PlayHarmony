@@ -2,19 +2,24 @@ package iris.playharmony.view;
 
 import iris.playharmony.controller.NavController;
 import iris.playharmony.controller.handler.PathHandler;
+import iris.playharmony.util.ImageFactory;
 import iris.playharmony.util.OnRefresh;
+import iris.playharmony.util.Resources;
 import iris.playharmony.util.TypeUtils;
 import iris.playharmony.view.main.LobbyView;
 import iris.playharmony.view.util.ButtonFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+
+import java.util.Objects;
 
 public class HeaderView extends HBox {
 
@@ -26,11 +31,15 @@ public class HeaderView extends HBox {
     public HeaderView() {
 
         add(ButtonFactory.button("<-", e -> {
-            if(!NavController.get().getCurrentView().getClass().equals(LobbyView.class)) {
-                NavController.get().popView();
-                TypeUtils.callAnnotatedMethod(NavController.get().getCurrentView(), OnRefresh.class);
+            Parent view = NavController.get().getCurrentView();
+            if(view != null){
+                if(!Objects.equals(view.getClass(),LobbyView.class)) {
+                    NavController.get().popView();
+                    TypeUtils.callAnnotatedMethod(NavController.get().getCurrentView(), OnRefresh.class);
+                }
             }
         }));
+
         add(setTitle());
         add(getRegion());
         add(getRegion());
@@ -54,7 +63,7 @@ public class HeaderView extends HBox {
     }
 
     private ImageView setImage() {
-        Image image = new Image(PathHandler.DEFAULT_PHOTO_PATH);
+        Image image = ImageFactory.loadFromFile(PathHandler.DEFAULT_PHOTO_PATH);
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(70);
         imageView.setFitHeight(70);

@@ -2,6 +2,7 @@ package iris.playharmony.view.song;
 
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.model.ObservableSong;
+import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.TableFactory;
 import javafx.collections.FXCollections;
@@ -37,13 +38,6 @@ public abstract class SongListView extends VBox {
 
     protected abstract void initElements();
 
-    protected TableView updateTableViewData() {
-        data = getSongs(Comparator.comparing(o -> o.title().get()));
-        TableFactory.updateTable(data, songsTable);
-        TableFactory.updatePagination(data, songsTable, pagination);
-        return songsTable;
-    }
-
     protected ObservableList<ObservableSong> getSongs(Comparator<ObservableSong> comparator) {
         data = FXCollections.observableArrayList();
         new DatabaseController()
@@ -71,8 +65,8 @@ public abstract class SongListView extends VBox {
     }
 
     protected void searchCommand() {
+        refresh();
 
-        updateTableViewData();
         if(searchField.getText().isEmpty())
             return;
         data = data.filtered(observableSong -> observableSong.getTitle().toLowerCase().contains(searchField.getText().toLowerCase()));
@@ -83,5 +77,12 @@ public abstract class SongListView extends VBox {
     protected Node add(Node node) {
         getChildren().add(node);
         return node;
+    }
+
+    @OnRefresh
+    public void refresh() {
+        data = getSongs(Comparator.comparing(o -> o.title().get()));
+        TableFactory.updateTable(data, songsTable);
+        TableFactory.updatePagination(data, songsTable, pagination);
     }
 }

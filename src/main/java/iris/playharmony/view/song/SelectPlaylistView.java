@@ -12,7 +12,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 
@@ -20,9 +19,7 @@ public class SelectPlaylistView extends VBox {
 
     private static int SPACING = 15;
 
-    private Playlist playlist;
     private TableView playlistsTable;
-    private Pagination pagination;
     private String toBeAddedSong;
 
     public SelectPlaylistView(String songTitle) {
@@ -40,7 +37,7 @@ public class SelectPlaylistView extends VBox {
                 TableFactory.tableColumn("Nr of songs", "size")
         ));
 
-        add(pagination = TableFactory.pagination(getPlaylists(), playlistsTable));
+        add(TableFactory.pagination(getPlaylists(), playlistsTable));
 
         add(ButtonFactory.button("Add To Playlist", event -> addToPlaylist()));
     }
@@ -58,6 +55,8 @@ public class SelectPlaylistView extends VBox {
         new DatabaseController().addPlayList(selectedPlaylist, Session.getSession().currentUser());
 
         NavController.get().popView();
+        UserSongListView userSongListView = NavController.get().getCurrentView();
+        userSongListView.refresh();
     }
 
     private ObservableList<Playlist> getPlaylists() {

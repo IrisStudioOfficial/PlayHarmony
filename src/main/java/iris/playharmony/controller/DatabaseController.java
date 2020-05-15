@@ -3,12 +3,16 @@ package iris.playharmony.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import iris.playharmony.controller.handler.PathHandler;
-import iris.playharmony.exceptions.*;
+import iris.playharmony.exceptions.CreateUserException;
+import iris.playharmony.exceptions.EmailException;
+import iris.playharmony.exceptions.RemoveUserException;
+import iris.playharmony.exceptions.UpdateUserException;
 import iris.playharmony.model.*;
 
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DatabaseController {
@@ -53,9 +57,10 @@ public class DatabaseController {
                         }
                     }
 
-                    ArrayList<Playlist> list = new Gson().fromJson(rs.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
+                    List<Playlist> list = new Gson().fromJson(rs.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
+                    list = list == null ? new ArrayList<>() : list;
 
-                    userList.add(new User(image.getAbsoluteFile(), rs.getString("NAME"), rs.getString("SURNAME"), rs.getString("CATEGORY"), Role.getRoleFrom(rs.getString("USER_ROLE")), new Email(rs.getString("EMAIL")),list));
+                    userList.add(new User(image.getAbsoluteFile(), rs.getString("NAME"), rs.getString("SURNAME"), rs.getString("CATEGORY"), Role.getRoleFrom(rs.getString("USER_ROLE")), new Email(rs.getString("EMAIL")), list));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -212,7 +217,7 @@ public class DatabaseController {
                             .setDate(rs.getString("PUBLICATION"))
                             .setPathFile(rs.getString("PATHFILE"))
                             .setAuthor(rs.getString("AUTHOR"))
-                            .setPhoto(image)
+                            .setPhoto(image.toString())
                     );
             }
         } catch(Exception e) {

@@ -4,8 +4,6 @@ import iris.playharmony.model.Song;
 import javafx.scene.media.Media;
 
 import java.io.File;
-import java.net.URL;
-import java.nio.file.Paths;
 
 public class MediaFactory {
 

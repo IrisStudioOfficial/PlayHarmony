@@ -1,6 +1,7 @@
 package iris.playharmony.model;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 public class User {

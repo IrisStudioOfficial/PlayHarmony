@@ -126,10 +126,9 @@ public class NewSongView extends VBox {
 
 
     private void createSong() {
-        Song song = new Song(title.getText(),author.getText(),photoFile,dateDay.getText() + "-" + dateMonth.getText() +"-" + dateYear.getText(),pathFile.getText());
+        Song song = new Song(title.getText(),author.getText(), photoFile.toString(), dateDay.getText() + "-" + dateMonth.getText() +"-" + dateYear.getText(),pathFile.getText());
         if(new DatabaseController().addSong(song)) {
-            NavController.get().clear();
-            NavController.get().pushView(new AdminSongListView());
+            NavController.get().popView();
         } else {
             errorAlert("ERROR! Song is already registered", "ERROR! Song is already registered");
         }
