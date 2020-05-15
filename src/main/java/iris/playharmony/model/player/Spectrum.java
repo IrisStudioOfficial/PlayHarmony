@@ -8,7 +8,7 @@ import javafx.scene.media.AudioSpectrumListener;
 public class Spectrum implements AudioSpectrumListener {
 
     private static final double DEFAULT_SPECTRUM_INTERVAL = 0.005;
-    private static final int DEFAULT_SPECTRUM_NUM_BANDS = 1024;
+    private static final int DEFAULT_SPECTRUM_NUM_BANDS = 800;
     private static final int DEFAULT_SPECTRUM_THRESHOLD = -60; // dB
 
     // The audio properties
@@ -32,7 +32,7 @@ public class Spectrum implements AudioSpectrumListener {
     @Override
     public void spectrumDataUpdate(double timestamp, double duration, float[] magnitudes, float[] phases) {
         GaussianSmooth.gaussianSmooth(magnitudes, audioData, magnitudes.length);
-        for(int i = 0;i < 2;i++) {
+        for(int i = 0;i < 3;i++) {
             GaussianSmooth.gaussianSmooth(audioData, audioData, magnitudes.length);
         }
     }

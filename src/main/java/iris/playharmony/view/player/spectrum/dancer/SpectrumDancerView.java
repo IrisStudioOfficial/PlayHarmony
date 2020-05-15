@@ -6,9 +6,9 @@ import iris.playharmony.view.player.spectrum.SpectrumUpdatable;
 import javafx.animation.Interpolator;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Bounds;
-import javafx.scene.effect.*;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.*;
@@ -65,55 +65,45 @@ public class SpectrumDancerView extends AnchorPane implements SpectrumUpdatable 
 
         float average = getAverage(audioData, spectrum.getNumBands());
 
-        songImageFrame.setRadius(beat * 0.2 + MIN_RADIUS);
+        Interpolator interpolator = Interpolator.LINEAR;
 
-        Interpolator interpolator = Interpolator.EASE_BOTH;
+        final double interpolationStep = 0.5;
 
-        final double interpolationStep = 0.8;
+        songImageFrame.setRadius(interpolator.interpolate(songImageFrame.getRadius(), beat * 0.5 + MIN_RADIUS, 0.8));
 
         final float minRadius = (float) songImageFrame.getRadius();
 
-        float size = beat + minRadius;
+        float size = minRadius * 0.75f;
 
-        /*
+        final float center = spectrum.getAudioMagnitude(spectrum.getNumBands() / 2);
 
-        if(beat >= 50) {
-            size *= 1.5f;
-        }
-
-        if(beat >= 70) {
-            size *= 2.0;
-        }
-
-         */
-
-        for(int i = 0, j = 0;i < MAX_DANCER_ARC_COUNT;i++, j+=2) {
+        for(int i = 0, j = 0;i < MAX_DANCER_ARC_COUNT;i++, j++) {
 
             final float magX = spectrum.getAudioMagnitude(j);
-            final float magY = spectrum.getAudioMagnitude(j + 1);
+            final float magY = spectrum.getAudioMagnitude(j * 10);
 
             Arc arc = arcs.get(i);
 
             final double oldRotate = arc.getRotate();
 
-            final double rx = interpolator.interpolate(arc.getRadiusX(), size + i + magX, interpolationStep);
-            final double ry = interpolator.interpolate(arc.getRadiusY(), size + i + magY, interpolationStep);
+            double rx = interpolator.interpolate(arc.getRadiusX(), beat + size + i + magX, interpolationStep);
+            double ry = interpolator.interpolate(arc.getRadiusY(), center + size + i + magY, interpolationStep);
 
             double rotate = oldRotate;
 
             if(viewModel.getMusicPlayer().getStatus() == PLAYING) {
-                rotate = interpolator.interpolate(oldRotate, oldRotate + average + (i + 1), 0.1);
+                rotate = interpolator.interpolate(oldRotate, oldRotate + 0.1 * (beat / Math.max(1, average)) * (0.1 + i), 0.25);
             }
 
-            arc.setRadiusX(Math.max(rx, minRadius + 1));
-            arc.setRadiusY(Math.max(ry, minRadius + 1));
+            arc.setRadiusX(rx);
+            arc.setRadiusY(ry);
             arc.setRotate(rotate);
         }
     }
 
     private float getAverage(float[] audioData, int count) {
         return (float) IntStream.range(0, count)
-                .mapToDouble(i -> audioData[i])
+                .mapToDouble(i -> audioData[i] + 60)
                 .average().getAsDouble();
     }
 
@@ -144,7 +134,7 @@ public class SpectrumDancerView extends AnchorPane implements SpectrumUpdatable 
         arc.setStrokeLineJoin(StrokeLineJoin.MITER);
         arc.setStrokeDashOffset(2);
 
-        // arc.setEffect(new DropShadow());
+        arc.setEffect(new BoxBlur());
 
         getChildren().add(arc);
 

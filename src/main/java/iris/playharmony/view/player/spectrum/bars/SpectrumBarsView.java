@@ -15,7 +15,7 @@ public class SpectrumBarsView extends AnchorPane implements SpectrumUpdatable {
     private static final float BAR_HEIGHT = 1;
     private static final float BAR_SEPARATION = 10.5f;
 
-    private static final double INTERPOLATION_STEP = 0.35;
+    private static final double INTERPOLATION_STEP = 0.45;
 
 
     private final SpectrumBarGroup bars;

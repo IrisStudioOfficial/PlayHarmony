@@ -76,7 +76,7 @@ public class PlayHarmony extends Application {
 
         Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
 
-        Song song = SongFactory.createSongFromFolder(Resources.get("songs/Roses"));
+        Song song = SongFactory.createSongFromFolder(Resources.get("songs/SpinningOverYou"));
 
         MusicPlayerViewModel viewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
 
@@ -86,9 +86,9 @@ public class PlayHarmony extends Application {
 
         viewModel.setSong(song);
 
-        // musicPlayer.play();
+        musicPlayer.play();
 
-        musicPlayer.play(MediaFactory.getMedia("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\[DnB] - Tristam  Braken - Frame of Mind [Monstercat Release].mp3.crdownload"));
+        // musicPlayer.play(MediaFactory.getMedia("G:\\Eclipse\\JWorkspace\\MusicPlayerFX\\Reyko - Spinning Over You (1).mp3"));
     }
 
     private void createScene() {
