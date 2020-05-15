@@ -63,7 +63,8 @@ public class SongTimeView extends HBox {
         });
 
         musicPlayer.totalDurationProperty().addListener((observable, oldValue, newValue) -> {
-            slider.setMax(newValue.toSeconds());
+            if(newValue != null)
+                slider.setMax(newValue.toSeconds());
         });
 
         musicPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {

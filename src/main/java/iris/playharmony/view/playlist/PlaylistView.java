@@ -5,17 +5,27 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
+import iris.playharmony.model.SongPlayMode;
+import iris.playharmony.model.player.MusicPlayer;
+import iris.playharmony.model.player.Spectrum;
 import iris.playharmony.session.Session;
 import iris.playharmony.util.OnRefresh;
+import iris.playharmony.view.player.MusicPlayerView;
+import iris.playharmony.view.player.MusicPlayerViewModel;
 import iris.playharmony.view.util.*;
+import javafx.animation.Interpolator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
+
+import java.util.List;
+import java.util.Random;
 
 public class PlaylistView extends VBox {
 
@@ -24,7 +34,10 @@ public class PlaylistView extends VBox {
 
     private TableView songsTable;
     private Pagination pagination;
-    private Label playModeLabel;
+    private MusicPlayerViewModel musicPlayerViewModel;
+    private SongPlayMode songPlayMode = SongPlayMode.getDefault();
+
+    int index = 0;
 
     private static int SPACING = 15;
 
@@ -60,10 +73,9 @@ public class PlaylistView extends VBox {
 
         add(ButtonFactory.button("Add Song", event -> addSong()));
         add(ButtonFactory.button("Delete Song", event -> deleteSong()));
-        add(ButtonFactory.button("Change Song Play Mode", event -> changeSongPlayMode()));
-
-        add(playModeLabel = TextFactory.label("Song Play Mode: " + playlist.getSongPlayMode().toString(), DefaultStyle.label()));
+        add(ButtonFactory.button("Play Song", this::playSong));
     }
+
 
     private void add(Node node) {
         getChildren().add(node);
@@ -87,15 +99,70 @@ public class PlaylistView extends VBox {
         }
     }
 
-    private void changeSongPlayMode() {
-        playlist.changeSongPlayMode();
-        playModeLabel.setText("Song Play Mode: " + playlist.getSongPlayMode().toString());
-    }
 
     @OnRefresh
     public void refresh() {
         songs = getSongs();
         TableFactory.updateTable(songs, songsTable);
         TableFactory.updatePagination(songs, songsTable, pagination);
+    }
+
+    private void playSong(ActionEvent actionEvent) {
+        MusicPlayer musicPlayer = new MusicPlayer();
+        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
+        ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
+        Song song;
+        if (selectedItem == null)
+            song = playlist.getSongList().get(0);
+        else
+            song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
+
+        musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
+        musicPlayerViewModel.setSong(song);
+
+        musicPlayerViewModel.nextSongTriggeredProperty().addListener((a, b, c) -> nextSong());
+        musicPlayerViewModel.previousSongTriggeredProperty().addListener((a, b, c) -> previousSong());
+        musicPlayerViewModel.songPlayModeProperty().addListener((observable, oldValue, newValue) -> songPlayMode = newValue);
+        NavController.get().pushView(new MusicPlayerView(musicPlayerViewModel));
+        musicPlayer.play();
+    }
+
+
+    public void nextSong() {
+        switch(songPlayMode) {
+            case SEQUENTIAL:
+                index++;
+                if(index >= playlist.getSongList().size())
+                    index = 0;
+
+                break;
+            case RANDOM:
+                index = new Random().nextInt(playlist.getSongList().size());
+                break;
+            case SELF:
+                break;
+        }
+
+        musicPlayerViewModel.setSong(playlist.getSongList().get(index));
+        musicPlayerViewModel.getMusicPlayer().play();
+    }
+
+    public void previousSong() {
+        switch(songPlayMode) {
+            case SEQUENTIAL:
+                index--;
+                if(index < 0)
+                    index = playlist.getSongList().size() - 1;
+
+                break;
+            case RANDOM:
+                index = new Random().nextInt(playlist.getSongList().size());
+                break;
+            case SELF:
+                break;
+        }
+
+        musicPlayerViewModel.setSong(playlist.getSongList().get(index));
+        musicPlayerViewModel.getMusicPlayer().play();
     }
 }

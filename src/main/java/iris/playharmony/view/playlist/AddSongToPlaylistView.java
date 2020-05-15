@@ -1,17 +1,24 @@
 package iris.playharmony.view.playlist;
 
 import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
+import iris.playharmony.model.player.MusicPlayer;
+import iris.playharmony.model.player.Spectrum;
 import iris.playharmony.session.Session;
 import iris.playharmony.util.OnRefresh;
+import iris.playharmony.view.player.MusicPlayerView;
+import iris.playharmony.view.player.MusicPlayerViewModel;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TableFactory;
 import iris.playharmony.view.util.TextFactory;
+import javafx.animation.Interpolator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Pagination;
@@ -48,6 +55,7 @@ public class AddSongToPlaylistView extends VBox {
         add(pagination = TableFactory.pagination(songs, songsTable));
 
         add(ButtonFactory.button("Add Song", event -> addSongs()));
+        add(ButtonFactory.button("Play Song", this::playSong));
     }
 
     private void add(Node node) {
@@ -82,5 +90,18 @@ public class AddSongToPlaylistView extends VBox {
     public void refresh() {
         TableFactory.updateTable(songs, songsTable);
         TableFactory.updatePagination(songs, songsTable, pagination);
+    }
+
+    private void playSong(ActionEvent actionEvent) {
+        MusicPlayer musicPlayer = new MusicPlayer();
+        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
+        ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
+        Song song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
+
+        MusicPlayerViewModel musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
+        musicPlayerViewModel.setSong(song);
+
+        NavController.get().pushView(new MusicPlayerView(musicPlayerViewModel));
+        musicPlayer.play();
     }
 }

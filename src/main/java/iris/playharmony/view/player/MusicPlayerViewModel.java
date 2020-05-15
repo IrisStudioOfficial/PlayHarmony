@@ -20,6 +20,9 @@ public class MusicPlayerViewModel {
     private final StringProperty songTitleProperty;
     private final ObjectProperty<Image> songImageProperty;
     private final ObjectProperty<SongPlayMode> songPlayModeProperty;
+    private final IntegerProperty previousSongTriggeredProperty;
+    private final IntegerProperty nextSongTriggeredProperty;
+
 
     public MusicPlayerViewModel(MusicPlayer musicPlayer, Spectrum spectrum) {
 
@@ -35,6 +38,8 @@ public class MusicPlayerViewModel {
         songTitleProperty = new SimpleStringProperty();
         songImageProperty = new SimpleObjectProperty<>();
         songPlayModeProperty = new SimpleObjectProperty<>(SongPlayMode.getDefault());
+        previousSongTriggeredProperty = new SimpleIntegerProperty();
+        nextSongTriggeredProperty = new SimpleIntegerProperty();
     }
 
     public Song getSong() {
@@ -48,8 +53,8 @@ public class MusicPlayerViewModel {
     public void setSong(Song song) {
         songProperty.set(song);
         songTitleProperty.set(song.getTitle());
-        songImageProperty.set(ImageFactory.loadFromFile(Resources.get(song.getPhoto())));
-        musicPlayer.setSong(MediaFactory.getMedia(Resources.get(song.getPathFile())));
+        songImageProperty.set(ImageFactory.loadFromFile(song.getPhoto()));
+        musicPlayer.setSong(MediaFactory.getMedia(song.getPathFile()));
     }
 
     public String getSongTitle() {
@@ -78,5 +83,13 @@ public class MusicPlayerViewModel {
 
     public Spectrum getSpectrum() {
         return spectrum;
+    }
+
+    public IntegerProperty previousSongTriggeredProperty() {
+        return previousSongTriggeredProperty;
+    }
+
+    public IntegerProperty nextSongTriggeredProperty() {
+        return nextSongTriggeredProperty;
     }
 }
