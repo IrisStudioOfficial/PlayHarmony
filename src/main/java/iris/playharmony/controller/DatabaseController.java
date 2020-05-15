@@ -12,6 +12,7 @@ import iris.playharmony.model.*;
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DatabaseController {
@@ -56,9 +57,10 @@ public class DatabaseController {
                         }
                     }
 
-                    ArrayList<Playlist> list = new Gson().fromJson(rs.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
+                    List<Playlist> list = new Gson().fromJson(rs.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
+                    list = list == null ? new ArrayList<>() : list;
 
-                    userList.add(new User(image.getAbsoluteFile(), rs.getString("NAME"), rs.getString("SURNAME"), rs.getString("CATEGORY"), Role.getRoleFrom(rs.getString("USER_ROLE")), new Email(rs.getString("EMAIL")),list));
+                    userList.add(new User(image.getAbsoluteFile(), rs.getString("NAME"), rs.getString("SURNAME"), rs.getString("CATEGORY"), Role.getRoleFrom(rs.getString("USER_ROLE")), new Email(rs.getString("EMAIL")), list));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

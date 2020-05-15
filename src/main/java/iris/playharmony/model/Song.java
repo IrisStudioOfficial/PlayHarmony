@@ -1,5 +1,7 @@
 package iris.playharmony.model;
 
+import java.util.Objects;
+
 public class Song {
 
     private String title;
@@ -61,5 +63,18 @@ public class Song {
 
     public String getPathFile() {
         return pathFile;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Song song = (Song) o;
+        return title.equals(song.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title);
     }
 }

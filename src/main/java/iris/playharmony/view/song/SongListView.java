@@ -38,13 +38,6 @@ public abstract class SongListView extends VBox {
 
     protected abstract void initElements();
 
-    /*protected TableView updateTableViewData() {
-        data = getSongs(Comparator.comparing(o -> o.title().get()));
-        TableFactory.updateTable(data, songsTable);
-        TableFactory.updatePagination(data, songsTable, pagination);
-        return songsTable;
-    }*/
-
     protected ObservableList<ObservableSong> getSongs(Comparator<ObservableSong> comparator) {
         data = FXCollections.observableArrayList();
         new DatabaseController()

@@ -1,6 +1,7 @@
 package iris.playharmony.controller;
 
 import iris.playharmony.util.OnFinish;
+import iris.playharmony.util.OnRefresh;
 import iris.playharmony.util.Singleton;
 import iris.playharmony.view.NavigationView;
 import javafx.scene.Parent;
@@ -61,6 +62,10 @@ public class NavController implements Iterable<Parent> {
 
         if(currentView != null) {
             callAnnotatedMethod(currentView, OnFinish.class);
+        }
+
+        if(getCurrentView() != null) {
+            callAnnotatedMethod(getCurrentView(), OnRefresh.class);
         }
 
         return Optional.ofNullable(currentView);

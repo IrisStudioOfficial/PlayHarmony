@@ -1,9 +1,11 @@
 package iris.playharmony.view.playlist;
 
+import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
+import iris.playharmony.session.Session;
 import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.util.*;
 import javafx.collections.FXCollections;
@@ -14,8 +16,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
-
-import java.util.Iterator;
 
 public class PlaylistView extends VBox {
 
@@ -76,17 +76,13 @@ public class PlaylistView extends VBox {
     private void deleteSong() {
         ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
-            Iterator<Song> iterator = playlist.getSongList().iterator();
-            while (iterator.hasNext()) {
-                Song song = iterator.next();
-                if(song.getTitle().equals(selectedItem.getTitle())) {
-                    if(AlertFactory.confirmAlert("Remove Song", "Do you want to delete the song?")) {
-                        iterator.remove();
-                        songs.remove(selectedItem);
-                        TableFactory.updateTable(songs, songsTable);
-                        TableFactory.updatePagination(songs, songsTable, pagination);
-                    }
-                }
+            if(AlertFactory.confirmAlert("Remove Song", "Do you want to delete the song?")) {
+                Song sonPrueba = new DatabaseController().getSongs().stream()
+                        .filter(song -> song.getTitle().equals(selectedItem.getTitle()))
+                        .findAny().get();
+                playlist.deleteSong(sonPrueba);
+                new DatabaseController().addPlayList(playlist, Session.getSession().currentUser());
+                refresh();
             }
         }
     }

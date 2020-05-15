@@ -32,7 +32,7 @@ public class Playlist {
     }
 
     public boolean addSong(Song song) {
-        if(!songList.stream().anyMatch(songPlaylist -> songPlaylist.getTitle().equals(song.getTitle()))) {
+        if(!songList.contains(song)) {
             return songList.add(song);
         }
 
@@ -40,11 +40,7 @@ public class Playlist {
     }
 
     public boolean deleteSong(Song song) {
-        if(songList.stream().anyMatch(songPlaylist -> songPlaylist.getTitle().equals(song.getTitle()))) {
-            return songList.remove(song);
-        }
-
-        return false;
+        return songList.remove(song);
     }
 
     public int getSize() {
