@@ -53,8 +53,7 @@ public class AdminSongListView extends SongListView {
             return;
         if (!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
             AlertFactory.errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
-        updateTableViewData();
-        TableFactory.updatePagination(data, songsTable, pagination);
+        refresh();
     }
 }
 
