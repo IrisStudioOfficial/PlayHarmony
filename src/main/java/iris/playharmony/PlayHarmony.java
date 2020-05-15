@@ -1,7 +1,8 @@
 package iris.playharmony;
 
-
+import iris.playharmony.controller.NavController;
 import iris.playharmony.view.MainView;
+import iris.playharmony.view.main.LobbyView;
 import javafx.application.Application;
 import javafx.scene.DepthTest;
 import javafx.scene.Parent;
@@ -56,6 +57,8 @@ public class PlayHarmony extends Application {
         primaryStage.setScene(scene);
 
         primaryStage.setMaximized(true);
+
+        NavController.get().pushView(new LobbyView());
 
         primaryStage.show();
     }
