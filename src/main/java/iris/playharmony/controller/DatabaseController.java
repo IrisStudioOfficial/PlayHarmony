@@ -167,7 +167,7 @@ public class DatabaseController {
             pst.setString(2, song.getAuthor());
 
             try (FileInputStream fis = new FileInputStream(song.getPhoto())) {
-                pst.setBinaryStream(3, fis, (int)song.getPhoto().length());
+                pst.setBinaryStream(3, fis, (int)new File(song.getPhoto()).length());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -217,7 +217,7 @@ public class DatabaseController {
                             .setDate(rs.getString("PUBLICATION"))
                             .setPathFile(rs.getString("PATHFILE"))
                             .setAuthor(rs.getString("AUTHOR"))
-                            .setPhoto(image.toString())
+                            .setPhoto(image.getAbsolutePath())
                     );
             }
         } catch(Exception e) {
