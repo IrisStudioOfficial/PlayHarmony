@@ -92,7 +92,7 @@ public class SpectrumDancerView extends AnchorPane implements SpectrumUpdatable 
             double rotate = oldRotate;
 
             if(viewModel.getMusicPlayer().getStatus() == PLAYING) {
-                rotate = interpolator.interpolate(oldRotate, oldRotate + 0.1 * (beat / Math.max(1, average)) * (0.1 + i), 0.25);
+                rotate = interpolator.interpolate(oldRotate, oldRotate + 0.1 * (beat / Math.max(1, average)) * (0.1 + i), 0.2);
             }
 
             arc.setRadiusX(rx);

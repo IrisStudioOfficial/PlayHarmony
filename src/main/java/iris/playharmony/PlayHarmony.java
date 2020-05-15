@@ -5,7 +5,6 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Song;
 import iris.playharmony.model.player.MusicPlayer;
 import iris.playharmony.model.player.Spectrum;
-import iris.playharmony.util.MediaFactory;
 import iris.playharmony.util.Resources;
 import iris.playharmony.util.SongFactory;
 import iris.playharmony.view.MainView;
