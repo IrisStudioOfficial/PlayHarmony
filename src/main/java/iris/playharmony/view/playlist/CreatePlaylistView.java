@@ -37,6 +37,7 @@ public class CreatePlaylistView extends VBox {
         getChildren().add(node);
         return node;
     }
+    
 
     private void createPlayList() {
         Playlist playlist = new Playlist(namePlayList.getText());
