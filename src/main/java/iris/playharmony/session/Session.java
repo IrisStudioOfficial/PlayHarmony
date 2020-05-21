@@ -4,15 +4,19 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.model.User;
 
 public class Session {
-    private User user;
+
     private static Session session;
 
     public static Session getSession() {
 
-        if(session == null)
+        if(session == null) {
             session = new Session();
+        }
+
         return session;
     }
+
+    private User user;
 
     private Session() {
         this.user = new DatabaseController().getUsers().stream()

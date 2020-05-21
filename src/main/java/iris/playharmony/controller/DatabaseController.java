@@ -40,6 +40,7 @@ public class DatabaseController {
     }
 
     public List<User> getUsers() {
+
         List<User> userList = new ArrayList<>();
 
         String sql = "SELECT * FROM USERS";
