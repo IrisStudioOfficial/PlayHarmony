@@ -19,12 +19,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 
-import java.util.List;
 import java.util.Random;
 
 public class PlaylistView extends VBox {
@@ -89,16 +87,15 @@ public class PlaylistView extends VBox {
         ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
             if(AlertFactory.confirmAlert("Remove Song", "Do you want to delete the song?")) {
-                Song sonPrueba = new DatabaseController().getSongs().stream()
+                Song songPrueba = new DatabaseController().getSongs().stream()
                         .filter(song -> song.getTitle().equals(selectedItem.getTitle()))
                         .findAny().get();
-                playlist.deleteSong(sonPrueba);
+                playlist.deleteSong(songPrueba);
                 new DatabaseController().addPlayList(playlist, Session.getSession().currentUser());
                 refresh();
             }
         }
     }
-
 
     @OnRefresh
     public void refresh() {
