@@ -1,6 +1,6 @@
 package iris.playharmony.view.playlist;
 
-import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.User;

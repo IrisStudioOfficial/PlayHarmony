@@ -1,10 +1,9 @@
-package iris.playharmony.controller;
+package iris.playharmony.controller.db;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import iris.playharmony.controller.handler.PathHandler;
 import iris.playharmony.exceptions.CreateUserException;
-import iris.playharmony.exceptions.EmailException;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.exceptions.UpdateUserException;
 import iris.playharmony.model.*;
@@ -12,10 +11,9 @@ import iris.playharmony.model.*;
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class DatabaseController {
+public class DatabaseController implements IUserDatabaseController, ISongDatabaseController {
 
     private static Connection connection;
 
@@ -39,6 +37,7 @@ public class DatabaseController {
         }
     }
 
+    @Override
     public List<User> getUsers() {
 
         List<User> userList = new ArrayList<>();
@@ -71,6 +70,7 @@ public class DatabaseController {
         return userList;
     }
 
+    @Override
     public boolean addUser(User user) throws CreateUserException {
         if(user.getName().equals("") || user.getSurname().equals("") || user.getCategory().equals(""))
             throw new CreateUserException();
@@ -101,6 +101,7 @@ public class DatabaseController {
         return false;
     }
 
+    @Override
     public boolean updateUser(User user, String key) throws UpdateUserException {
         if(user.getName().equals("") || user.getSurname().equals("") || user.getCategory().equals(""))
             throw new UpdateUserException();
@@ -140,6 +141,7 @@ public class DatabaseController {
         return false;
     }
 
+    @Override
     public boolean removeUser(String key) throws RemoveUserException {
         if(key == null || key.equals(""))
             throw new RemoveUserException();
@@ -160,6 +162,7 @@ public class DatabaseController {
         return false;
     }
 
+    @Override
     public boolean addSong(Song song){
         String sql = "INSERT INTO SONGS (title, author, photo, publication, pathFile) VALUES(?,?,?,?,?)";
 
@@ -183,6 +186,7 @@ public class DatabaseController {
         return false;
     }
 
+    @Override
     public boolean deleteSong(Song song){
         String sql = "DELETE FROM SONGS WHERE title = ?";
 
@@ -196,6 +200,7 @@ public class DatabaseController {
     }
 
 
+    @Override
     public List<Song> getSongs() {
         List<Song> songList = new ArrayList<>();
 
@@ -228,6 +233,7 @@ public class DatabaseController {
         return songList;
     }
 
+    @Override
     public boolean addPlayList(Playlist updatedPlaylist, User user){
         user.getPlayLists().removeIf(playlist -> playlist.getName().equals(updatedPlaylist.getName()));
         user.addPlayList(updatedPlaylist);

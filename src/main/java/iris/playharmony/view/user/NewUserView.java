@@ -1,9 +1,8 @@
 package iris.playharmony.view.user;
 
-import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.CreateUserException;
-import iris.playharmony.exceptions.EmailException;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Role;

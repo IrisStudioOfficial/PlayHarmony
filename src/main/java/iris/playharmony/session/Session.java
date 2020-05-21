@@ -1,6 +1,6 @@
 package iris.playharmony.session;
 
-import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.User;
 
 public class Session {

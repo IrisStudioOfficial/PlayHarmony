@@ -3,6 +3,7 @@ package iris.playharmony.model;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class User {
     
@@ -13,6 +14,7 @@ public class User {
     private Role role;
     private Email email;
     private List<Playlist> playLists;
+    private String password;
 
     public User() {}
 
@@ -86,5 +88,32 @@ public class User {
 
     public void addPlayList(Playlist playlist){
         playLists.add(playlist);
+    }
+
+    public User setPlayLists(List<Playlist> playLists) {
+        this.playLists = playLists;
+        return this;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public User setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return email.equals(user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
     }
 }

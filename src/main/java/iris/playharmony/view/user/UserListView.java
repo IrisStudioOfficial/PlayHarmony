@@ -1,6 +1,6 @@
 package iris.playharmony.view.user;
 
-import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.ObservableUser;

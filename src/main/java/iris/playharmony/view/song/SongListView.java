@@ -1,6 +1,6 @@
 package iris.playharmony.view.song;
 
-import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.util.ButtonFactory;
