@@ -11,7 +11,7 @@ import javafx.scene.SceneAntialiasing;
 import javafx.stage.Stage;
 
 import java.util.concurrent.atomic.AtomicReference;
-
+// Con ganas de trabajar :)
 public class PlayHarmony extends Application {
 
     public static final int DEFAULT_WIDTH = 1280;
