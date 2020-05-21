@@ -1,8 +1,8 @@
 package iris.playharmony.view.main;
 
 import iris.playharmony.controller.NavController;
-import iris.playharmony.view.song.AdminSongListView;
-import iris.playharmony.view.user.UserListView;
+import iris.playharmony.view.admin.song.AdminSongListView;
+import iris.playharmony.view.admin.user.UserListView;
 import iris.playharmony.view.util.ButtonFactory;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
