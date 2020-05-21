@@ -1,19 +1,24 @@
 package iris.playharmony.view.song;
 
+import com.google.gson.Gson;
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
+import iris.playharmony.controller.handler.PathHandler;
 import iris.playharmony.model.ObservableSong;
+import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
-import iris.playharmony.model.player.MusicPlayer;
-import iris.playharmony.model.player.Spectrum;
-import iris.playharmony.view.player.MusicPlayerView;
-import iris.playharmony.view.player.MusicPlayerViewModel;
+import iris.playharmony.model.User;
+import iris.playharmony.session.Session;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TableFactory;
 import iris.playharmony.view.util.TextFactory;
-import javafx.animation.Interpolator;
 import javafx.event.ActionEvent;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class UserSongListView extends SongListView {
 
@@ -34,26 +39,50 @@ public class UserSongListView extends SongListView {
 
         add(pagination = TableFactory.pagination(data, songsTable));
         add(ButtonFactory.button("Add To Playlist", this::selectPlaylist));
+        add(ButtonFactory.button("Add To Favourites", this::addToFavourites));
         add(ButtonFactory.button("Play song", this::playSong));
     }
 
-    private void playSong(ActionEvent actionEvent) {
-        MusicPlayer musicPlayer = new MusicPlayer();
-        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
+    private void addToFavourites(ActionEvent actionEvent) {
+        Playlist favourites = Session.getSession().currentUser().favourites();
+        favourites = favourites == null ? new Playlist("Favourites") : favourites;
+
         ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
-        Song song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
+        Song toBeAdded = new DatabaseController().getSongs().stream()
+                .filter(song -> song.getTitle().equals(selectedItem.getTitle()))
+                .findAny().get();
 
-        MusicPlayerViewModel musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
-        musicPlayerViewModel.setSong(song);
-
-        NavController.get().pushView(new MusicPlayerView(musicPlayerViewModel));
-        musicPlayer.play();
+        favourites.addSong(toBeAdded);
+        addFavourites(favourites, Session.getSession().currentUser());
     }
 
-    private void selectPlaylist(ActionEvent event) {
+    protected void selectPlaylist(ActionEvent event) {
         ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null)
             NavController.get().pushView(new SelectPlaylistView(selectedItem.getTitle()));
+    }
+
+    public boolean addFavourites(Playlist favourites, User user) {
+        Connection connection = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            String url = "jdbc:sqlite:" + PathHandler.DATABASE_PATH;
+            connection = DriverManager.getConnection(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        user.favourites(favourites);
+
+        String sql = "UPDATE USERS SET FAVOURITES = ? WHERE EMAIL = ?";
+        try(PreparedStatement pst = connection.prepareStatement(sql)){
+            pst.setString(1, new Gson().toJson(user.favourites()));
+            pst.setString(2, user.getEmail().toString());
+            return pst.executeUpdate() == 1;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
 
