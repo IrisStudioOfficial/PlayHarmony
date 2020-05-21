@@ -1,19 +1,28 @@
 package iris.playharmony.model;
 
+import iris.playharmony.controller.db.DBAttribute;
+
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class User {
-    
+
+    // @DBAttribute(index = 1) We set binary, not string
     private File photo;
+    @DBAttribute(index = 2)
     private String name;
+    @DBAttribute(index = 3)
     private String surname;
+    @DBAttribute(index = 4)
     private String category;
+    @DBAttribute(index = 5)
     private Role role;
+    @DBAttribute(index = 6)
     private Email email;
+    @DBAttribute(index = 7)
     private List<Playlist> playLists;
+    @DBAttribute(index = 8)
     private String password;
 
     public User() {}

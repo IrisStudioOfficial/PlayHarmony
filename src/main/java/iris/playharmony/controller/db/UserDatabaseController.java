@@ -3,32 +3,40 @@ package iris.playharmony.controller.db;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import iris.playharmony.controller.handler.PathHandler;
-import iris.playharmony.exceptions.RemoveUserException;
-import iris.playharmony.exceptions.UpdateUserException;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import iris.playharmony.util.FileUtils;
+import iris.playharmony.util.Resources;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class UserDatabaseController extends AbstractDatabaseController implements IUserDatabaseController {
 
-    public static final String SQL_QUERY_SELECT_ALL_USERS = "SELECT * FROM USERS";
+    private static final String SQL_QUERY_SELECT_ALL_USERS = "SELECT * FROM USERS";
 
-    public static final String SQL_QUERY_INSERT_NEW_USER = "INSERT INTO USERS (PHOTO, NAME, SURNAME, CATEGORY, USER_ROLE, EMAIL) VALUES (?, ?, ?, ?, ?, ?)";
-    public static final String SQL_QUERY_UPDATE_USER = "UPDATE USERS SET PHOTO = ?, NAME = ?, SURNAME = ?, CATEGORY = ?, USER_ROLE = ?, EMAIL = ? " +
+    private static final String SQL_QUERY_INSERT_NEW_USER = "INSERT INTO USERS (PHOTO, NAME, SURNAME, CATEGORY, USER_ROLE, EMAIL)" +
+            " VALUES (?, ?, ?, ?, ?, ?)";
+
+    private static final String SQL_QUERY_UPDATE_USER = "UPDATE USERS SET" +
+            " PHOTO = ?," +
+            " NAME = ?," +
+            " SURNAME = ?," +
+            " CATEGORY = ?," +
+            " USER_ROLE = ?," +
+            " EMAIL = ? " +
             "WHERE EMAIL = ?";
+
+    public static final String SQL_QUERY_REMOVE_USER_BY_EMAIL = "DELETE FROM USERS" +
+            " WHERE email = ?";
 
 
     @Override
@@ -86,12 +94,9 @@ public class UserDatabaseController extends AbstractDatabaseController implement
 
                 FileUtils.readFileBinary(photo, inputStream -> statement.setBinaryStream(1, inputStream, (int)photo.length()));
 
-                statement.setString(2, user.getName());
-                statement.setString(3, user.getSurname());
-                statement.setString(4, user.getCategory());
-                statement.setString(5, user.getRole().toString());
-                statement.setString(6, user.getEmail().toString());
-                statement.setString(8, user.getPassword());
+                DBObjectSerializer serializer = new DBObjectSerializer();
+
+                serializer.serialize(user, statement);
 
                 statement.executeUpdate();
 
@@ -126,57 +131,62 @@ public class UserDatabaseController extends AbstractDatabaseController implement
 
                 File photo = user.getPhoto();
 
+                final int photoIndex = 1;
+
                 if(photo != null) {
 
-                    FileUtils.readFileBinary(photo, inputStream -> statement.setBinaryStream(1, inputStream, (int)photo.length()));
+                    FileUtils.readFileBinary(photo, inputStream -> statement.setBinaryStream(photoIndex, inputStream, (int)photo.length()));
 
                 } else {
 
-                    try (InputStream fis = getClass().getResourceAsStream("/" + PathHandler.DEFAULT_PHOTO_PATH)) {
-                        ps.setBinaryStream(1, fis, fis.available());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    File defaultPhoto = new File(Resources.get(PathHandler.DEFAULT_PHOTO_PATH));
 
+                    FileUtils.readFileBinary(defaultPhoto, inputStream -> statement.setBinaryStream(photoIndex, inputStream, inputStream.available()));
                 }
 
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getSurname());
-                ps.setString(4, user.getCategory());
-                ps.setString(5, user.getRole().toString());
-                ps.setString(6, user.getEmail().toString());
-                ps.setString(7, key);
+                DBObjectSerializer serializer = new DBObjectSerializer();
 
-                ps.executeUpdate();
+                serializer.serialize(user, statement);
 
-                close(ps);
+                statement.executeUpdate();
+
                 return true;
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+
         return false;
     }
 
     @Override
-    public boolean removeUser(String key) throws RemoveUserException {
-        if(key == null || key.equals(""))
-            throw new RemoveUserException();
-        if (getUsers().stream().anyMatch(databaseUser -> databaseUser.getEmail().toString().equals(key))) {
-            try {
-                String sql = "DELETE FROM USERS WHERE email = ?";
-                PreparedStatement ps = connection.prepareStatement(sql);
-                ps.setString(1, key);
+    public boolean removeUser(String userEmail) {
 
-                ps.executeUpdate();
+        if(userEmail == null || userEmail.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
 
-                close(ps);
+        if(userExists(userEmail)) {
+
+            try(PreparedStatement statement = getDBConnection().prepareStatement(SQL_QUERY_REMOVE_USER_BY_EMAIL)) {
+
+                statement.setString(1, userEmail);
+
+                statement.executeUpdate();
+
                 return true;
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+
         return false;
+    }
+
+    private boolean userExists(String userEmail) {
+        return getUsers().stream().anyMatch(user -> Objects.equals(user.getEmail(), userEmail));
     }
 
 }
