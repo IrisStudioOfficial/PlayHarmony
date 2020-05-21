@@ -1,8 +1,16 @@
 package iris.playharmony;
 
 import iris.playharmony.controller.NavController;
+import iris.playharmony.model.Song;
+import iris.playharmony.model.player.MusicPlayer;
+import iris.playharmony.model.player.Spectrum;
+import iris.playharmony.util.Resources;
+import iris.playharmony.util.SongFactory;
 import iris.playharmony.view.MainView;
 import iris.playharmony.view.main.LobbyView;
+import iris.playharmony.view.player.MusicPlayerView;
+import iris.playharmony.view.player.MusicPlayerViewModel;
+import javafx.animation.Interpolator;
 import javafx.application.Application;
 import javafx.scene.DepthTest;
 import javafx.scene.Parent;
@@ -60,8 +68,30 @@ public class PlayHarmony extends Application {
 
         NavController.get().pushView(new LobbyView());
 
+        showMusicPlayerView();
+
         primaryStage.show();
     }
+
+    private void showMusicPlayerView() {
+
+        MusicPlayer musicPlayer = new MusicPlayer();
+
+        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
+
+        Song song = SongFactory.createSongFromFolder(Resources.get("songs/Roses"));
+
+        MusicPlayerViewModel viewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
+
+        MusicPlayerView view = new MusicPlayerView(viewModel);
+
+        NavController.get().pushView(view);
+
+        viewModel.setSong(song);
+
+        musicPlayer.play();
+    }
+
 
     private void createScene() {
 

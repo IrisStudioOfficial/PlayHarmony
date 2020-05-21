@@ -15,6 +15,7 @@ public class ObservableSong {
     private SimpleStringProperty path = new SimpleStringProperty();
 
     public ObservableSong photo(String photo) {
+        System.out.println(new File(photo).toURI().toString());
         this.photo = new ImageView(new Image(new File(photo).toURI().toString(), 100, 100, false, false));
         return this;
     }
