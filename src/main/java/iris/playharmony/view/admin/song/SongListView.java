@@ -1,12 +1,20 @@
 package iris.playharmony.view.admin.song;
 
 import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
+import iris.playharmony.model.Song;
+import iris.playharmony.model.player.MusicPlayer;
+import iris.playharmony.model.player.Spectrum;
 import iris.playharmony.util.OnRefresh;
+import iris.playharmony.view.player.MusicPlayerView;
+import iris.playharmony.view.player.MusicPlayerViewModel;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.TableFactory;
+import javafx.animation.Interpolator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Pagination;
@@ -84,5 +92,18 @@ public abstract class SongListView extends VBox {
         data = getSongs(Comparator.comparing(o -> o.title().get()));
         TableFactory.updateTable(data, songsTable);
         TableFactory.updatePagination(data, songsTable, pagination);
+    }
+
+    protected void playSong(ActionEvent actionEvent) {
+        MusicPlayer musicPlayer = new MusicPlayer();
+        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
+        ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
+        Song song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
+
+        MusicPlayerViewModel musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
+        musicPlayerViewModel.setSong(song);
+
+        NavController.get().pushView(new MusicPlayerView(musicPlayerViewModel));
+        musicPlayer.play();
     }
 }
