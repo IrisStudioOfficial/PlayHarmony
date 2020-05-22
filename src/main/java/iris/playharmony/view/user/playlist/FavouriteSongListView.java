@@ -2,9 +2,7 @@ package iris.playharmony.view.user.playlist;
 
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
-import iris.playharmony.model.ObservableSong;
-import iris.playharmony.model.Song;
-import iris.playharmony.model.User;
+import iris.playharmony.model.*;
 import iris.playharmony.model.player.MusicPlayer;
 import iris.playharmony.model.player.Spectrum;
 import iris.playharmony.session.Session;
@@ -26,12 +24,17 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 import java.util.Comparator;
+import java.util.Random;
 
 public class FavouriteSongListView extends ListTemplate {
 
     private TextField searchField;
     private ObservableList<ObservableSong> data;
     private Comparator<ObservableSong> comparator;
+    private MusicPlayerViewModel musicPlayerViewModel;
+    private SongPlayMode songPlayMode = SongPlayMode.getDefault();
+
+    int index = 0;
 
     public FavouriteSongListView() {
         super("User favorite songs");
@@ -115,10 +118,6 @@ public class FavouriteSongListView extends ListTemplate {
         TableFactory.updatePagination(data, table, pagination);
     }
 
-    private void playAll(ActionEvent actionEvent) {
-        actionEvent.consume();
-    }
-
     private void playSong(ActionEvent actionEvent) {
         MusicPlayer musicPlayer = new MusicPlayer();
         Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
@@ -146,5 +145,68 @@ public class FavouriteSongListView extends ListTemplate {
                 refresh();
             }
         }
+    }
+
+
+    private void playAll(ActionEvent actionEvent) {
+        Playlist favourites = Session.getSession().currentUser().favourites();
+        MusicPlayer musicPlayer = new MusicPlayer();
+        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
+        ObservableSong selectedItem = (ObservableSong) table.getSelectionModel().getSelectedItem();
+        Song song;
+        if (selectedItem == null)
+            song = favourites.getSongList().get(0);
+        else
+            song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
+
+        musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
+        musicPlayerViewModel.setSong(song);
+
+        musicPlayerViewModel.nextSongTriggeredProperty().addListener((a, b, c) -> nextSong());
+        musicPlayerViewModel.previousSongTriggeredProperty().addListener((a, b, c) -> previousSong());
+        musicPlayerViewModel.songPlayModeProperty().addListener((observable, oldValue, newValue) -> songPlayMode = newValue);
+        NavController.get().pushView(new MusicPlayerView(musicPlayerViewModel));
+        musicPlayer.play();
+    }
+
+
+    public void nextSong() {
+        Playlist favourites = Session.getSession().currentUser().favourites();
+        switch(songPlayMode) {
+            case SEQUENTIAL:
+                index++;
+                if(index >= favourites.getSongList().size())
+                    index = 0;
+
+                break;
+            case RANDOM:
+                index = new Random().nextInt(favourites.getSongList().size());
+                break;
+            case SELF:
+                break;
+        }
+
+        musicPlayerViewModel.setSong(favourites.getSongList().get(index));
+        musicPlayerViewModel.getMusicPlayer().play();
+    }
+
+    public void previousSong() {
+        Playlist favourites = Session.getSession().currentUser().favourites();
+        switch(songPlayMode) {
+            case SEQUENTIAL:
+                index--;
+                if(index < 0)
+                    index = favourites.getSongList().size() - 1;
+
+                break;
+            case RANDOM:
+                index = new Random().nextInt(favourites.getSongList().size());
+                break;
+            case SELF:
+                break;
+        }
+
+        musicPlayerViewModel.setSong(favourites.getSongList().get(index));
+        musicPlayerViewModel.getMusicPlayer().play();
     }
 }
