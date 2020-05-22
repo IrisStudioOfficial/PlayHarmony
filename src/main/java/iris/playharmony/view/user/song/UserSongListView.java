@@ -1,13 +1,10 @@
 package iris.playharmony.view.user.song;
 
-import com.google.gson.Gson;
 import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
-import iris.playharmony.controller.handler.PathHandler;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
-import iris.playharmony.model.User;
 import iris.playharmony.model.player.MusicPlayer;
 import iris.playharmony.model.player.Spectrum;
 import iris.playharmony.session.Session;
@@ -23,63 +20,50 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
+import javafx.scene.control.Pagination;
+import javafx.scene.control.TableView;
 
-import javax.xml.crypto.Data;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Comparator;
 
-public class UserSongListView extends ListTemplate {
-
-    private TextField searchField;
-    private ObservableList<ObservableSong> data;
-    private Comparator<ObservableSong> comparator;
+public class UserSongListView extends ListTemplate<ObservableSong> {
 
     public UserSongListView() {
         super("Search Song");
+        init();
     }
 
     @Override
     protected void initElements() {
-        comparator = Comparator.comparing(observable -> observable.title().get());
-        data = getObservableData();
-        searchField = new TextField();
+
     }
 
     @Override
-    protected void initSearchForm() {
-        HBox searchRow = new HBox();
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-        Region padding = new Region();
-        padding.setPrefWidth(5);
-        searchField.setOnAction(event -> searchCommand());
-        searchRow.getChildren().add(region);
-        searchRow.getChildren().add(searchField);
-        searchRow.getChildren().add(ButtonFactory.button("Search", event -> searchCommand()));
-
-        add(searchRow);
+    protected void searchCommand() {
+        if(searchField.getText().isEmpty())
+            return;
+        data = data.filtered(observableSong -> observableSong.getTitle().toLowerCase().contains(searchField.getText().toLowerCase()));
+        TableFactory.updateTable(data, table);
+        TableFactory.updatePagination(data, table, pagination);
     }
 
     @Override
-    protected void initTable() {
-        add(table = TableFactory.table(data,
+    protected TableView initTable() {
+        return TableFactory.table(data,
                 TableFactory.tableColumnPhoto("Photo", "photo", 100),
                 TableFactory.tableColumn("Title", "title"),
                 TableFactory.tableColumn("Author", "author"),
                 TableFactory.tableColumn("Date", "date")
-        ));
+        );
     }
 
     @Override
-    protected void initPagination() {
-        add(pagination = TableFactory.pagination(data, table));
+    protected Pagination initPagination() {
+        return TableFactory.pagination(data, table);
+    }
+
+    @Override
+    protected Comparator<ObservableSong> getComparator() {
+        return Comparator.comparing(observable -> observable.title().get());
     }
 
     @Override
@@ -111,33 +95,10 @@ public class UserSongListView extends ListTemplate {
         TableFactory.updatePagination(data, table, pagination);
     }
 
-    private void searchCommand() {
-        refresh();
-
-        if(searchField.getText().isEmpty())
-            return;
-        data = data.filtered(observableSong -> observableSong.getTitle().toLowerCase().contains(searchField.getText().toLowerCase()));
-        TableFactory.updateTable(data, table);
-        TableFactory.updatePagination(data, table, pagination);
-    }
-
     private void selectPlaylist(ActionEvent event) {
         ObservableSong selectedItem = (ObservableSong) table.getSelectionModel().getSelectedItem();
         if (selectedItem != null)
             NavController.get().pushView(new SelectPlaylistView(selectedItem.getTitle()));
-    }
-
-    private void playSong(ActionEvent actionEvent) {
-        MusicPlayer musicPlayer = new MusicPlayer();
-        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
-        ObservableSong selectedItem = (ObservableSong) table.getSelectionModel().getSelectedItem();
-        Song song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
-
-        MusicPlayerViewModel musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
-        musicPlayerViewModel.setSong(song);
-
-        NavController.get().pushView(new MusicPlayerView(musicPlayerViewModel));
-        musicPlayer.play();
     }
 
     private void addToFavourites(ActionEvent actionEvent) {
@@ -151,6 +112,19 @@ public class UserSongListView extends ListTemplate {
 
         favourites.addSong(toBeAdded);
         new DatabaseController().addFavourites(favourites, Session.getSession().currentUser());
+    }
+
+    private void playSong(ActionEvent actionEvent) {
+        MusicPlayer musicPlayer = new MusicPlayer();
+        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
+        ObservableSong selectedItem = (ObservableSong) table.getSelectionModel().getSelectedItem();
+        Song song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
+
+        MusicPlayerViewModel musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
+        musicPlayerViewModel.setSong(song);
+
+        NavController.get().pushView(new MusicPlayerView(musicPlayerViewModel));
+        musicPlayer.play();
     }
 }
 
