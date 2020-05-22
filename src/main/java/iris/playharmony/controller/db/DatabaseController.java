@@ -4,9 +4,22 @@ import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
 import iris.playharmony.model.User;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 
 public class DatabaseController implements IUserDatabaseController, ISongDatabaseController, IPlaylistDatabaseController {
+
+    private static DatabaseController instance;
+
+    public static DatabaseController get() {
+        if(instance == null) {
+            synchronized (DatabaseController.class) {
+                instance = new DatabaseController();
+            }
+        }
+        return instance;
+    }
+
 
     private final IUserDatabaseController userDatabaseController;
     private final ISongDatabaseController songDatabaseController;

@@ -2,6 +2,8 @@ package iris.playharmony.model;
 
 import iris.playharmony.util.Pair;
 
+import java.util.Objects;
+
 public class Email {
 
     public static boolean check(String text) {
@@ -50,6 +52,20 @@ public class Email {
 
         this.name = emailAttributes.getKey();
         this.domain = emailAttributes.getValue();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Email email = (Email) o;
+        return Objects.equals(name, email.name) &&
+                Objects.equals(domain, email.domain);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, domain);
     }
 
     @Override

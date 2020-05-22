@@ -20,7 +20,12 @@ public class SongFactory {
 
         String songDataFile = songPath.resolve(SONG_METADATA_FILENAME).toString();
 
-        return Json.fromJsonFile(Song.class, songDataFile);
+        Song song = Json.fromJsonFile(Song.class, songDataFile);
+
+        song.setPathFile(songPath.resolve(song.getPathFile()).toString());
+        song.setPhoto(songPath.resolve(song.getPhoto()).toString());
+
+        return song;
     }
 
 }

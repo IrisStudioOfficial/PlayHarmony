@@ -2,17 +2,16 @@ package iris.playharmony.controller.db;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import iris.playharmony.controller.db.sql.*;
 import iris.playharmony.controller.handler.PathHandler;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import iris.playharmony.util.FileUtils;
-import iris.playharmony.util.Json;
 import iris.playharmony.util.Resources;
 
 import java.io.File;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,25 +19,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
+
 public class UserDatabaseController extends AbstractDatabaseController implements IUserDatabaseController {
 
-    private static final String SQL_QUERY_SELECT_ALL_USERS = "SELECT * FROM USERS";
+    private static final String USERS_TABLE_NAME = "USERS";
 
-    private static final String SQL_QUERY_INSERT_NEW_USER = "INSERT INTO USERS (PHOTO, NAME, SURNAME, CATEGORY, USER_ROLE, EMAIL)" +
-            " VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String SQL_SELECT_ALL_USERS = "SELECT * FROM USERS";
 
-    private static final String SQL_QUERY_UPDATE_USER = "UPDATE USERS SET" +
-            " PHOTO = ?," +
-            " NAME = ?," +
-            " SURNAME = ?," +
-            " CATEGORY = ?," +
-            " USER_ROLE = ?," +
-            " EMAIL = ? " +
-            "WHERE EMAIL = ?";
+    private static final SQLWriteQuery SQL_QUERY_INSERT_NEW_USER = new SQLInsertQuery(USERS_TABLE_NAME,
+            "photo", "name", "surname", "category", "user_role", "email");
 
-    public static final String SQL_QUERY_REMOVE_USER_BY_EMAIL = "DELETE FROM USERS" +
-            " WHERE email = ?";
+    private static final SQLWriteQuery SQL_QUERY_UPDATE_USER = new SQLUpdateQuery(USERS_TABLE_NAME,
+            "email",
+            "photo", "name", "surname", "category", "user_role", "email");
 
+    private static final SQLWriteQuery SQL_QUERY_REMOVE_USER_BY_EMAIL = new SQLDeleteByKeyQuery(USERS_TABLE_NAME, "email");
+
+
+
+    public UserDatabaseController() {
+    }
 
     @Override
     public List<User> getUsers() {
@@ -47,7 +48,7 @@ public class UserDatabaseController extends AbstractDatabaseController implement
 
         try(Statement statement = getDBConnection().createStatement()) {
 
-            ResultSet resultSet = statement.executeQuery(SQL_QUERY_SELECT_ALL_USERS);
+            ResultSet resultSet = statement.executeQuery(SQL_SELECT_ALL_USERS);
 
             readUsersFromDatabase(resultSet, userList);
 
@@ -64,9 +65,7 @@ public class UserDatabaseController extends AbstractDatabaseController implement
 
             File photo = FileUtils.writeToTemporalFile(resultSet.getBinaryStream("photo"));
 
-            List<Playlist> playList = Json.fromJson(List.class, resultSet.getString("PLAYLIST"));
-
-            // List<Playlist> playList = new Gson().fromJson(resultSet.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
+            List<Playlist> playList = new Gson().fromJson(resultSet.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
 
             playList = playList == null ? new ArrayList<>() : playList;
 
@@ -78,7 +77,7 @@ public class UserDatabaseController extends AbstractDatabaseController implement
                     .mail(new Email(resultSet.getString("EMAIL")))
                     .photo(photo)
                     .setPlayLists(playList);
-                    //.setPassword(resultSet.getString("PASSWORD"));
+                    // .setPassword(resultSet.getString("PASSWORD"));
 
             userList.add(user);
         }
@@ -89,25 +88,26 @@ public class UserDatabaseController extends AbstractDatabaseController implement
 
         checkUser(user);
 
-        if (!userExists(user)) {
+        if(userExists(user)) {
+            throw new IllegalArgumentException("User already exists");
+        }
 
-            try(PreparedStatement statement = getDBConnection().prepareStatement(SQL_QUERY_INSERT_NEW_USER)) {
+        try(SQLStatement statement = SQL_QUERY_INSERT_NEW_USER.prepareStatement(getDBConnection())) {
 
-                File photo = user.getPhoto();
+            File photo = user.getPhoto();
 
-                FileUtils.readFileBinary(photo, inputStream -> statement.setBinaryStream(1, inputStream, (int)photo.length()));
+            FileUtils.readFileBinary(photo, inputStream -> statement.set("photo", inputStream, (int)photo.length()));
 
-                DBObjectSerializer serializer = new DBObjectSerializer();
+            statement.set("name", user.getName())
+                    .set("surname", user.getSurname())
+                    .set("email", user.getEmail().toString())
+                    .set("category", user.getCategory())
+                    .set("user_role", user.getRole().toString());
 
-                serializer.serialize(user, statement);
+            return statement.execute() != SQLStatement.ERROR_CODE;
 
-                statement.executeUpdate();
-
-                return true;
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return false;
@@ -128,36 +128,32 @@ public class UserDatabaseController extends AbstractDatabaseController implement
 
         checkUser(user);
 
-        if(userExists(user)) {
+        if(!userExists(user)) {
+            throw new IllegalArgumentException("User does not exists");
+        }
 
-            try(PreparedStatement statement = getDBConnection().prepareStatement(SQL_QUERY_UPDATE_USER)) {
+        try(SQLStatement statement = SQL_QUERY_UPDATE_USER.prepareStatement(getDBConnection())) {
 
-                File photo = user.getPhoto();
+            File photo = user.getPhoto();
 
-                final int photoIndex = 1;
-
-                if(photo != null) {
-
-                    FileUtils.readFileBinary(photo, inputStream -> statement.setBinaryStream(photoIndex, inputStream, (int)photo.length()));
-
-                } else {
-
-                    File defaultPhoto = new File(Resources.get(PathHandler.DEFAULT_PHOTO_PATH));
-
-                    FileUtils.readFileBinary(defaultPhoto, inputStream -> statement.setBinaryStream(photoIndex, inputStream, inputStream.available()));
-                }
-
-                DBObjectSerializer serializer = new DBObjectSerializer();
-
-                serializer.serialize(user, statement);
-
-                statement.executeUpdate();
-
-                return true;
-
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if(photo != null) {
+                FileUtils.readFileBinary(photo, inputStream -> statement.set("photo", inputStream, (int)photo.length()));
+            } else {
+                File defaultPhoto = new File(requireNonNull(Resources.get(PathHandler.DEFAULT_PHOTO_PATH)));
+                FileUtils.readFileBinary(defaultPhoto, inputStream -> statement.set("photo", inputStream, inputStream.available()));
             }
+
+            statement.setKey("email", user.getEmail().toString())
+                    .set("name", user.getName())
+                    .set("surname", user.getSurname())
+                    .set("email", user.getEmail().toString())
+                    .set("category", user.getCategory())
+                    .set("user_role", user.getRole().toString());
+
+            return statement.execute() != SQLStatement.ERROR_CODE;
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return false;
@@ -170,26 +166,25 @@ public class UserDatabaseController extends AbstractDatabaseController implement
             throw new IllegalArgumentException();
         }
 
-        if(userExists(userEmail)) {
+        if(!userExists(userEmail)) {
+            throw new IllegalArgumentException("User " + userEmail + " does not exists");
+        }
 
-            try(PreparedStatement statement = getDBConnection().prepareStatement(SQL_QUERY_REMOVE_USER_BY_EMAIL)) {
+        try(SQLStatement statement = SQL_QUERY_REMOVE_USER_BY_EMAIL.prepareStatement(getDBConnection())) {
 
-                statement.setString(1, userEmail);
+            statement.setKey("email", userEmail);
 
-                statement.executeUpdate();
+            return statement.execute() != SQLStatement.ERROR_CODE;
 
-                return true;
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return false;
     }
 
     private boolean userExists(String userEmail) {
-        return getUsers().stream().anyMatch(user -> Objects.equals(user.getEmail(), userEmail));
+        return getUsers().stream().anyMatch(user -> Objects.equals(user.getEmail().toString(), userEmail));
     }
 
 }

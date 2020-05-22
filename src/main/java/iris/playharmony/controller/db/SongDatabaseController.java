@@ -1,12 +1,13 @@
 package iris.playharmony.controller.db;
 
+import iris.playharmony.controller.db.sql.SQLDeleteByKeyQuery;
+import iris.playharmony.controller.db.sql.SQLInsertQuery;
+import iris.playharmony.controller.db.sql.SQLStatement;
+import iris.playharmony.controller.db.sql.SQLWriteQuery;
 import iris.playharmony.model.Song;
 import iris.playharmony.util.FileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,12 +16,18 @@ import java.util.List;
 
 public class SongDatabaseController extends AbstractDatabaseController implements ISongDatabaseController {
 
-    private static final String SQL_QUERY_INSERT_NEW_SONG = "INSERT INTO SONGS (title, author, photo, publication, pathFile)" +
-            " VALUES(?,?,?,?,?)";
+    private static final String SONGS_TABLE_NAME = "SONGS";
 
-    public static final String SQL_QUERY_GET_ALL_SONGS = "SELECT * FROM SONGS";
-    public static final String SQL_QUERY_DELETE_SONG_BY_TITLE = "DELETE FROM SONGS WHERE title = ?";
+    private static final String SQL_QUERY_GET_ALL_SONGS = "SELECT * FROM SONGS";
 
+    private static final SQLWriteQuery SQL_QUERY_INSERT_NEW_SONG = new SQLInsertQuery(SONGS_TABLE_NAME,
+            "title", "author", "photo", "publication", "pathFile");
+
+    private static final SQLWriteQuery SQL_QUERY_DELETE_SONG_BY_TITLE = new SQLDeleteByKeyQuery(SONGS_TABLE_NAME, "title");
+
+
+    public SongDatabaseController() {
+    }
 
     @Override
     public List<Song> getSongs() {
@@ -48,31 +55,32 @@ public class SongDatabaseController extends AbstractDatabaseController implement
 
             Song song = new Song()
                     .setTitle(resultSet.getString("TITLE"))
-                    .setDate(resultSet.getString("PUBLICATION"))
-                    .setPathFile(resultSet.getString("PATHFILE"))
                     .setAuthor(resultSet.getString("AUTHOR"))
-                    .setPhoto(resultSet.toString());
+                    .setPhoto(resultSet.getString("PHOTO"))
+                    .setDate(resultSet.getString("PUBLICATION"))
+                    .setPathFile(resultSet.getString("PATHFILE"));
 
             songList.add(song);
         }
     }
 
     @Override
-    public boolean addSong(Song song){
+    public boolean addSong(Song song) {
 
-        try(PreparedStatement statement = getDBConnection().prepareStatement(SQL_QUERY_INSERT_NEW_SONG)) {
+        try(SQLStatement statement = SQL_QUERY_INSERT_NEW_SONG.prepareStatement(getDBConnection())) {
 
             File songPhoto = new File(song.getPhoto());
 
-            FileUtils.readFileBinary(songPhoto, inputStream -> statement.setBinaryStream(3, inputStream, (int)songPhoto.length()));
+            FileUtils.readFileBinary(songPhoto, inputStream -> statement.set("photo", inputStream, (int)songPhoto.length()));
 
-            DBObjectSerializer serializer = new DBObjectSerializer();
+            statement.set("title", song.getTitle())
+                    .set("author", song.getAuthor())
+                    .set("publication", song.getDate())
+                    .set("pathFile", song.getPathFile());
 
-            serializer.serialize(song, statement);
+            return statement.execute() != SQLStatement.ERROR_CODE;
 
-            return statement.executeUpdate() == 1;
-
-        }catch(SQLException e){
+        } catch(Exception e){
             e.printStackTrace();
         }
 
@@ -82,13 +90,13 @@ public class SongDatabaseController extends AbstractDatabaseController implement
     @Override
     public boolean deleteSong(Song song) {
 
-        try(PreparedStatement statement = getDBConnection().prepareStatement(SQL_QUERY_DELETE_SONG_BY_TITLE)) {
+        try(SQLStatement statement = SQL_QUERY_DELETE_SONG_BY_TITLE.prepareStatement(getDBConnection())) {
 
-            statement.setString(1, song.getTitle());
+            statement.setKey("title", song.getTitle());
 
-            return statement.executeUpdate() == 1;
+            return statement.execute() != SQLStatement.ERROR_CODE;
 
-        }catch(SQLException e){
+        } catch(Exception e) {
             e.printStackTrace();
         }
 
