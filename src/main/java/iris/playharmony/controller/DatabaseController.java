@@ -111,7 +111,7 @@ public class DatabaseController {
             throw new UpdateUserException();
         if (getUsers().stream().anyMatch(databaseUser -> databaseUser.getEmail().toString().equals(key))) {
             try {
-                String sql = "UPDATE USERS SET PHOTO = ?, NAME = ?, SURNAME = ?, CATEGORY = ?, USER_ROLE = ?, EMAIL = ? " +
+                String sql = "UPDATE USERS SET PHOTO = ?, NAME = ?, SURNAME = ?, CATEGORY = ?, USER_ROLE = ?, EMAIL = ?, FAVOURITES = ? " +
                         "WHERE EMAIL = ?";
                 PreparedStatement ps = connection.prepareStatement(sql);
                 if(user.getPhoto() != null) {
@@ -132,7 +132,8 @@ public class DatabaseController {
                 ps.setString(4, user.getCategory());
                 ps.setString(5, user.getRole().toString());
                 ps.setString(6, user.getEmail().toString());
-                ps.setString(7, key);
+                ps.setString(7, new Gson().toJson(user.favourites()));
+                ps.setString(8, key);
 
                 ps.executeUpdate();
 
@@ -242,6 +243,29 @@ public class DatabaseController {
 
         try(PreparedStatement pst = connection.prepareStatement(sql)){
             pst.setString(1, jsonOfPlayList);
+            pst.setString(2, user.getEmail().toString());
+            return pst.executeUpdate() == 1;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean addFavourites(Playlist favourites, User user) {
+        Connection connection = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            String url = "jdbc:sqlite:" + PathHandler.DATABASE_PATH;
+            connection = DriverManager.getConnection(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        user.favourites(favourites);
+
+        String sql = "UPDATE USERS SET FAVOURITES = ? WHERE EMAIL = ?";
+        try(PreparedStatement pst = connection.prepareStatement(sql)){
+            pst.setString(1, new Gson().toJson(user.favourites()));
             pst.setString(2, user.getEmail().toString());
             return pst.executeUpdate() == 1;
         }catch(SQLException e){

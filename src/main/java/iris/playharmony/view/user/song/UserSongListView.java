@@ -28,6 +28,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -149,30 +150,7 @@ public class UserSongListView extends ListTemplate {
                 .findAny().get();
 
         favourites.addSong(toBeAdded);
-        addFavourites(favourites, Session.getSession().currentUser());
-    }
-
-    private boolean addFavourites(Playlist favourites, User user) {
-        Connection connection = null;
-        try {
-            Class.forName("org.sqlite.JDBC");
-            String url = "jdbc:sqlite:" + PathHandler.DATABASE_PATH;
-            connection = DriverManager.getConnection(url);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        user.favourites(favourites);
-
-        String sql = "UPDATE USERS SET FAVOURITES = ? WHERE EMAIL = ?";
-        try(PreparedStatement pst = connection.prepareStatement(sql)){
-            pst.setString(1, new Gson().toJson(user.favourites()));
-            pst.setString(2, user.getEmail().toString());
-            return pst.executeUpdate() == 1;
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-
-        return false;
+        new DatabaseController().addFavourites(favourites, Session.getSession().currentUser());
     }
 }
 
