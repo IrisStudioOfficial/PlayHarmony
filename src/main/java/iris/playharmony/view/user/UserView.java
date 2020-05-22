@@ -2,6 +2,7 @@ package iris.playharmony.view.user;
 
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
+import iris.playharmony.model.User;
 import iris.playharmony.session.Session;
 import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.template.ListTemplate;
@@ -13,58 +14,60 @@ import iris.playharmony.view.util.TableFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
+import javafx.scene.control.Pagination;
+import javafx.scene.control.TableView;
 
-public class UserView extends ListTemplate {
+import java.util.Comparator;
 
-    private TextField searchField;
-    private ObservableList<Playlist> data;
+public class UserView extends ListTemplate<Playlist> {
 
     public UserView() {
         super("Select Playlist");
+        init();
     }
 
     @Override
     protected void initElements() {
-        data = getObservableData();
-        searchField = new TextField();
+
     }
 
     @Override
-    protected void initSearchForm() {
-        HBox searchRow = new HBox();
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-        Region padding = new Region();
-        padding.setPrefWidth(5);
-        searchField.setOnAction(event -> searchCommand());
-        searchRow.getChildren().add(region);
-        searchRow.getChildren().add(searchField);
-        searchRow.getChildren().add(ButtonFactory.button("Search", event -> searchCommand()));
-
-        add(searchRow);
+    protected void searchCommand() {
+        if(!searchField.getText().isEmpty()) {
+            data = data.filtered(playlist -> playlist.getName().toLowerCase().contains(searchField.getText().toLowerCase()));
+            TableFactory.updateTable(data, table);
+            TableFactory.updatePagination(data, table, pagination);
+        }
     }
 
     @Override
-    protected void initTable() {
-        add(table = TableFactory.table(data,
+    protected TableView initTable() {
+        return TableFactory.table(data,
                 TableFactory.tableColumn("Name", "name"),
                 TableFactory.tableColumn("Nr of songs", "size")
-        ));
+        );
     }
 
     @Override
-    protected void initPagination() {
-        add(pagination = TableFactory.pagination(data, table));
+    protected Pagination initPagination() {
+        return TableFactory.pagination(data, table);
+    }
+
+    @Override
+    protected Comparator<Playlist> getComparator() {
+        return Comparator.comparing(Playlist::getName);
     }
 
     @Override
     protected ObservableList<Playlist> getObservableData() {
         ObservableList<Playlist> data = FXCollections.observableArrayList();
-        data.addAll(Session.getSession().currentUser().getPlayLists());
+        User user = Session.getSession().currentUser();
+        if(user.getPlayLists() == null) {
+            return FXCollections.emptyObservableList();
+        }
+        user.getPlayLists().stream()
+                .sorted(comparator)
+                .forEach(data::add);
         return data;
     }
 
@@ -81,16 +84,6 @@ public class UserView extends ListTemplate {
     @Override
     public void refresh() {
         data = getObservableData();
-        TableFactory.updateTable(data, table);
-        TableFactory.updatePagination(data, table, pagination);
-    }
-
-    private void searchCommand() {
-        refresh();
-
-        if(searchField.getText().isEmpty())
-            return;
-        data = data.filtered(playlist -> playlist.getName().toLowerCase().contains(searchField.getText().toLowerCase()));
         TableFactory.updateTable(data, table);
         TableFactory.updatePagination(data, table, pagination);
     }

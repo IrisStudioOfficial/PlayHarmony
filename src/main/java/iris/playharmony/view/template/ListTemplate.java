@@ -1,6 +1,5 @@
 package iris.playharmony.view.template;
 
-import iris.playharmony.model.Playlist;
 import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TextFactory;
 import javafx.collections.ObservableList;
@@ -13,22 +12,33 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import java.util.Comparator;
+
 public abstract class ListTemplate<T> extends VBox {
 
+    private String title;
     protected TableView table;
     protected Pagination pagination;
-    private TextField searchField;
-    private ObservableList<T> data;
+    protected TextField searchField = new TextField();
+    protected Comparator<T> comparator;
+    protected ObservableList<T> data;
 
     private static int SPACING = 15;
 
     public ListTemplate(String title) {
         super(SPACING);
+        this.title = title;
+    }
+
+    protected void init() {
+        comparator = getComparator();
+        data = getObservableData();
+
         add(TextFactory.label(title, DefaultStyle.title()));
+        add(TextFactory.searchField(searchField, event -> searchCommand()));
+        add(table = initTable());
+        add(pagination = initPagination());
         initElements();
-        initSearchForm();
-        initTable();
-        initPagination();
 
         add(addPaddingTo(bottomButtonPanel()));
         setPadding(new Insets(SPACING));
@@ -36,13 +46,23 @@ public abstract class ListTemplate<T> extends VBox {
 
     protected abstract void initElements();
 
-    protected abstract void initSearchForm();
+    protected abstract void searchCommand();
 
-    protected abstract void initTable();
+    protected abstract TableView initTable();
 
-    protected abstract void initPagination();
+    protected abstract Pagination initPagination();
 
-    protected abstract ObservableList<?> getObservableData();
+    protected abstract Comparator<T> getComparator();
+
+    protected abstract ObservableList<T> getObservableData();
+
+    protected abstract Node[] bottomButtonPanel();
+
+    public abstract void refresh();
+
+    protected void add(Node node) {
+        getChildren().add(node);
+    }
 
     private HBox addPaddingTo(Node[] nodes) {
         HBox hBox = new HBox();
@@ -57,12 +77,4 @@ public abstract class ListTemplate<T> extends VBox {
         padding.setPrefWidth(5);
         return padding;
     }
-
-    protected abstract Node[] bottomButtonPanel();
-
-    protected void add(Node node) {
-        getChildren().add(node);
-    }
-
-    public abstract void refresh();
 }

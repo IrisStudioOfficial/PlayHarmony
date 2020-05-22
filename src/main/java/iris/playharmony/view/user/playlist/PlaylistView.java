@@ -12,43 +12,72 @@ import iris.playharmony.session.Session;
 import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.player.MusicPlayerView;
 import iris.playharmony.view.player.MusicPlayerViewModel;
+import iris.playharmony.view.template.ListTemplate;
 import iris.playharmony.view.user.song.AddSongToPlaylistView;
-import iris.playharmony.view.util.*;
+import iris.playharmony.view.util.AlertFactory;
+import iris.playharmony.view.util.ButtonFactory;
+import iris.playharmony.view.util.TableFactory;
 import javafx.animation.Interpolator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.VBox;
 
+import java.util.Comparator;
 import java.util.Random;
 
-public class PlaylistView extends VBox {
+public class PlaylistView extends ListTemplate<ObservableSong> {
 
     private Playlist playlist;
-    private ObservableList<ObservableSong> songs;
 
-    private TableView songsTable;
-    private Pagination pagination;
     private MusicPlayerViewModel musicPlayerViewModel;
     private SongPlayMode songPlayMode = SongPlayMode.getDefault();
-
     int index = 0;
 
-    private static int SPACING = 15;
-
     public PlaylistView(Playlist playlist) {
-        super(SPACING);
+        super(playlist.getName());
         this.playlist = playlist;
-        songs = getSongs();
-        initElements();
-        setPadding(new Insets(SPACING));
+        init();
     }
 
-    private ObservableList<ObservableSong> getSongs() {
+    @Override
+    protected void initElements() {
+
+    }
+
+    @Override
+    protected void searchCommand() {
+        if(searchField.getText().isEmpty())
+            return;
+        data = data.filtered(observableSong -> observableSong.getTitle().toLowerCase().contains(searchField.getText().toLowerCase()));
+        TableFactory.updateTable(data, table);
+        TableFactory.updatePagination(data, table, pagination);
+    }
+
+    @Override
+    protected TableView initTable() {
+        return TableFactory.table(data,
+                TableFactory.tableColumnPhoto("Photo", "photo", 100),
+                TableFactory.tableColumn("Title", "title"),
+                TableFactory.tableColumn("Author", "author"),
+                TableFactory.tableColumn("Date", "date")
+        );
+    }
+
+    @Override
+    protected Pagination initPagination() {
+        return TableFactory.pagination(data, table);
+    }
+
+    @Override
+    protected Comparator<ObservableSong> getComparator() {
+        return Comparator.comparing(o -> o.title().get());
+    }
+
+    @Override
+    protected ObservableList<ObservableSong> getObservableData() {
         ObservableList<ObservableSong> data = FXCollections.observableArrayList();
         for (Song song : playlist.getSongList()) {
             ObservableSong observableSong = new ObservableSong().title(song.getTitle()).author(song.getAuthor())
@@ -58,26 +87,21 @@ public class PlaylistView extends VBox {
         return data;
     }
 
-    private void initElements() {
-        add(TextFactory.label(playlist.getName(), DefaultStyle.label()));
-
-        add(songsTable = TableFactory.table(songs,
-                TableFactory.tableColumnPhoto("Photo", "photo", 100),
-                TableFactory.tableColumn("Title", "title"),
-                TableFactory.tableColumn("Author", "author"),
-                TableFactory.tableColumn("Date", "date")
-        ));
-
-        add(pagination = TableFactory.pagination(songs, songsTable));
-
-        add(ButtonFactory.button("Add Song", event -> addSong()));
-        add(ButtonFactory.button("Delete Song", event -> deleteSong()));
-        add(ButtonFactory.button("Play Song", this::playSong));
+    @Override
+    protected Node[] bottomButtonPanel() {
+        return new Node[] {
+                ButtonFactory.button("Add Song", event -> addSong()),
+                ButtonFactory.button("Delete Song", event -> deleteSong()),
+                ButtonFactory.button("Play Song", this::playSong)
+        };
     }
 
-
-    private void add(Node node) {
-        getChildren().add(node);
+    @OnRefresh
+    @Override
+    public void refresh() {
+        data = getObservableData();
+        TableFactory.updateTable(data, table);
+        TableFactory.updatePagination(data, table, pagination);
     }
 
     private void addSong() {
@@ -85,7 +109,7 @@ public class PlaylistView extends VBox {
     }
 
     private void deleteSong() {
-        ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
+        ObservableSong selectedItem = (ObservableSong) table.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
             if(AlertFactory.confirmAlert("Remove Song", "Do you want to delete the song?")) {
                 Song songPrueba = new DatabaseController().getSongs().stream()
@@ -98,17 +122,10 @@ public class PlaylistView extends VBox {
         }
     }
 
-    @OnRefresh
-    public void refresh() {
-        songs = getSongs();
-        TableFactory.updateTable(songs, songsTable);
-        TableFactory.updatePagination(songs, songsTable, pagination);
-    }
-
     private void playSong(ActionEvent actionEvent) {
         MusicPlayer musicPlayer = new MusicPlayer();
         Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
-        ObservableSong selectedItem = (ObservableSong) songsTable.getSelectionModel().getSelectedItem();
+        ObservableSong selectedItem = (ObservableSong) table.getSelectionModel().getSelectedItem();
         Song song;
         if (selectedItem == null)
             song = playlist.getSongList().get(0);
@@ -124,7 +141,6 @@ public class PlaylistView extends VBox {
         NavController.get().pushView(new MusicPlayerView(musicPlayerViewModel));
         musicPlayer.play();
     }
-
 
     public void nextSong() {
         switch(songPlayMode) {

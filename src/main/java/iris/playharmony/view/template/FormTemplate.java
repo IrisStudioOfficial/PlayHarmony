@@ -1,6 +1,5 @@
 package iris.playharmony.view.template;
 
-import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TextFactory;
 import javafx.geometry.Insets;
@@ -21,20 +20,6 @@ public abstract class FormTemplate extends VBox {
         setPadding(new Insets(SPACING));
     }
 
-    private HBox addPaddingTo(Node[] nodes) {
-        Node[] nodesWithPadding = new Node[2 * nodes.length - 1];
-        for (int i = 0; i < nodesWithPadding.length; i++) {
-            nodesWithPadding[i] = i%2 == 0 ? nodes[i/2] : getNewPadding();
-        }
-        return new HBox(nodesWithPadding);
-    }
-
-    private Region getNewPadding() {
-        Region padding = new Region();
-        padding.setPrefHeight(5);
-        return padding;
-    }
-
     protected abstract void initElements();
 
     protected abstract Node[] bottomButtonPanel();
@@ -44,4 +29,18 @@ public abstract class FormTemplate extends VBox {
     }
 
     public abstract void refresh();
+
+    private HBox addPaddingTo(Node[] nodes) {
+        HBox hBox = new HBox();
+        for (int i = 0; i < 2 * nodes.length - 1; i++) {
+            hBox.getChildren().add(i%2 == 0 ? nodes[i/2] : getNewPadding());
+        }
+        return hBox;
+    }
+
+    private Region getNewPadding() {
+        Region padding = new Region();
+        padding.setPrefWidth(5);
+        return padding;
+    }
 }
