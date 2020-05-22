@@ -24,6 +24,7 @@ public class User {
     private List<Playlist> playLists;
     // @DBAttribute(index = 8)
     private String password;
+    private Playlist favorites = null;
 
     public User() {}
 
@@ -89,6 +90,15 @@ public class User {
     public User mail(Email email) {
         this.email = email;
         return this;
+    }
+
+    public User favourites(Playlist playlist) {
+        this.favorites = playlist;
+        return this;
+    }
+
+    public Playlist favourites() {
+        return this.favorites;
     }
 
     public List<Playlist> getPlayLists() {

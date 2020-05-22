@@ -5,8 +5,6 @@ import iris.playharmony.model.player.MusicPlayer;
 import iris.playharmony.util.Resources;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.MultiImageButton;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
@@ -28,7 +26,7 @@ public class SongButtonPanel extends HBox {
 
 
     private final Button changePlayModeButton;
-    private final Button backwardsButton;
+    private final Button previousButton;
     private final Button playPauseButton;
     private final Button forwardButton;
 
@@ -39,13 +37,22 @@ public class SongButtonPanel extends HBox {
 
         changePlayModeButton = createChangePlayModeButton(viewModel);
 
-        backwardsButton = ButtonFactory.imageButton(Resources.get(ICONS_PLAYER_BACK));
+        previousButton = ButtonFactory.imageButton(Resources.get(ICONS_PLAYER_BACK));
 
         playPauseButton = createPlayPauseButton(viewModel);
 
         forwardButton = ButtonFactory.imageButton(Resources.get(ICONS_PLAYER_NEXT));
 
-        getChildren().addAll(changePlayModeButton, backwardsButton, playPauseButton, forwardButton);
+        forwardButton.setOnAction(e -> {
+            viewModel.nextSongTriggeredProperty().set(viewModel.nextSongTriggeredProperty().getValue() + 1);
+        });
+
+        previousButton.setOnAction(e -> viewModel.previousSongTriggeredProperty());
+        previousButton.setOnAction(e -> {
+            viewModel.previousSongTriggeredProperty().set(viewModel.previousSongTriggeredProperty().getValue() + 1);
+        });
+
+        getChildren().addAll(changePlayModeButton, previousButton, playPauseButton, forwardButton);
     }
 
     private Button createPlayPauseButton(MusicPlayerViewModel viewModel) {

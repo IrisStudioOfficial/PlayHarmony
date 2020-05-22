@@ -7,12 +7,10 @@ public class Playlist {
 
     private String name;
     private List<Song> songList;
-    private SongPlayMode songPlayMode;
 
     public Playlist(String name) {
         this.name = name;
         this.songList = new ArrayList<>();
-        this.songPlayMode = SongPlayMode.SEQUENTIAL;
     }
 
     public String getName() {
@@ -25,10 +23,6 @@ public class Playlist {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public SongPlayMode getSongPlayMode() {
-        return songPlayMode;
     }
 
     public boolean addSong(Song song) {
@@ -47,13 +41,4 @@ public class Playlist {
         return songList.size();
     }
 
-    public void changeSongPlayMode() {
-        if(songPlayMode.equals(SongPlayMode.SEQUENTIAL)) {
-            songPlayMode = SongPlayMode.RANDOM;
-        } else if(songPlayMode.equals(SongPlayMode.RANDOM)) {
-            songPlayMode = SongPlayMode.SELF;
-        } else {
-            songPlayMode = SongPlayMode.SEQUENTIAL;
-        }
-    }
 }
