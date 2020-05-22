@@ -1,6 +1,6 @@
 package iris.playharmony.view.template;
 
-import iris.playharmony.util.OnRefresh;
+import iris.playharmony.model.Playlist;
 import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TextFactory;
 import javafx.collections.ObservableList;
@@ -8,14 +8,17 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-public abstract class ListTemplate extends VBox {
+public abstract class ListTemplate<T> extends VBox {
 
     protected TableView table;
     protected Pagination pagination;
+    private TextField searchField;
+    private ObservableList<T> data;
 
     private static int SPACING = 15;
 
@@ -26,6 +29,7 @@ public abstract class ListTemplate extends VBox {
         initSearchForm();
         initTable();
         initPagination();
+
         add(addPaddingTo(bottomButtonPanel()));
         setPadding(new Insets(SPACING));
     }
