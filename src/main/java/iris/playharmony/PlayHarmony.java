@@ -3,6 +3,7 @@ package iris.playharmony;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.view.MainView;
 import iris.playharmony.view.main.LobbyView;
+import iris.playharmony.view.user.song.UserSongListView;
 import javafx.application.Application;
 import javafx.scene.DepthTest;
 import javafx.scene.Parent;
@@ -11,7 +12,6 @@ import javafx.scene.SceneAntialiasing;
 import javafx.stage.Stage;
 
 import java.util.concurrent.atomic.AtomicReference;
-// Con ganas de trabajar :)
 public class PlayHarmony extends Application {
 
     public static final int DEFAULT_WIDTH = 1280;

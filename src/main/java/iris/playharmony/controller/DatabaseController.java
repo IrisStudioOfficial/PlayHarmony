@@ -58,8 +58,15 @@ public class DatabaseController {
 
                     List<Playlist> list = new Gson().fromJson(rs.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
                     list = list == null ? new ArrayList<>() : list;
-
-                    userList.add(new User(image.getAbsoluteFile(), rs.getString("NAME"), rs.getString("SURNAME"), rs.getString("CATEGORY"), Role.getRoleFrom(rs.getString("USER_ROLE")), new Email(rs.getString("EMAIL")), list));
+                    Playlist favourites = new Gson().fromJson(rs.getString("FAVOURITES"), Playlist.class);
+                    User user = new User(image.getAbsoluteFile(),
+                            rs.getString("NAME"),
+                            rs.getString("SURNAME"),
+                            rs.getString("CATEGORY"),
+                            Role.getRoleFrom(rs.getString("USER_ROLE")),
+                            new Email(rs.getString("EMAIL")),
+                            list).favourites(favourites);
+                    userList.add(user);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

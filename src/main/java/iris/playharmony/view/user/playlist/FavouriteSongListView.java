@@ -4,6 +4,7 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Song;
+import iris.playharmony.model.User;
 import iris.playharmony.model.player.MusicPlayer;
 import iris.playharmony.model.player.Spectrum;
 import iris.playharmony.session.Session;
@@ -74,6 +75,9 @@ public class FavouriteSongListView extends ListTemplate {
     @Override
     protected ObservableList<ObservableSong> getObservableData() {
         data = FXCollections.observableArrayList();
+        User user = Session.getSession().currentUser();
+        if(Session.getSession().currentUser().favourites() == null)
+            return FXCollections.emptyObservableList();
         Session.getSession().currentUser().favourites()
                 .getSongList()
                 .stream()
