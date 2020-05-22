@@ -8,6 +8,7 @@ import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import iris.playharmony.util.FileUtils;
+import iris.playharmony.util.Json;
 import iris.playharmony.util.Resources;
 
 import java.io.File;
@@ -63,7 +64,9 @@ public class UserDatabaseController extends AbstractDatabaseController implement
 
             File photo = FileUtils.writeToTemporalFile(resultSet.getBinaryStream("photo"));
 
-            List<Playlist> playList = new Gson().fromJson(resultSet.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
+            List<Playlist> playList = Json.fromJson(List.class, resultSet.getString("PLAYLIST"));
+
+            // List<Playlist> playList = new Gson().fromJson(resultSet.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
 
             playList = playList == null ? new ArrayList<>() : playList;
 
@@ -71,11 +74,11 @@ public class UserDatabaseController extends AbstractDatabaseController implement
                     .name(resultSet.getString("NAME"))
                     .surname(resultSet.getString("SURNAME"))
                     .category("CATEGORY")
-                    .role(Role.getRoleFrom("USER_ROLE"))
+                    .role(Role.getRoleFrom(resultSet.getString("USER_ROLE")))
                     .mail(new Email(resultSet.getString("EMAIL")))
                     .photo(photo)
-                    .setPlayLists(playList)
-                    .setPassword(resultSet.getString("PASSWORD"));
+                    .setPlayLists(playList);
+                    //.setPassword(resultSet.getString("PASSWORD"));
 
             userList.add(user);
         }

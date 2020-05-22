@@ -76,14 +76,20 @@ public class UserListView extends VBox {
     }
 
     private void removeUser(Event event) {
+
         event.consume();
-        ObservableUser selection = (ObservableUser) usersTable.getSelectionModel().getSelectedItem();
-        if(selection == null)
+
+        ObservableUser selectedUser = (ObservableUser) usersTable.getSelectionModel().getSelectedItem();
+
+        if(selectedUser == null) {
             return;
-        try {
-            new DatabaseController().removeUser(selection.getEmail());
+        }
+
+        DatabaseController db = new DatabaseController();
+
+        if(db.removeUser(selectedUser.getEmail())) {
             refresh();
-        } catch (RemoveUserException e) {
+        } else {
             AlertFactory.errorAlert("ERROR! Couldn't remove user", "ERROR! Couldn't remove user");
         }
     }

@@ -5,7 +5,6 @@ import iris.playharmony.controller.handler.PathHandler;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public abstract class AbstractDatabaseController {
 
@@ -17,16 +16,6 @@ public abstract class AbstractDatabaseController {
 
     protected Connection getDBConnection() {
         return dbConnection;
-    }
-
-    protected void close(Statement statement) {
-        try {
-            if (statement != null) {
-                statement.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     private Connection openMySQLConnection() {

@@ -1,13 +1,20 @@
 package iris.playharmony.model;
 
+import iris.playharmony.controller.db.DBAttribute;
+
 import java.util.Objects;
 
 public class Song {
 
+    @DBAttribute(index = 1)
     private String title;
+    @DBAttribute(index = 2)
     private String author;
+    // @DBAttribute(index = 3) We set binary, not string
     private String photo;
+    @DBAttribute(index = 4)
     private String date;
+    @DBAttribute(index = 5)
     private String pathFile;
 
     public Song(String title, String author, String photo, String date, String pathFile) {
@@ -76,5 +83,16 @@ public class Song {
     @Override
     public int hashCode() {
         return Objects.hash(title);
+    }
+
+    @Override
+    public String toString() {
+        return "Song{" +
+                "title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", photo='" + photo + '\'' +
+                ", date='" + date + '\'' +
+                ", pathFile='" + pathFile + '\'' +
+                '}';
     }
 }

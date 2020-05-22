@@ -7,6 +7,7 @@ import iris.playharmony.model.Email;
 import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
+import iris.playharmony.util.TypeUtils;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.DefaultStyle;
@@ -19,8 +20,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.util.ArrayList;
+
+import static java.util.Objects.nonNull;
 
 public class UpdateUserView extends VBox {
 
@@ -78,22 +82,54 @@ public class UpdateUserView extends VBox {
     }
 
     private void updateUser() {
-        try {
-            User user = new User(photoFile, name.getText(), surname.getText(),
-                    category.getText(), (Role) role.getValue(), new Email(email.getText()), new ArrayList<>());
-            try {
-                if(new DatabaseController().updateUser(user, user.getEmail().toString())) {
-                    NavController.get().popView();
-                    UserListView userListView = NavController.get().getCurrentView();
-                    userListView.refresh();
-                } else {
-                    AlertFactory.errorAlert("ERROR! Couldn't update user", "ERROR! Couldn't update user");
-                }
-            } catch (UpdateUserException e) {
-                AlertFactory.errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
-            }
-        } catch (EmailException e) {
+
+        User user = getUserFromForm();
+
+        DatabaseController db = new DatabaseController();
+
+        if(db.updateUser(user, user.getEmail().toString())) {
+
+            NavController.get().popView();
+            UserListView userListView = NavController.get().getCurrentView();
+            userListView.refresh();
+
+        } else {
+            AlertFactory.errorAlert("ERROR! Couldn't update user", "ERROR! Couldn't update user");
+        }
+    }
+
+    private User getUserFromForm() {
+
+        Email email = getEmail();
+
+        User user = new User(
+                photoFile,
+                name.getText(),
+                surname.getText(),
+                category.getText(),
+                (Role) role.getValue(),
+                email,
+                new ArrayList<>());
+
+        if(notAllFieldsAreSet(user)) {
+            AlertFactory.errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
+        }
+
+        return user;
+    }
+
+    private boolean notAllFieldsAreSet(User user) {
+        return TypeUtils.getAllFieldValues(user).stream().map(String::valueOf).allMatch(field -> nonNull(field) && !field.isEmpty());
+    }
+
+    private Email getEmail() {
+
+        String text = email.getText();
+
+        if(!Email.check(text)) {
             AlertFactory.errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
         }
+
+        return new Email(text);
     }
 }

@@ -22,7 +22,7 @@ public class User {
     private Email email;
     @DBAttribute(index = 7)
     private List<Playlist> playLists;
-    @DBAttribute(index = 8)
+    // @DBAttribute(index = 8)
     private String password;
 
     public User() {}
@@ -124,5 +124,19 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(email);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "photo=" + photo +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", category='" + category + '\'' +
+                ", role=" + role +
+                ", email=" + email +
+                ", playLists=" + playLists +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

@@ -1,6 +1,36 @@
 package iris.playharmony.model;
 
+import iris.playharmony.util.Pair;
+
 public class Email {
+
+    public static boolean check(String text) {
+        Pair<String, String> emailAttributes = getEmailAttributesFromText(text);
+        return check(emailAttributes.getKey(), emailAttributes.getValue());
+    }
+
+    public static boolean check(String name, String domain) {
+        if(name == null || name.isEmpty() || domain == null || domain.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    private static Pair<String, String> getEmailAttributesFromText(String text) {
+
+        String name = null;
+        String domain = null;
+
+        for (int i = 0; i < text.length(); i++) {
+            if(text.charAt(i) == '@') {
+                name = text.substring(0, i);
+                domain = text.substring(i + 1);
+                break;
+            }
+        }
+
+        return new Pair<>(name, domain);
+    }
 
     private String name;
     private String domain;
@@ -10,21 +40,16 @@ public class Email {
         this.domain = domain;
     }
 
-    public Email(String email) {
-        this.name = "";
-        this.domain = "";
+    public Email(String text) {
 
-        for (int i = 0; i < email.length(); i++) {
-            if(email.charAt(i) == '@') {
-                this.name = email.substring(0, i);
-                this.domain = email.substring(i + 1);
-                break;
-            }
-        }
+        Pair<String, String> emailAttributes = getEmailAttributesFromText(text);
 
-        if(this.name.equals("") || this.domain.equals("")) {
+        if(!check(emailAttributes.getKey(), emailAttributes.getValue())) {
             throw new IllegalArgumentException();
         }
+
+        this.name = emailAttributes.getKey();
+        this.domain = emailAttributes.getValue();
     }
 
     @Override

@@ -7,6 +7,7 @@ import iris.playharmony.model.Email;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
+import iris.playharmony.util.TypeUtils;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.DefaultStyle;
@@ -21,6 +22,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import static java.util.Objects.nonNull;
 
 public class NewUserView extends VBox {
 
@@ -76,22 +79,63 @@ public class NewUserView extends VBox {
     }
 
     private void createUser() {
-        try {
-            User user = new User(photoFile, name.getText(), surname.getText(),
-                    category.getText(), (Role) role.getValue(), new Email(email.getText()), new ArrayList<Playlist>());
-            try {
-                if(new DatabaseController().addUser(user)) {
-                    NavController.get().popView();
-                    UserListView userListView = NavController.get().getCurrentView();
-                    userListView.refresh();
-                } else {
-                    AlertFactory.errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
-                }
-            } catch (CreateUserException e) {
-                AlertFactory.errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
-            }
-        } catch (EmailException e) {
-            AlertFactory.errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
+
+        User user = getUserFromForm();
+
+        if(user == null) {
+            return;
         }
+
+        DatabaseController db = new DatabaseController();
+
+        if(db.addUser(user)) {
+
+            NavController.get().popView();
+            UserListView userListView = NavController.get().getCurrentView();
+            userListView.refresh();
+
+        } else {
+            AlertFactory.errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
+        }
+    }
+
+    private User getUserFromForm() {
+
+        Email email = getEmail();
+
+        if(email == null) {
+            return null;
+        }
+
+        User user = new User(
+                photoFile,
+                name.getText(),
+                surname.getText(),
+                category.getText(),
+                (Role) role.getValue(),
+                email,
+                new ArrayList<>());
+
+        if(notAllFieldsAreSet(user)) {
+            AlertFactory.errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
+        }
+
+        return user;
+    }
+
+    private boolean notAllFieldsAreSet(User user) {
+        return !TypeUtils.getAllFieldValues(user).stream().map(String::valueOf).allMatch(field -> nonNull(field) && !field.trim().isEmpty());
+    }
+
+    private Email getEmail() {
+
+        String text = email.getText();
+
+        if(!Email.check(text)) {
+            AlertFactory.errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
+            return null;
+        }
+
+        return new Email(text);
     }
 }

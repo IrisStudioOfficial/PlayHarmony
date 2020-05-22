@@ -1,10 +1,13 @@
 package iris.playharmony.util;
 
+import iris.playharmony.model.User;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
@@ -36,6 +39,7 @@ public final class TypeUtils {
                 .findAny()
                 .ifPresent(method -> {
                     try {
+                        method.setAccessible(true);
                         method.invoke(object);
                     } catch (Exception e) {
                         Logger.getGlobal().log(Level.SEVERE, "Cannot access field " + method.getName(), e);
@@ -58,5 +62,20 @@ public final class TypeUtils {
                 .collect(toList());
     }
 
-    private TypeUtils() { }
+
+    public static List<?> getAllFieldValues(Object object) {
+        return Stream.of(object.getClass().getDeclaredFields())
+                .map(field -> {
+                    field.setAccessible(true);
+                    try {
+                        return field.get(object);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private TypeUtils() {}
 }

@@ -13,6 +13,4 @@ public interface ISongDatabaseController {
     boolean deleteSong(Song song);
 
     List<Song> getSongs();
-
-    boolean addPlayList(Playlist updatedPlaylist, User user);
 }
