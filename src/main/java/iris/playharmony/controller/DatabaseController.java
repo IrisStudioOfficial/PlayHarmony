@@ -252,6 +252,24 @@ public class DatabaseController {
         return false;
     }
 
+    public boolean deletePlayList(Playlist updatedPlaylist, User user){
+        user.getPlayLists().removeIf(playlist -> playlist.getName().equals(updatedPlaylist.getName()));
+
+        String sql = "UPDATE USERS SET PLAYLIST = ? WHERE EMAIL = ?";
+        String jsonOfPlayList = new Gson().toJson(user.getPlayLists());
+
+        try(PreparedStatement pst = connection.prepareStatement(sql)){
+            pst.setString(1, jsonOfPlayList);
+            pst.setString(2, user.getEmail().toString());
+            return pst.executeUpdate() == 1;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+
     public boolean addFavourites(Playlist favourites, User user) {
         Connection connection = null;
         try {
