@@ -11,8 +11,7 @@ import iris.playharmony.view.util.TableFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Pagination;
-import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
 
 import java.util.Comparator;
 
@@ -20,49 +19,38 @@ public class SelectPlaylistView extends ListTemplate<Playlist> {
 
     private String toBeAddedSong;
 
-    public SelectPlaylistView(String songTitle) {
-        super("Select Playlist");
-        this.toBeAddedSong = songTitle;
-        init();
+    public SelectPlaylistView(Object toBeAddedSong) {
+        super("Select Playlist", toBeAddedSong);
     }
 
     @Override
-    protected void initElements() {
-
+    protected void initBaseElement(Object toBeAddedSong) {
+        this.toBeAddedSong = (String) toBeAddedSong;
     }
 
     @Override
-    protected void searchCommand() {
-        if(searchField.getText().isEmpty())
-            return;
-        data = data.filtered(playlist -> playlist.getName().toLowerCase().contains(searchField.getText().toLowerCase()));
-        TableFactory.updateTable(data, table);
-        TableFactory.updatePagination(data, table, pagination);
-    }
-
-    @Override
-    protected TableView initTable() {
-        return TableFactory.table(data,
-                TableFactory.tableColumn("Name", "name"),
-                TableFactory.tableColumn("Nr of songs", "size")
-        );
-    }
-
-    @Override
-    protected Pagination initPagination() {
-        return TableFactory.pagination(data, table);
-    }
-
-    @Override
-    protected Comparator<Playlist> getComparator() {
+    protected Comparator<Playlist> initComparator() {
         return Comparator.comparing(Playlist::getName);
     }
 
     @Override
-    protected ObservableList<Playlist> getObservableData() {
-        ObservableList<Playlist> data = FXCollections.observableArrayList();
-        data.addAll(Session.getSession().currentUser().getPlayLists());
-        return data;
+    protected ObservableList<Playlist> getData() {
+        ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+        playlists.addAll(Session.getSession().currentUser().getPlayLists());
+        return playlists;
+    }
+
+    @Override
+    protected String fieldToFilter(Playlist playlist) {
+        return playlist.getName();
+    }
+
+    @Override
+    protected TableColumn[] initTable() {
+        return new TableColumn[] {
+                TableFactory.tableColumn("Name", "name"),
+                TableFactory.tableColumn("Nr of songs", "size")
+        };
     }
 
     @Override
@@ -72,15 +60,8 @@ public class SelectPlaylistView extends ListTemplate<Playlist> {
         };
     }
 
-    @Override
-    public void refresh() {
-        data = getObservableData();
-        TableFactory.updateTable(data, table);
-        TableFactory.updatePagination(data, table, pagination);
-    }
-
     private void addToPlaylist() {
-        Playlist selectedPlaylist = (Playlist) table.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = getSelectedItem();
         selectedPlaylist.addSong(new DatabaseController().getSongs().stream()
                 .filter(song -> song.getTitle().equals(toBeAddedSong))
                 .findAny().get());

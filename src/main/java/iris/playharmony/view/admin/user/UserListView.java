@@ -4,7 +4,6 @@ import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.ObservableUser;
-import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.template.ListTemplate;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
@@ -13,8 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.scene.Node;
-import javafx.scene.control.Pagination;
-import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
 
 import java.util.Comparator;
 
@@ -22,52 +20,37 @@ public class UserListView extends ListTemplate<ObservableUser> {
 
     public UserListView() {
         super("Users");
-        init();
     }
 
     @Override
-    protected void initElements() {
-
+    protected Comparator<ObservableUser> initComparator() {
+        return Comparator.comparing(ObservableUser::getName);
     }
 
     @Override
-    protected void searchCommand() {
-        if(searchField.getText().isEmpty())
-            return;
-        data = data.filtered(observableUser -> observableUser.getName().toLowerCase().contains(searchField.getText().toLowerCase()));
-        TableFactory.updateTable(data, table);
-        TableFactory.updatePagination(data, table, pagination);
+    protected ObservableList<ObservableUser> getData() {
+        ObservableList<ObservableUser> observableUsers = FXCollections.observableArrayList();
+        new DatabaseController().getUsers().stream()
+                .map(ObservableUser::from)
+                .forEach(observableUsers::add);
+        return observableUsers;
     }
 
     @Override
-    protected TableView initTable() {
-        return TableFactory.table(data,
+    protected String fieldToFilter(ObservableUser user) {
+        return user.getName();
+    }
+
+    @Override
+    protected TableColumn[] initTable() {
+        return new TableColumn[] {
                 TableFactory.tableColumnPhoto("Photo", "photo", 100),
                 TableFactory.tableColumn("Name", "name"),
                 TableFactory.tableColumn("Surname", "surname"),
                 TableFactory.tableColumn("Email", "Email"),
                 TableFactory.tableColumn("Category", "Category"),
                 TableFactory.tableColumn("Role", "Role")
-        );
-    }
-
-    @Override
-    protected Pagination initPagination() {
-        return TableFactory.pagination(data, table);
-    }
-
-    @Override
-    protected Comparator<ObservableUser> getComparator() {
-        return Comparator.comparing(ObservableUser::getName);
-    }
-
-    @Override
-    protected ObservableList<ObservableUser> getObservableData() {
-        data = FXCollections.observableArrayList();
-        new DatabaseController().getUsers().stream()
-                .map(ObservableUser::from)
-                .forEach(data::add);
-        return data;
+        };
     }
 
     @Override
@@ -79,17 +62,9 @@ public class UserListView extends ListTemplate<ObservableUser> {
         };
     }
 
-    @OnRefresh
-    @Override
-    public void refresh() {
-        data = getObservableData();
-        TableFactory.updateTable(data, table);
-        TableFactory.updatePagination(data, table, pagination);
-    }
-
     private void removeUser(Event event) {
         event.consume();
-        ObservableUser selection = (ObservableUser) table.getSelectionModel().getSelectedItem();
+        ObservableUser selection = getSelectedItem();
         if(selection == null)
             return;
         try {
@@ -101,7 +76,7 @@ public class UserListView extends ListTemplate<ObservableUser> {
     }
 
     private void updateUser() {
-        ObservableUser selectedItem = (ObservableUser) table.getSelectionModel().getSelectedItem();
+        ObservableUser selectedItem = getSelectedItem();
         if(selectedItem != null) {
             NavController.get().pushView(new UpdateUserView(selectedItem));
         }

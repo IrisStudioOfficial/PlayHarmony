@@ -1,6 +1,7 @@
 package iris.playharmony.view.main;
 
 import iris.playharmony.controller.NavController;
+import iris.playharmony.view.session.SignUpView;
 import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.user.UserView;
 import iris.playharmony.view.util.ButtonFactory;
@@ -21,12 +22,8 @@ public class LobbyView extends FormTemplate {
     protected Node[] bottomButtonPanel() {
         return new Node[] {
                 ButtonFactory.button("Admin", event -> NavController.get().pushView(new AdminView())),
-                ButtonFactory.button("User", event -> NavController.get().pushView(new UserView()))
+                ButtonFactory.button("User", event -> NavController.get().pushView(new UserView())),
+                ButtonFactory.button("SignUp", event -> NavController.get().pushView(new SignUpView()))
         };
-    }
-
-    @Override
-    public void refresh() {
-
     }
 }
