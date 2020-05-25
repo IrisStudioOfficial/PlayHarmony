@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SQLStatement implements AutoCloseable {
 
@@ -31,27 +33,27 @@ public class SQLStatement implements AutoCloseable {
         return ERROR_CODE;
     }
 
-    public SQLStatement setKey(String name, String value) throws SQLException {
+    public SQLStatement setKey(String name, String value) {
         final String keyName = (name + "_KEY").toUpperCase();
-        preparedStatement.setString(query.getParamIndex(keyName), value);
+        setStatementParameter(name, value);
         paramsSetTracker.put(keyName, true);
         return this;
     }
 
-    public SQLStatement set(String name, String value) throws SQLException {
-        preparedStatement.setString(query.getParamIndex(name), value);
+    public SQLStatement set(String name, String value) {
+        setStatementParameter(name, value);
         paramsSetTracker.put(name.toUpperCase(), true);
         return this;
     }
 
-    public SQLStatement set(String name, InputStream inputStream) throws SQLException {
-        preparedStatement.setBinaryStream(query.getParamIndex(name), inputStream);
+    public SQLStatement set(String name, InputStream inputStream) {
+        setStatementParameter(name, inputStream);
         paramsSetTracker.put(name.toUpperCase(), true);
         return this;
     }
 
-    public SQLStatement set(String name, InputStream inputStream, int bytes) throws SQLException {
-        preparedStatement.setBinaryStream(query.getParamIndex(name), inputStream, bytes);
+    public SQLStatement set(String name, InputStream inputStream, int bytes) {
+        setStatementParameter(name, inputStream, bytes);
         paramsSetTracker.put(name.toUpperCase(), true);
         return this;
     }
@@ -84,6 +86,30 @@ public class SQLStatement implements AutoCloseable {
             if(!param.getValue()) {
                 throw new RuntimeException("Param " + param.getKey() + " has not been set on query " + getQuery().getSQLQuery());
             }
+        }
+    }
+
+    private void setStatementParameter(String name, String value) {
+        try {
+            preparedStatement.setString(query.getParamIndex(name), value);
+        } catch (SQLException e) {
+            Logger.getGlobal().log(Level.SEVERE, "Error while setting parameter " + name, e);
+        }
+    }
+
+    private void setStatementParameter(String name, InputStream inputStream) {
+        try {
+            preparedStatement.setBinaryStream(query.getParamIndex(name), inputStream);
+        } catch(SQLException e) {
+            Logger.getGlobal().log(Level.SEVERE, "Error while setting parameter " + name, e);
+        }
+    }
+
+    private void setStatementParameter(String name, InputStream inputStream, int bytes) {
+        try {
+            preparedStatement.setBinaryStream(query.getParamIndex(name), inputStream, bytes);
+        } catch(SQLException e) {
+            Logger.getGlobal().log(Level.SEVERE, "Error while setting parameter " + name, e);
         }
     }
 }

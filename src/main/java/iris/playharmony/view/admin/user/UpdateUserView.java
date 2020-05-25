@@ -117,7 +117,7 @@ public class UpdateUserView extends VBox {
     }
 
     private boolean notAllFieldsAreSet(User user) {
-        return TypeUtils.getAllFieldValues(user).stream().map(String::valueOf).allMatch(field -> nonNull(field) && !field.isEmpty());
+        return !TypeUtils.getAllFieldValues(user).stream().map(String::valueOf).allMatch(field -> nonNull(field) && !field.isEmpty());
     }
 
     private Email getEmail() {

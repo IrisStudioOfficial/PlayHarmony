@@ -80,7 +80,7 @@ public class SongDatabaseController extends AbstractDatabaseController implement
 
             return statement.execute() != SQLStatement.ERROR_CODE;
 
-        } catch(Exception e){
+        } catch(Exception e) {
             e.printStackTrace();
         }
 
