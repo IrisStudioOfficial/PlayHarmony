@@ -54,6 +54,8 @@ public class TableFactory {
 
     public static TableColumn tableColumnPhoto(String name, String id, int size) {
         TableColumn column = tableColumn(name, id);
+        column.setMaxWidth(size);
+        column.setMinWidth(size);
         column.setPrefWidth(size);
         return column;
     }

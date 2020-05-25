@@ -49,7 +49,8 @@ public class UserSongListView extends ListTemplate<ObservableSong> {
     @Override
     protected TableView initTable() {
         return TableFactory.table(data,
-                TableFactory.tableColumnPhoto("Photo", "photo", 100),
+                TableFactory.tableColumnPhoto("", "fav", 40),
+                TableFactory.tableColumnPhoto("Photo", "photo", 200),
                 TableFactory.tableColumn("Title", "title"),
                 TableFactory.tableColumn("Author", "author"),
                 TableFactory.tableColumn("Date", "date")
