@@ -76,6 +76,7 @@ public class DatabaseController {
         return userList;
     }
 
+
     public boolean addUser(User user) throws CreateUserException {
         if(user.getName().equals("") || user.getSurname().equals("") || user.getCategory().equals(""))
             throw new CreateUserException();
