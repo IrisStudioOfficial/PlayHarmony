@@ -70,4 +70,14 @@ public class DatabaseController implements IUserDatabaseController, ISongDatabas
     public boolean addPlayList(Playlist updatedPlaylist, User user) {
         return playlistDatabaseController.addPlayList(updatedPlaylist, user);
     }
+
+    @Override
+    public boolean deletePlayList(Playlist playList, User user) {
+        return playlistDatabaseController.deletePlayList(playList, user);
+    }
+
+    @Override
+    public boolean addToFavourites(Playlist favourites, User user) {
+        return playlistDatabaseController.addToFavourites(favourites, user);
+    }
 }

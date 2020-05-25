@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import iris.playharmony.controller.handler.PathHandler;
 import iris.playharmony.exceptions.CreateUserException;
-import iris.playharmony.exceptions.EmailException;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.exceptions.UpdateUserException;
 import iris.playharmony.model.*;
@@ -71,7 +70,7 @@ public class DatabaseController {
                     e.printStackTrace();
                 }
             }
-        } catch (SQLException | EmailException ignored) {}
+        } catch (Exception e) {}
 
         return userList;
     }

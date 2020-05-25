@@ -9,6 +9,7 @@ import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import iris.playharmony.util.FileUtils;
+import iris.playharmony.util.Json;
 import iris.playharmony.util.Resources;
 
 import java.io.File;
@@ -32,7 +33,7 @@ public class UserDatabaseController extends AbstractDatabaseController implement
 
     private static final SQLWriteQuery SQL_QUERY_UPDATE_USER = new SQLUpdateQuery(USERS_TABLE_NAME,
             "email",
-            "photo", "name", "surname", "category", "user_role", "email");
+            "photo", "name", "surname", "category", "user_role", "email", "favourites");
 
     private static final SQLWriteQuery SQL_QUERY_REMOVE_USER_BY_EMAIL = new SQLDeleteByKeyQuery(USERS_TABLE_NAME, "email");
 
@@ -67,6 +68,8 @@ public class UserDatabaseController extends AbstractDatabaseController implement
 
             List<Playlist> playList = new Gson().fromJson(resultSet.getString("PLAYLIST"), new TypeToken<List<Playlist>>(){}.getType());
 
+            Playlist favourites = new Gson().fromJson(resultSet.getString("FAVOURITES"), Playlist.class);
+
             playList = playList == null ? new ArrayList<>() : playList;
 
             User user = new User()
@@ -76,6 +79,7 @@ public class UserDatabaseController extends AbstractDatabaseController implement
                     .role(Role.getRoleFrom(resultSet.getString("USER_ROLE")))
                     .mail(new Email(resultSet.getString("EMAIL")))
                     .photo(photo)
+                    .favourites(favourites)
                     .setPlayLists(playList);
                     // .setPassword(resultSet.getString("PASSWORD"));
 
@@ -148,6 +152,7 @@ public class UserDatabaseController extends AbstractDatabaseController implement
                     .set("surname", user.getSurname())
                     .set("email", user.getEmail().toString())
                     .set("category", user.getCategory())
+                    .set("favourites", Json.toJson(user.favourites()))
                     .set("user_role", user.getRole().toString());
 
             return statement.execute() != SQLStatement.ERROR_CODE;

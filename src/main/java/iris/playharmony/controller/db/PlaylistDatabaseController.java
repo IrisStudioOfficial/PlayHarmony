@@ -9,29 +9,56 @@ import iris.playharmony.util.Json;
 
 public class PlaylistDatabaseController extends AbstractDatabaseController implements IPlaylistDatabaseController {
 
-    private static final String PLAYLIST_TABLE_NAME = "PLAYLIST";
+    private static final String USER_TABLE_NAME = "USERS";
 
-    private static final SQLWriteQuery SQL_QUERY_SET_PLAYLIST_TO_USER = new SQLUpdateQuery(PLAYLIST_TABLE_NAME,
+    private static final SQLWriteQuery SQL_QUERY_UPDATE_PLAYLIST = new SQLUpdateQuery(USER_TABLE_NAME,
             "email",
             "playlist");
+
+    private static final SQLWriteQuery SQL_QUERY_UPDATE_FAVOURITES = new SQLUpdateQuery(USER_TABLE_NAME,
+            "email",
+            "favourites");
 
 
     public PlaylistDatabaseController() {
     }
 
     @Override
-    public boolean addPlayList(Playlist updatedPlaylist, User user) {
+    public boolean addPlayList(Playlist playlist, User user) {
 
-        user.getPlayLists().removeIf(playlist -> playlist.getName().equals(updatedPlaylist.getName()));
+        removeUserPlaylist(playlist, user);
 
-        user.addPlayList(updatedPlaylist);
+        user.addPlayList(playlist);
 
-        String jsonOfPlayList = Json.toJson(updatedPlaylist);
+        return updateUserPlaylists(SQL_QUERY_UPDATE_PLAYLIST, "playlist", Json.toJson(playlist), user);
+    }
 
-        try(SQLStatement statement = SQL_QUERY_SET_PLAYLIST_TO_USER.prepareStatement(getDBConnection())) {
+    @Override
+    public boolean deletePlayList(Playlist playList, User user) {
+
+        removeUserPlaylist(playList, user);
+
+        return updateUserPlaylists(SQL_QUERY_UPDATE_PLAYLIST, "playlist", Json.toJson(playList), user);
+    }
+
+    @Override
+    public boolean addToFavourites(Playlist favourites, User user) {
+
+        user.favourites(favourites);
+
+        return updateUserPlaylists(SQL_QUERY_UPDATE_FAVOURITES, "favourites", Json.toJson(favourites), user);
+    }
+
+    private void removeUserPlaylist(Playlist playlist, User user) {
+        user.getPlayLists().removeIf(pl -> pl.getName().equals(playlist.getName()));
+    }
+
+    private boolean updateUserPlaylists(SQLWriteQuery sql, String paramName, String json, User user) {
+
+        try(SQLStatement statement = sql.prepareStatement(getDBConnection())) {
 
             statement.setKey("email", user.getEmail().toString())
-                    .set("playlist", jsonOfPlayList);
+                    .set(paramName, json);
 
             return statement.execute() != SQLStatement.ERROR_CODE;
 
