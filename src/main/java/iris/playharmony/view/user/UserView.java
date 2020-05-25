@@ -4,7 +4,6 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.User;
 import iris.playharmony.session.Session;
-import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.template.ListTemplate;
 import iris.playharmony.view.user.playlist.CreatePlaylistView;
 import iris.playharmony.view.user.playlist.PlaylistView;
@@ -14,8 +13,7 @@ import iris.playharmony.view.util.TableFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Pagination;
-import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
 
 import java.util.Comparator;
 
@@ -23,52 +21,34 @@ public class UserView extends ListTemplate<Playlist> {
 
     public UserView() {
         super("Select Playlist");
-        init();
     }
 
     @Override
-    protected void initElements() {
-
-    }
-
-    @Override
-    protected void searchCommand() {
-        if(!searchField.getText().isEmpty()) {
-            data = data.filtered(playlist -> playlist.getName().toLowerCase().contains(searchField.getText().toLowerCase()));
-            TableFactory.updateTable(data, table);
-            TableFactory.updatePagination(data, table, pagination);
-        }
-    }
-
-    @Override
-    protected TableView initTable() {
-        return TableFactory.table(data,
-                TableFactory.tableColumn("Name", "name"),
-                TableFactory.tableColumn("Nr of songs", "size")
-        );
-    }
-
-    @Override
-    protected Pagination initPagination() {
-        return TableFactory.pagination(data, table);
-    }
-
-    @Override
-    protected Comparator<Playlist> getComparator() {
+    protected Comparator<Playlist> initComparator() {
         return Comparator.comparing(Playlist::getName);
     }
 
     @Override
-    protected ObservableList<Playlist> getObservableData() {
-        ObservableList<Playlist> data = FXCollections.observableArrayList();
+    protected ObservableList<Playlist> getData() {
+        ObservableList<Playlist> playlists = FXCollections.observableArrayList();
         User user = Session.getSession().currentUser();
-        if(user.getPlayLists() == null) {
-            return FXCollections.emptyObservableList();
+        if(user.getPlayLists() != null) {
+            playlists.addAll(user.getPlayLists());
         }
-        user.getPlayLists().stream()
-                .sorted(comparator)
-                .forEach(data::add);
-        return data;
+        return playlists;
+    }
+
+    @Override
+    protected String fieldToFilter(Playlist playlist) {
+        return playlist.getName();
+    }
+
+    @Override
+    protected TableColumn[] initTable() {
+        return new TableColumn[] {
+                TableFactory.tableColumn("Name", "name"),
+                TableFactory.tableColumn("Nr of songs", "size")
+        };
     }
 
     @Override
@@ -80,16 +60,8 @@ public class UserView extends ListTemplate<Playlist> {
         };
     }
 
-    @OnRefresh
-    @Override
-    public void refresh() {
-        data = getObservableData();
-        TableFactory.updateTable(data, table);
-        TableFactory.updatePagination(data, table, pagination);
-    }
-
     private void seePlaylist() {
-        Playlist selectedItem = (Playlist) table.getSelectionModel().getSelectedItem();
+        Playlist selectedItem = getSelectedItem();
         if(selectedItem != null) {
             NavController.get().pushView(new PlaylistView(selectedItem));
         }
