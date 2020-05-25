@@ -67,30 +67,8 @@ public class PlayHarmony extends Application {
 
         NavController.get().pushView(new LobbyView());
 
-        showMusicPlayerView();
-
         primaryStage.show();
     }
-
-    private void showMusicPlayerView() {
-
-        MusicPlayer musicPlayer = new MusicPlayer();
-
-        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
-
-        Song song = SongFactory.createSongFromFolder(Resources.get("songs/Roses"));
-
-        MusicPlayerViewModel viewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
-
-        MusicPlayerView view = new MusicPlayerView(viewModel);
-
-        NavController.get().pushView(view);
-
-        viewModel.setSong(song);
-
-        musicPlayer.play();
-    }
-
 
     private void createScene() {
 
