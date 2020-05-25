@@ -18,8 +18,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.Pagination;
-import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
 
 import java.util.Comparator;
 
@@ -27,53 +26,46 @@ public class AddSongToPlaylistView extends ListTemplate<ObservableSong> {
 
     private Playlist playlist;
 
-    public AddSongToPlaylistView(Playlist playlist) {
-        super("Add Song to Playlist");
-        this.playlist = playlist;
-        init();
+    public AddSongToPlaylistView(Object baseElement) {
+        super("Add Song To Playlist", baseElement);
     }
 
     @Override
-    protected void initElements() {
-
+    protected void initBaseElement(Object playlist) {
+        this.playlist = (Playlist) playlist;
     }
 
     @Override
-    protected void searchCommand() {
-
-    }
-
-    @Override
-    protected TableView initTable() {
-        return TableFactory.table(data,
-                TableFactory.tableColumnPhoto("Photo", "photo", 100),
-                TableFactory.tableColumn("Title", "title"),
-                TableFactory.tableColumn("Author", "author"),
-                TableFactory.tableColumn("Date", "date")
-        );
-    }
-
-    @Override
-    protected Pagination initPagination() {
-        return TableFactory.pagination(data, table);
-    }
-
-    @Override
-    protected Comparator<ObservableSong> getComparator() {
+    protected Comparator<ObservableSong> initComparator() {
         return Comparator.comparing(o -> o.title().get());
     }
 
     @Override
-    protected ObservableList<ObservableSong> getObservableData() {
-        ObservableList<ObservableSong> data = FXCollections.observableArrayList();
+    protected ObservableList<ObservableSong> getData() {
+        ObservableList<ObservableSong> lists = FXCollections.observableArrayList();
         for (Song song : new DatabaseController().getSongs()) {
             ObservableSong observableSong = new ObservableSong().title(song.getTitle()).author(song.getAuthor())
                     .photo(song.getPhoto()).date(song.getDate()).path(song.getPathFile());
             if(playlist.getSongList().stream().noneMatch(s -> s.getTitle().equals(observableSong.getTitle()))) {
-                data.add(observableSong);
+                lists.add(observableSong);
             }
         }
-        return data;
+        return lists;
+    }
+
+    @Override
+    protected String fieldToFilter(ObservableSong song) {
+        return song.getTitle();
+    }
+
+    @Override
+    protected TableColumn[] initTable() {
+        return new TableColumn[] {
+                TableFactory.tableColumnPhoto("Photo", "photo", 100),
+                TableFactory.tableColumn("Title", "title"),
+                TableFactory.tableColumn("Author", "author"),
+                TableFactory.tableColumn("Date", "date")
+        };
     }
 
     @Override
@@ -84,21 +76,13 @@ public class AddSongToPlaylistView extends ListTemplate<ObservableSong> {
         };
     }
 
-    @Override
-    public void refresh() {
-        data = getObservableData();
-        TableFactory.updateTable(data, table);
-        TableFactory.updatePagination(data, table, pagination);
-    }
-
     private void addSongs() {
-        ObservableSong selectedItem = (ObservableSong) table.getSelectionModel().getSelectedItem();
+        ObservableSong selectedItem = getSelectedItem();
         if(selectedItem != null) {
             playlist.addSong(new DatabaseController().getSongs().stream()
                     .filter(song -> song.getTitle().equals(selectedItem.getTitle()))
                     .findAny().get());
             new DatabaseController().addPlayList(playlist, Session.getSession().currentUser());
-            data.remove(selectedItem);
             refresh();
         }
     }
@@ -106,7 +90,7 @@ public class AddSongToPlaylistView extends ListTemplate<ObservableSong> {
     private void playSong(ActionEvent actionEvent) {
         MusicPlayer musicPlayer = new MusicPlayer();
         Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
-        ObservableSong selectedItem = (ObservableSong) table.getSelectionModel().getSelectedItem();
+        ObservableSong selectedItem = getSelectedItem();
         Song song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
 
         MusicPlayerViewModel musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);

@@ -5,7 +5,6 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.User;
 import iris.playharmony.session.Session;
-import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.user.UserView;
 import iris.playharmony.view.util.AlertFactory;
@@ -32,12 +31,6 @@ public class CreatePlaylistView extends FormTemplate {
         return new Node[] {
                 ButtonFactory.button("Create", e -> createPlayList())
         };
-    }
-
-    @OnRefresh
-    @Override
-    public void refresh() {
-
     }
 
     private void createPlayList() {
