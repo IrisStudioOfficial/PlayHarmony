@@ -19,6 +19,17 @@ public abstract class FormTemplate extends VBox {
         setPadding(new Insets(SPACING));
     }
 
+    public FormTemplate(String title, Object baseElement) {
+        super(SPACING);
+        initBaseElement(baseElement);
+        add(TextFactory.label(title, DefaultStyle.title()));
+        initElements();
+        add(TemplateHelper.addPaddingTo(bottomButtonPanel()));
+        setPadding(new Insets(SPACING));
+    }
+
+    protected void initBaseElement(Object baseElement) {}
+
     protected abstract void initElements();
 
     protected abstract Node[] bottomButtonPanel();
