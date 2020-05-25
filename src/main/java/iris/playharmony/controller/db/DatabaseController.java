@@ -25,7 +25,7 @@ public class DatabaseController implements IUserDatabaseController, ISongDatabas
     private final ISongDatabaseController songDatabaseController;
     private final IPlaylistDatabaseController playlistDatabaseController;
 
-    public DatabaseController() {
+    private DatabaseController() {
         userDatabaseController = new UserDatabaseController();
         songDatabaseController = new SongDatabaseController();
         playlistDatabaseController = new PlaylistDatabaseController();
