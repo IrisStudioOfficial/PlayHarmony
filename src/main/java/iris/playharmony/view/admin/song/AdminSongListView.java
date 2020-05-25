@@ -15,6 +15,8 @@ import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AdminSongListView extends ListTemplate<ObservableSong> {
 
@@ -58,11 +60,12 @@ public class AdminSongListView extends ListTemplate<ObservableSong> {
     protected Node[] bottomButtonPanel() {
         return new Node[] {
                 ButtonFactory.button("Add Song", e -> addSong()),
-                ButtonFactory.button("Delete Song", this::removeSong)
+                ButtonFactory.button("Delete Song", this::removeSong),
+                ButtonFactory.button("Update Song", e -> updateSong())
         };
     }
 
-    private static void addSong() {
+    private void addSong() {
         NavController.get().pushView(new NewSongView());
     }
 
@@ -74,5 +77,17 @@ public class AdminSongListView extends ListTemplate<ObservableSong> {
         if (!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
             AlertFactory.errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
         refresh();
+    }
+
+    private void updateSong() {
+        ObservableSong observableSong = getSelectedItem();
+        if(observableSong != null) {
+            List<Song> songList = new DatabaseController().getSongs().stream()
+                    .filter(song -> song.getTitle().equals(observableSong.getTitle()))
+                    .collect(Collectors.toList());
+            if(songList.size() > 0) {
+                NavController.get().pushView(new UpdateSongView(songList.get(0)));
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package iris.playharmony.view.user;
 
+import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.User;
@@ -8,6 +9,7 @@ import iris.playharmony.view.template.ListTemplate;
 import iris.playharmony.view.user.playlist.CreatePlaylistView;
 import iris.playharmony.view.user.playlist.PlaylistView;
 import iris.playharmony.view.user.song.UserSongListView;
+import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.TableFactory;
 import javafx.collections.FXCollections;
@@ -56,7 +58,8 @@ public class UserView extends ListTemplate<Playlist> {
         return new Node[] {
                 ButtonFactory.button("Search Songs", e -> NavController.get().pushView(new UserSongListView())),
                 ButtonFactory.button("Add Playlist", e -> NavController.get().pushView(new CreatePlaylistView())),
-                ButtonFactory.button("See Playlist", event -> seePlaylist())
+                ButtonFactory.button("See Playlist", event -> seePlaylist()),
+                ButtonFactory.button("Delete Playlist", event -> deletePlaylist())
         };
     }
 
@@ -66,4 +69,13 @@ public class UserView extends ListTemplate<Playlist> {
             NavController.get().pushView(new PlaylistView(selectedItem));
         }
     }
+
+    private void deletePlaylist() {
+        Playlist selectedItem = getSelectedItem();
+        if(AlertFactory.confirmAlert("Confirm", "Are you sure you want to delete the playlist?")){
+            new DatabaseController().deletePlayList(selectedItem, Session.getSession().currentUser());
+            refresh();
+        }
+    }
+
 }

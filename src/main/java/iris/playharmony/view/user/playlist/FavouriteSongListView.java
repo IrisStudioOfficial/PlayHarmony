@@ -23,6 +23,15 @@ import java.util.Comparator;
 import java.util.Random;
 
 public class FavouriteSongListView extends ListTemplate<ObservableSong> {
+    /**
+     * Esto es una niña en bici paseando por el mar con un chocobollo (bollo de
+     * chocolate) en la parte de atras. Se le cae una vez el chocobollo al suelo.
+     * NIÑA: Chocobollo, si te vuelves a caer te tiro al mar
+     * Se le cae otra vez el chocobollo.
+     * NIÑA: Chocobollo,si te vuelves a caer te tirare al mar.
+     * Se le vuelve a caer el chocobollo.
+     * Lo coge y lo tira al mar.
+     */
 
     private MusicPlayerViewModel musicPlayerViewModel;
     private SongPlayMode songPlayMode = SongPlayMode.getDefault();
