@@ -21,16 +21,17 @@ public class UpdateSongView extends FormTemplate {
 
     private TextField title;
     private TextField author;
-    private TextField pathPhoto;
-    private File photoFile;
     private TextField dateDay;
     private TextField dateMonth;
     private TextField dateYear;
+    private TextField pathPhoto;
     private TextField pathFile;
+
+    private File photoFile;
     private File songFile;
 
-    public UpdateSongView(Song song) {
-        super("Update Song", song);
+    public UpdateSongView(Object baseElement) {
+        super("Update Song", baseElement);
     }
 
     @Override
@@ -43,13 +44,16 @@ public class UpdateSongView extends FormTemplate {
         add(TextFactory.label("Title", DefaultStyle.label()));
         add(title = TextFactory.textField(song.getTitle()));
         add(TextFactory.label("Author", DefaultStyle.label()));
-        add(author = TextFactory.textField(""));
+        add(author = TextFactory.textField(song.getAuthor()));
+        String[] date = song.getDate().split("-");
         add(TextFactory.label("Day", DefaultStyle.label()));
-        add(dateDay = TextFactory.textField(""));
+        add(dateDay = TextFactory.textField(date[0]));
         add(TextFactory.label("Month", DefaultStyle.label()));
-        add(dateMonth = TextFactory.textField(""));
+        add(dateMonth = TextFactory.textField(date[1]));
         add(TextFactory.label("Year", DefaultStyle.label()));
-        add(dateYear = TextFactory.textField(""));
+        add(dateYear = TextFactory.textField(date[2]));
+        pathPhoto = new TextField(song.getPhoto());
+        pathFile = new TextField(song.getPathFile());
         add(TextFactory.label("Photo", DefaultStyle.label()));
         add(ButtonFactory.buttonWithLabeledResource(pathPhoto, "Upload Image", event -> uploadImage(pathPhoto)));
         add(TextFactory.label("Song File", DefaultStyle.label()));
@@ -58,7 +62,7 @@ public class UpdateSongView extends FormTemplate {
 
     @Override
     protected Node[] bottomButtonPanel() {
-        return new Node[]{
+        return new Node[] {
                 ButtonFactory.button("Update Song", event -> updateSong())
         };
     }
@@ -91,11 +95,11 @@ public class UpdateSongView extends FormTemplate {
     }
 
     private void updateSong() {
-        Song song = new Song(title.getText(), author.getText(), photoFile.toString(), dateDay.getText() + "-" + dateMonth.getText() + "-" + dateYear.getText(), pathFile.getText());
+        /*Song song = new Song(title.getText(), author.getText(), photoFile.toString(), dateDay.getText() + "-" + dateMonth.getText() + "-" + dateYear.getText(), pathFile.getText());
         if (new DatabaseController().addSong(song)) {
             NavController.get().popView();
         } else {
             AlertFactory.errorAlert("ERROR! Song is already registered", "ERROR! Song is already registered");
-        }
+        }*/
     }
 }
