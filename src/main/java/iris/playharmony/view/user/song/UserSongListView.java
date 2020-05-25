@@ -26,7 +26,7 @@ import javafx.scene.control.TableView;
 import java.util.Comparator;
 
 public class UserSongListView extends ListTemplate<ObservableSong> {
-
+    //Welcome
     public UserSongListView() {
         super("Search Song");
         init();
