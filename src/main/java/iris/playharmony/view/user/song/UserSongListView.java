@@ -1,6 +1,6 @@
 package iris.playharmony.view.user.song;
 
-import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.OLDDatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
@@ -37,7 +37,7 @@ public class UserSongListView extends ListTemplate<ObservableSong> {
     @Override
     protected ObservableList<ObservableSong> getData() {
         ObservableList<ObservableSong> songs = FXCollections.observableArrayList();
-        new DatabaseController()
+        new OLDDatabaseController()
                 .getSongs()
                 .stream()
                 .map(ObservableSong::from)
@@ -82,19 +82,19 @@ public class UserSongListView extends ListTemplate<ObservableSong> {
         favourites = favourites == null ? new Playlist("Favourites") : favourites;
 
         ObservableSong selectedItem = getSelectedItem();
-        Song toBeAdded = new DatabaseController().getSongs().stream()
+        Song toBeAdded = new OLDDatabaseController().getSongs().stream()
                 .filter(song -> song.getTitle().equals(selectedItem.getTitle()))
                 .findAny().get();
 
         favourites.addSong(toBeAdded);
-        new DatabaseController().addFavourites(favourites, Session.getSession().currentUser());
+        new OLDDatabaseController().addFavourites(favourites, Session.getSession().currentUser());
     }
 
     private void playSong(ActionEvent actionEvent) {
         MusicPlayer musicPlayer = new MusicPlayer();
         Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
         ObservableSong selectedItem = getSelectedItem();
-        Song song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
+        Song song = new OLDDatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
 
         MusicPlayerViewModel musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
         musicPlayerViewModel.setSong(song);

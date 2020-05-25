@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +27,7 @@ public class SQLStatement implements AutoCloseable {
     public int execute() {
         try {
             checkThatAllParametersHaveBeenSet();
+            System.out.println("Executing SQL statement " + query.getSQLQuery() + " with parameters:\n" + paramsSetTracker);
             return preparedStatement.executeUpdate();
         } catch (Throwable e) {
             e.printStackTrace();
@@ -35,7 +37,7 @@ public class SQLStatement implements AutoCloseable {
 
     public SQLStatement setKey(String name, String value) {
         final String keyName = (name + "_KEY").toUpperCase();
-        setStatementParameter(name, value);
+        setStatementParameter(keyName, value);
         paramsSetTracker.put(keyName, true);
         return this;
     }
@@ -76,7 +78,7 @@ public class SQLStatement implements AutoCloseable {
     }
 
     private Map<String, Boolean> createParamsSetTracker() {
-        Map<String, Boolean> tracker = new HashMap<>();
+        Map<String, Boolean> tracker = new LinkedHashMap<>();
         query.getParams().forEach((param, index) -> tracker.put(param, false));
         return tracker;
     }

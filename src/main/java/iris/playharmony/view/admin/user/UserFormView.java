@@ -1,18 +1,20 @@
-package iris.playharmony.view.session;
+package iris.playharmony.view.admin.user;
 
 import iris.playharmony.controller.NavController;
 import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.Email;
+import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import iris.playharmony.util.TypeUtils;
-import iris.playharmony.view.admin.user.UserListView;
-import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TextFactory;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -21,51 +23,45 @@ import java.util.ArrayList;
 
 import static java.util.Objects.nonNull;
 
-public class SignUpView extends FormTemplate {
+public abstract class UserFormView extends VBox {
 
-    private File photoFile;
-    private TextField photo;
-    private TextField name;
-    private TextField surname;
-    private TextField email;
-    private TextField password;
-    private TextField category;
+    private static final int SPACING = 15;
 
-    public SignUpView() {
-        super("Sign Up");
+    protected File photoFile;
+    protected TextField photo = new TextField();
+    protected TextField name = new TextField();
+    protected TextField surname = new TextField();
+    protected TextField email = new TextField();
+    protected TextField category = new TextField();
+    protected ComboBox<Object> role = new ComboBox<>();
+
+    public UserFormView() {
+        super(SPACING);
+        initElements();
+        setPadding(new Insets(SPACING));
     }
 
-    @Override
     protected void initElements() {
-        photo = new TextField();
-
+        add(TextFactory.label("Update User", DefaultStyle.title()));
         add(TextFactory.label("Name", DefaultStyle.label()));
-        add(name = TextFactory.textField(""));
+        add(name = new TextField());
         add(TextFactory.label("Surname", DefaultStyle.label()));
-        add(surname = TextFactory.textField(""));
+        add(surname = new TextField());
         add(TextFactory.label("Email", DefaultStyle.label()));
-        add(email = TextFactory.textField(""));
-        add(TextFactory.label("Password", DefaultStyle.label()));
-        add(password = TextFactory.textField(""));
+        add(email = new TextField());
         add(TextFactory.label("Category", DefaultStyle.label()));
-        add(category = TextFactory.textField(""));
-        add(TextFactory.label("Upload Image", DefaultStyle.label()));
-        add(ButtonFactory.buttonWithLabeledResource(photo, "Photo", event -> uploadImage(photo)));
+        add(category = new TextField());
+        add(TextFactory.label("Role", DefaultStyle.label()));
+        add(role = TextFactory.comboBox(Role.values()));
+        add(ButtonFactory.buttonWithLabeledResource(photo, "Upload Image", event -> uploadImage(photo)));
     }
 
-    @Override
-    protected Node[] bottomButtonPanel() {
-        return new Node[] {
-                ButtonFactory.button("Sign Up", event -> createUser())
-        };
-    }
-
-    @Override
-    public void refresh() {
-
+    protected void add(Node node) {
+        getChildren().add(node);
     }
 
     private void uploadImage(TextField textField) {
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Search Image");
 
@@ -79,26 +75,7 @@ public class SignUpView extends FormTemplate {
         textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
     }
 
-    private void createUser() {
-
-        User user = getUserFromForm();
-
-        if(user == null) {
-            return;
-        }
-
-        if(DatabaseController.get().addUser(user)) {
-
-            NavController.get().popView();
-            UserListView userListView = NavController.get().getCurrentView();
-            userListView.refresh();
-
-        } else {
-            AlertFactory.errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
-        }
-    }
-
-    private User getUserFromForm() {
+    protected User getUserFromForm() {
 
         Email email = getEmail();
 
@@ -111,8 +88,7 @@ public class SignUpView extends FormTemplate {
                 name.getText(),
                 surname.getText(),
                 category.getText(),
-                null,
-                // (Role) role.getValue(),
+                (Role) role.getValue(),
                 email,
                 new ArrayList<>());
 
@@ -123,13 +99,11 @@ public class SignUpView extends FormTemplate {
         return user;
     }
 
-    private boolean notAllFieldsAreSet(User user) {
-        return !TypeUtils.getAllFieldValues(user).stream()
-                .map(field -> field == null ? null : field.toString())
-                .allMatch(field -> nonNull(field) && !field.trim().isEmpty());
+    protected boolean notAllFieldsAreSet(User user) {
+        return !TypeUtils.getAllFieldValues(user).stream().map(String::valueOf).allMatch(field -> nonNull(field) && !field.trim().isEmpty());
     }
 
-    private Email getEmail() {
+    protected Email getEmail() {
 
         String text = email.getText();
 

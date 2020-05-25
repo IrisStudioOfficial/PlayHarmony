@@ -1,6 +1,6 @@
 package iris.playharmony.view.user;
 
-import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.OLDDatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.User;
@@ -73,7 +73,7 @@ public class UserView extends ListTemplate<Playlist> {
     private void deletePlaylist() {
         Playlist selectedItem = getSelectedItem();
         if(AlertFactory.confirmAlert("Confirm", "Are you sure you want to delete the playlist?")){
-            new DatabaseController().deletePlayList(selectedItem, Session.getSession().currentUser());
+            new OLDDatabaseController().deletePlayList(selectedItem, Session.getSession().currentUser());
             refresh();
         }
     }

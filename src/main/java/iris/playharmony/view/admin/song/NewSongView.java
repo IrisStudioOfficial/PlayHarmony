@@ -1,7 +1,7 @@
 package iris.playharmony.view.admin.song;
 
-import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.controller.NavController;
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.Song;
 import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.util.AlertFactory;
@@ -85,7 +85,7 @@ public class NewSongView extends FormTemplate {
 
     private void createSong() {
         Song song = new Song(title.getText(), author.getText(), photoFile.toString(), dateDay.getText() + "-" + dateMonth.getText() + "-" + dateYear.getText(), pathFile.getText());
-        if (new DatabaseController().addSong(song)) {
+        if (DatabaseController.get().addSong(song)) {
             NavController.get().popView();
         } else {
             AlertFactory.errorAlert("ERROR! Song is already registered", "ERROR! Song is already registered");

@@ -13,7 +13,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseController {
+@Deprecated
+public class OLDDatabaseController {
 
     private static Connection connection;
 

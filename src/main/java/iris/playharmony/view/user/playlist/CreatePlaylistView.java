@@ -37,7 +37,7 @@ public class CreatePlaylistView extends FormTemplate {
         Playlist playlist = new Playlist(namePlayList.getText());
         User user = Session.getSession().currentUser();
 
-        if(new DatabaseController().addPlayList(playlist, user)) {
+        if(DatabaseController.get().addPlayList(playlist, user)) {
             NavController.get().popView();
             UserView userView = NavController.get().getCurrentView();
             userView.refresh();

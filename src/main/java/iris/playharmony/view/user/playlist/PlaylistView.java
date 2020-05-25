@@ -1,7 +1,7 @@
 package iris.playharmony.view.user.playlist;
 
-import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.controller.NavController;
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
@@ -94,11 +94,11 @@ public class PlaylistView extends ListTemplate<ObservableSong> {
         ObservableSong selectedItem = getSelectedItem();
         if(selectedItem != null) {
             if(AlertFactory.confirmAlert("Remove Song", "Do you want to delete the song?")) {
-                Song songPrueba = new DatabaseController().getSongs().stream()
+                Song songPrueba = DatabaseController.get().getSongs().stream()
                         .filter(song -> song.getTitle().equals(selectedItem.getTitle()))
                         .findAny().get();
                 playlist.deleteSong(songPrueba);
-                new DatabaseController().addPlayList(playlist, Session.getSession().currentUser());
+                DatabaseController.get().addPlayList(playlist, Session.getSession().currentUser());
                 refresh();
             }
         }
@@ -112,7 +112,7 @@ public class PlaylistView extends ListTemplate<ObservableSong> {
         if (selectedItem == null)
             song = playlist.getSongList().get(0);
         else
-            song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
+            song = DatabaseController.get().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
 
         musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
         musicPlayerViewModel.setSong(song);

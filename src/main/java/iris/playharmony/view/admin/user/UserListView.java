@@ -1,6 +1,6 @@
 package iris.playharmony.view.admin.user;
 
-import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.OLDDatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.ObservableUser;
@@ -30,7 +30,7 @@ public class UserListView extends ListTemplate<ObservableUser> {
     @Override
     protected ObservableList<ObservableUser> getData() {
         ObservableList<ObservableUser> observableUsers = FXCollections.observableArrayList();
-        new DatabaseController().getUsers().stream()
+        new OLDDatabaseController().getUsers().stream()
                 .map(ObservableUser::from)
                 .forEach(observableUsers::add);
         return observableUsers;
@@ -68,7 +68,7 @@ public class UserListView extends ListTemplate<ObservableUser> {
         if(selection == null)
             return;
         try {
-            new DatabaseController().removeUser(selection.getEmail());
+            new OLDDatabaseController().removeUser(selection.getEmail());
             refresh();
         } catch (RemoveUserException e) {
             AlertFactory.errorAlert("ERROR! Couldn't remove user", "ERROR! Couldn't remove user");

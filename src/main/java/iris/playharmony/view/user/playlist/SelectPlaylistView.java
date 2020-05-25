@@ -61,11 +61,14 @@ public class SelectPlaylistView extends ListTemplate<Playlist> {
     }
 
     private void addToPlaylist() {
+
         Playlist selectedPlaylist = getSelectedItem();
-        selectedPlaylist.addSong(new DatabaseController().getSongs().stream()
+
+        selectedPlaylist.addSong(DatabaseController.get().getSongs().stream()
                 .filter(song -> song.getTitle().equals(toBeAddedSong))
                 .findAny().get());
-        new DatabaseController().addPlayList(selectedPlaylist, Session.getSession().currentUser());
+
+        DatabaseController.get().addPlayList(selectedPlaylist, Session.getSession().currentUser());
 
         NavController.get().popView();
         UserSongListView userSongListView = NavController.get().getCurrentView();

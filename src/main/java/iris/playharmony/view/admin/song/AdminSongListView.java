@@ -1,7 +1,7 @@
 package iris.playharmony.view.admin.song;
 
-import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.controller.NavController;
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Song;
 import iris.playharmony.view.template.ListTemplate;
@@ -32,7 +32,7 @@ public class AdminSongListView extends ListTemplate<ObservableSong> {
     @Override
     protected ObservableList<ObservableSong> getData() {
         ObservableList<ObservableSong> observableSongs = FXCollections.observableArrayList();
-        new DatabaseController()
+        DatabaseController.get()
                 .getSongs()
                 .stream()
                 .map(ObservableSong::from)
@@ -74,7 +74,7 @@ public class AdminSongListView extends ListTemplate<ObservableSong> {
         ObservableSong selection = getSelectedItem();
         if (selection == null)
             return;
-        if (!new DatabaseController().deleteSong(new Song().setTitle(selection.getTitle())))
+        if (!DatabaseController.get().deleteSong(new Song().setTitle(selection.getTitle())))
             AlertFactory.errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
         refresh();
     }
@@ -82,7 +82,7 @@ public class AdminSongListView extends ListTemplate<ObservableSong> {
     private void updateSong() {
         ObservableSong observableSong = getSelectedItem();
         if(observableSong != null) {
-            List<Song> songList = new DatabaseController().getSongs().stream()
+            List<Song> songList = DatabaseController.get().getSongs().stream()
                     .filter(song -> song.getTitle().equals(observableSong.getTitle()))
                     .collect(Collectors.toList());
             if(songList.size() > 0) {

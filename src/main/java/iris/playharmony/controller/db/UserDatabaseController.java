@@ -147,7 +147,7 @@ public class UserDatabaseController extends AbstractDatabaseController implement
                 FileUtils.readFileBinary(defaultPhoto, inputStream -> statement.set("photo", inputStream, inputStream.available()));
             }
 
-            statement.setKey("email", user.getEmail().toString())
+            statement.setKey("email", key)
                     .set("name", user.getName())
                     .set("surname", user.getSurname())
                     .set("email", user.getEmail().toString())

@@ -1,6 +1,6 @@
 package iris.playharmony.view.user.playlist;
 
-import iris.playharmony.controller.DatabaseController;
+import iris.playharmony.controller.OLDDatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.*;
 import iris.playharmony.model.player.MusicPlayer;
@@ -92,7 +92,7 @@ public class FavouriteSongListView extends ListTemplate<ObservableSong> {
         if (selectedItem == null)
             song = favourites.getSongList().get(0);
         else
-            song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
+            song = new OLDDatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
 
         musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
         musicPlayerViewModel.setSong(song);
@@ -108,7 +108,7 @@ public class FavouriteSongListView extends ListTemplate<ObservableSong> {
         MusicPlayer musicPlayer = new MusicPlayer();
         Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
         ObservableSong selectedItem = getSelectedItem();
-        Song song = new DatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
+        Song song = new OLDDatabaseController().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
 
         MusicPlayerViewModel musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
         musicPlayerViewModel.setSong(song);
@@ -121,12 +121,12 @@ public class FavouriteSongListView extends ListTemplate<ObservableSong> {
         ObservableSong selectedItem = getSelectedItem();
         if(selectedItem != null) {
             if(AlertFactory.confirmAlert("Remove Song", "Do you want to delete the song?")) {
-                Song selectedSong = new DatabaseController().getSongs().stream()
+                Song selectedSong = new OLDDatabaseController().getSongs().stream()
                         .filter(song -> song.getTitle().equals(selectedItem.getTitle()))
                         .findAny().get();
                 User currentUser = Session.getSession().currentUser();
                 currentUser.favourites().deleteSong(selectedSong);
-                new DatabaseController().addFavourites(currentUser.favourites(),
+                new OLDDatabaseController().addFavourites(currentUser.favourites(),
                         currentUser);
                 refresh();
             }
