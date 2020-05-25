@@ -1,64 +1,112 @@
 package iris.playharmony.view.template;
 
+import iris.playharmony.model.ObservableSong;
 import iris.playharmony.util.OnRefresh;
 import iris.playharmony.view.util.DefaultStyle;
+import iris.playharmony.view.util.TableFactory;
 import iris.playharmony.view.util.TextFactory;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
-public abstract class ListTemplate extends VBox {
+import java.util.Comparator;
 
-    protected TableView table;
-    protected Pagination pagination;
+public abstract class ListTemplate<T> extends VBox {
 
-    private static int SPACING = 15;
+    private Comparator<T> comparator;
+    private ObservableList<T> data;
+
+    private TextField searchField;
+    private TableView table;
+    private Pagination pagination;
+
+    private static final int SPACING = 15;
 
     public ListTemplate(String title) {
         super(SPACING);
-        add(TextFactory.label(title, DefaultStyle.title()));
-        initElements();
-        initSearchForm();
-        initTable();
-        initPagination();
-        add(addPaddingTo(bottomButtonPanel()));
+        init(title);
         setPadding(new Insets(SPACING));
     }
 
-    protected abstract void initElements();
-
-    protected abstract void initSearchForm();
-
-    protected abstract void initTable();
-
-    protected abstract void initPagination();
-
-    protected abstract ObservableList<?> getObservableData();
-
-    private HBox addPaddingTo(Node[] nodes) {
-        HBox hBox = new HBox();
-        for (int i = 0; i < 2 * nodes.length - 1; i++) {
-            hBox.getChildren().add(i%2 == 0 ? nodes[i/2] : getNewPadding());
-        }
-        return hBox;
+    public ListTemplate(String title, Object baseElement) {
+        super(SPACING);
+        initBaseElement(baseElement);
+        init(title);
+        setPadding(new Insets(SPACING));
     }
 
-    private Region getNewPadding() {
-        Region padding = new Region();
-        padding.setPrefWidth(5);
-        return padding;
+    protected void initBaseElement(Object baseElement) {}
+
+    private void init(String title) {
+        initData();
+        add(TextFactory.label(title, DefaultStyle.title()));
+        beforeTable();
+        table();
+        afterTable();
     }
+
+    private void initData() {
+        comparator = initComparator();
+        data = getObservableData();
+    }
+
+    private void table() {
+        add(TextFactory.searchField(searchField = new TextField(), event -> searchCommand()));
+        add(table = TableFactory.table(data, initTable()));
+        add(pagination = TableFactory.pagination(data, table));
+        add(TemplateHelper.addPaddingTo(bottomButtonPanel()));
+    }
+
+    protected abstract Comparator<T> initComparator();
+
+    protected abstract ObservableList<T> getData();
+
+    protected void beforeTable() {}
+
+    protected abstract String fieldToFilter(T fieldData);
+
+    protected abstract TableColumn[] initTable();
 
     protected abstract Node[] bottomButtonPanel();
+
+    protected void afterTable() {}
+
+    protected void beforeRefresh() {}
+
+    @OnRefresh
+    public void refresh() {
+        beforeRefresh();
+        data = getObservableData();
+        TableFactory.updateTable(data, table);
+        TableFactory.updatePagination(data, table, pagination);
+    }
 
     protected void add(Node node) {
         getChildren().add(node);
     }
 
-    public abstract void refresh();
+    protected T getSelectedItem() {
+        return (T) table.getSelectionModel().getSelectedItem();
+    }
+
+    private ObservableList<T> getObservableData() {
+        data = FXCollections.observableArrayList();
+        ObservableList<T> dataToSort = getData();
+        dataToSort.stream().sorted(comparator).forEach(data::add);
+        return data;
+    }
+
+    private void searchCommand() {
+        if(!searchField.getText().isEmpty()) {
+            data = data.filtered(fieldData -> fieldToFilter(fieldData).toLowerCase().contains(searchField.getText().toLowerCase()));
+            TableFactory.updateTable(data, table);
+            TableFactory.updatePagination(data, table, pagination);
+        }
+    }
 }

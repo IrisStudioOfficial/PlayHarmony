@@ -4,52 +4,64 @@ import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.session.Session;
+import iris.playharmony.view.template.ListTemplate;
 import iris.playharmony.view.user.song.UserSongListView;
 import iris.playharmony.view.util.ButtonFactory;
-import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TableFactory;
-import iris.playharmony.view.util.TextFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.TableView;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TableColumn;
 
-public class SelectPlaylistView extends VBox {
+import java.util.Comparator;
 
-    private static int SPACING = 15;
+public class SelectPlaylistView extends ListTemplate<Playlist> {
 
-    private TableView playlistsTable;
     private String toBeAddedSong;
 
-    public SelectPlaylistView(String songTitle) {
-        super(SPACING);
-        initElements();
-        setPadding(new Insets(SPACING));
-        this.toBeAddedSong = songTitle;
+    public SelectPlaylistView(Object toBeAddedSong) {
+        super("Select Playlist", toBeAddedSong);
     }
 
-    private void initElements() {
-        TextFactory.label("Select Playlist", DefaultStyle.title());
+    @Override
+    protected void initBaseElement(Object toBeAddedSong) {
+        this.toBeAddedSong = (String) toBeAddedSong;
+    }
 
-        add(playlistsTable = TableFactory.table(getPlaylists(),
+    @Override
+    protected Comparator<Playlist> initComparator() {
+        return Comparator.comparing(Playlist::getName);
+    }
+
+    @Override
+    protected ObservableList<Playlist> getData() {
+        ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+        playlists.addAll(Session.getSession().currentUser().getPlayLists());
+        return playlists;
+    }
+
+    @Override
+    protected String fieldToFilter(Playlist playlist) {
+        return playlist.getName();
+    }
+
+    @Override
+    protected TableColumn[] initTable() {
+        return new TableColumn[] {
                 TableFactory.tableColumn("Name", "name"),
                 TableFactory.tableColumn("Nr of songs", "size")
-        ));
-
-        add(TableFactory.pagination(getPlaylists(), playlistsTable));
-
-        add(ButtonFactory.button("Add To Playlist", event -> addToPlaylist()));
+        };
     }
 
-    private Node add(Node node) {
-        getChildren().add(node);
-        return node;
+    @Override
+    protected Node[] bottomButtonPanel() {
+        return new Node[] {
+                ButtonFactory.button("Add To Playlist", event -> addToPlaylist())
+        };
     }
 
     private void addToPlaylist() {
-        Playlist selectedPlaylist = (Playlist) playlistsTable.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = getSelectedItem();
         selectedPlaylist.addSong(new DatabaseController().getSongs().stream()
                 .filter(song -> song.getTitle().equals(toBeAddedSong))
                 .findAny().get());
@@ -58,11 +70,5 @@ public class SelectPlaylistView extends VBox {
         NavController.get().popView();
         UserSongListView userSongListView = NavController.get().getCurrentView();
         userSongListView.refresh();
-    }
-
-    private ObservableList<Playlist> getPlaylists() {
-        ObservableList<Playlist> data = FXCollections.observableArrayList();
-        data.addAll(Session.getSession().currentUser().getPlayLists());
-        return data;
     }
 }

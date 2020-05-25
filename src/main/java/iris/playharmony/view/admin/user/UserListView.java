@@ -1,111 +1,84 @@
 package iris.playharmony.view.admin.user;
 
-import iris.playharmony.controller.db.DatabaseController;
+import iris.playharmony.controller.DatabaseController;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.exceptions.RemoveUserException;
 import iris.playharmony.model.ObservableUser;
-import iris.playharmony.util.OnRefresh;
-import iris.playharmony.view.util.*;
+import iris.playharmony.view.template.ListTemplate;
+import iris.playharmony.view.util.AlertFactory;
+import iris.playharmony.view.util.ButtonFactory;
+import iris.playharmony.view.util.TableFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Pagination;
-import javafx.scene.control.TableView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TableColumn;
 
-public class UserListView extends VBox {
+import java.util.Comparator;
 
-    ObservableList<ObservableUser> data;
-
-    private TableView usersTable;
-    private Pagination pagination;
-
-    private static int SPACING = 15;
+public class UserListView extends ListTemplate<ObservableUser> {
 
     public UserListView() {
-        super(SPACING);
-        data = getDBData();
-        initElements();
-        setPadding(new Insets(SPACING));
+        super("Users");
     }
 
-    private void initElements() {
-        add(TextFactory.label("Users", DefaultStyle.title()));
+    @Override
+    protected Comparator<ObservableUser> initComparator() {
+        return Comparator.comparing(ObservableUser::getName);
+    }
 
-        add(usersTable = TableFactory.table(data,
+    @Override
+    protected ObservableList<ObservableUser> getData() {
+        ObservableList<ObservableUser> observableUsers = FXCollections.observableArrayList();
+        new DatabaseController().getUsers().stream()
+                .map(ObservableUser::from)
+                .forEach(observableUsers::add);
+        return observableUsers;
+    }
+
+    @Override
+    protected String fieldToFilter(ObservableUser user) {
+        return user.getName();
+    }
+
+    @Override
+    protected TableColumn[] initTable() {
+        return new TableColumn[] {
                 TableFactory.tableColumnPhoto("Photo", "photo", 100),
                 TableFactory.tableColumn("Name", "name"),
                 TableFactory.tableColumn("Surname", "surname"),
                 TableFactory.tableColumn("Email", "Email"),
                 TableFactory.tableColumn("Category", "Category"),
                 TableFactory.tableColumn("Role", "Role")
-        ));
-
-        add(pagination = TableFactory.pagination(data, usersTable));
-
-        add(getBottomButtonPanel());
+        };
     }
 
-    private void add(Node node) {
-        getChildren().add(node);
-    }
-
-    private Node getBottomButtonPanel() {
-        Region padding = new Region();
-        padding.setPrefWidth(5);
-        Region padding2 = new Region();
-        padding2.setPrefWidth(5);
-        return new HBox(
+    @Override
+    protected Node[] bottomButtonPanel() {
+        return new Node[] {
                 ButtonFactory.button("Add User", e -> NavController.get().pushView(new NewUserView())),
-                padding,
                 ButtonFactory.button("Remove User", this::removeUser),
-                padding2,
                 ButtonFactory.button("Update User", event -> updateUser())
-        );
-    }
-
-    private void updateUser() {
-        ObservableUser selectedItem = (ObservableUser) usersTable.getSelectionModel().getSelectedItem();
-        if(selectedItem != null) {
-            NavController.get().pushView(new UpdateUserView(selectedItem));
-        }
+        };
     }
 
     private void removeUser(Event event) {
-
         event.consume();
-
-        ObservableUser selectedUser = (ObservableUser) usersTable.getSelectionModel().getSelectedItem();
-
-        if(selectedUser == null) {
+        ObservableUser selection = getSelectedItem();
+        if(selection == null)
             return;
-        }
-
-        DatabaseController db = new DatabaseController();
-
-        if(db.removeUser(selectedUser.getEmail())) {
+        try {
+            new DatabaseController().removeUser(selection.getEmail());
             refresh();
-        } else {
+        } catch (RemoveUserException e) {
             AlertFactory.errorAlert("ERROR! Couldn't remove user", "ERROR! Couldn't remove user");
         }
     }
 
-    private ObservableList<ObservableUser> getDBData() {
-        data = FXCollections.observableArrayList();
-        new DatabaseController().getUsers().stream()
-                .map(ObservableUser::from)
-                .forEach(data::add);
-        return data;
-    }
-
-    @OnRefresh
-    public void refresh() {
-        data = getDBData();
-        TableFactory.updateTable(data, usersTable);
-        TableFactory.updatePagination(data, usersTable, pagination);
+    private void updateUser() {
+        ObservableUser selectedItem = getSelectedItem();
+        if(selectedItem != null) {
+            NavController.get().pushView(new UpdateUserView(selectedItem));
+        }
     }
 }

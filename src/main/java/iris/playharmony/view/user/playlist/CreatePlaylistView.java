@@ -5,39 +5,33 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.User;
 import iris.playharmony.session.Session;
+import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.user.UserView;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
-import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TextFactory;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
-//asda
-public class CreatePlaylistView extends VBox {
+
+public class CreatePlaylistView extends FormTemplate {
 
     private TextField namePlayList;
 
-    private static int SPACING = 15;
-    
-    public CreatePlaylistView(){
-        super(SPACING);
-        addElements();
-        setPadding(new Insets(SPACING));
+    public CreatePlaylistView() {
+        super("Create Playlist");
     }
 
-    private void addElements() {
-        add(TextFactory.label("Create Playlist", DefaultStyle.title()));
+    @Override
+    protected void initElements() {
         add(namePlayList = TextFactory.textField("Name Of PlayList"));
-        add(ButtonFactory.button("Create", e -> createPlayList()));
     }
 
-    private Node add(Node node) {
-        getChildren().add(node);
-        return node;
+    @Override
+    protected Node[] bottomButtonPanel() {
+        return new Node[] {
+                ButtonFactory.button("Create", e -> createPlayList())
+        };
     }
-    
 
     private void createPlayList() {
         Playlist playlist = new Playlist(namePlayList.getText());

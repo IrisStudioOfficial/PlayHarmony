@@ -3,28 +3,26 @@ package iris.playharmony.view.main;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.view.admin.song.AdminSongListView;
 import iris.playharmony.view.admin.user.UserListView;
+import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.util.ButtonFactory;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.layout.VBox;
 
-public class AdminView extends VBox {
-
-    private static int SPACING = 15;
+public class AdminView extends FormTemplate {
 
     public AdminView() {
-        super(SPACING);
-        initElements();
-        setPadding(new Insets(SPACING));
+        super("Admin");
     }
 
-    private void initElements() {
-        add(ButtonFactory.button("Users", event -> NavController.get().pushView(new UserListView())));
-        add(ButtonFactory.button("Songs", event -> NavController.get().pushView(new AdminSongListView())));
+    @Override
+    protected void initElements() {
+
     }
 
-    private Node add(Node node) {
-        getChildren().add(node);
-        return node;
+    @Override
+    protected Node[] bottomButtonPanel() {
+        return new Node[] {
+                ButtonFactory.button("Users", event -> NavController.get().pushView(new UserListView())),
+                ButtonFactory.button("Songs", event -> NavController.get().pushView(new AdminSongListView()))
+        };
     }
 }
