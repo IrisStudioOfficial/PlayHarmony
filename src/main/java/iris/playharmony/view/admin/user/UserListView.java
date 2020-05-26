@@ -1,11 +1,9 @@
 package iris.playharmony.view.admin.user;
 
-import iris.playharmony.controller.OLDDatabaseController;
 import iris.playharmony.controller.NavController;
-import iris.playharmony.exceptions.RemoveUserException;
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.ObservableUser;
 import iris.playharmony.view.template.ListTemplate;
-import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.TableFactory;
 import javafx.collections.FXCollections;
@@ -30,7 +28,7 @@ public class UserListView extends ListTemplate<ObservableUser> {
     @Override
     protected ObservableList<ObservableUser> getData() {
         ObservableList<ObservableUser> observableUsers = FXCollections.observableArrayList();
-        new OLDDatabaseController().getUsers().stream()
+        DatabaseController.get().getUsers().stream()
                 .map(ObservableUser::from)
                 .forEach(observableUsers::add);
         return observableUsers;
@@ -67,12 +65,8 @@ public class UserListView extends ListTemplate<ObservableUser> {
         ObservableUser selection = getSelectedItem();
         if(selection == null)
             return;
-        try {
-            new OLDDatabaseController().removeUser(selection.getEmail());
-            refresh();
-        } catch (RemoveUserException e) {
-            AlertFactory.errorAlert("ERROR! Couldn't remove user", "ERROR! Couldn't remove user");
-        }
+        DatabaseController.get().removeUser(selection.getEmail());
+        refresh();
     }
 
     private void updateUser() {
