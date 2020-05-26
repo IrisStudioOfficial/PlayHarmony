@@ -2,6 +2,7 @@ package iris.playharmony.controller.db;
 
 import iris.playharmony.model.Playlist;
 import iris.playharmony.model.Song;
+import iris.playharmony.model.SongReview;
 import iris.playharmony.model.User;
 
 import javax.xml.crypto.Data;
@@ -79,5 +80,10 @@ public class DatabaseController implements IUserDatabaseController, ISongDatabas
     @Override
     public boolean addToFavourites(Playlist favourites, User user) {
         return playlistDatabaseController.addToFavourites(favourites, user);
+    }
+
+    @Override
+    public List<SongReview> getSongReviews() {
+        return songDatabaseController.getSongReviews();
     }
 }
