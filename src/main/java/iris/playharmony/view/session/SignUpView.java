@@ -3,9 +3,10 @@ package iris.playharmony.view.session;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.Email;
+import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import iris.playharmony.util.TypeUtils;
-import iris.playharmony.view.admin.user.UserListView;
+import iris.playharmony.view.main.LobbyView;
 import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
@@ -23,7 +24,6 @@ import static java.util.Objects.nonNull;
 
 public class SignUpView extends FormTemplate {
 
-    
     private File photoFile;
     private TextField photo;
     private TextField name;
@@ -61,11 +61,6 @@ public class SignUpView extends FormTemplate {
         };
     }
 
-    @Override
-    public void refresh() {
-
-    }
-
     private void uploadImage(TextField textField) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Search Image");
@@ -81,64 +76,49 @@ public class SignUpView extends FormTemplate {
     }
 
     private void createUser() {
-
         User user = getUserFromForm();
-
-        if(user == null) {
-            return;
-        }
-
-        if(DatabaseController.get().addUser(user)) {
-
-            NavController.get().popView();
-            UserListView userListView = NavController.get().getCurrentView();
-            userListView.refresh();
-
-        } else {
-            AlertFactory.errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
+        if(user != null) {
+            try {
+                if (DatabaseController.get().addUser(user)) {
+                    NavController.get().pushView(new LobbyView());
+                }
+            } catch (Exception e) {
+                AlertFactory.errorAlert("ERROR! User is already registered", "ERROR! User is already registered");
+            }
         }
     }
 
     private User getUserFromForm() {
+        User user = new User()
+                .photo(photoFile)
+                .name(name.getText())
+                .surname(surname.getText())
+                .category(category.getText())
+                .role(Role.STUDENT)
+                .mail(getEmail())
+                .setPlayLists(new ArrayList<>())
+                .setPassword(password.getText());
 
-        Email email = getEmail();
-
-        if(email == null) {
+        if(allRequiredFieldsAreSet(user)) {
+            return user;
+        } else {
+            AlertFactory.errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
             return null;
         }
-
-        User user = new User(
-                photoFile,
-                name.getText(),
-                surname.getText(),
-                category.getText(),
-                null,
-                // (Role) role.getValue(),
-                email,
-                new ArrayList<>());
-
-        if(notAllFieldsAreSet(user)) {
-            AlertFactory.errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
-        }
-
-        return user;
-    }
-
-    private boolean notAllFieldsAreSet(User user) {
-        return !TypeUtils.getAllFieldValues(user).stream()
-                .map(field -> field == null ? null : field.toString())
-                .allMatch(field -> nonNull(field) && !field.trim().isEmpty());
     }
 
     private Email getEmail() {
-
-        String text = email.getText();
-
-        if(!Email.check(text)) {
+        if(Email.check(email.getText())) {
+            return new Email(email.getText());
+        } else {
             AlertFactory.errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
             return null;
         }
+    }
 
-        return new Email(text);
+    private boolean allRequiredFieldsAreSet(User user) {
+        return !TypeUtils.getAllFieldValues(user).stream()
+                .map(field -> field == null ? null : field.toString())
+                .allMatch(field -> nonNull(field) && !field.trim().isEmpty());
     }
 }

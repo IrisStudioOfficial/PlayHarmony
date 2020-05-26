@@ -1,7 +1,12 @@
 package iris.playharmony.view.admin.song;
 
+import iris.playharmony.controller.NavController;
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.Song;
+import iris.playharmony.util.OnRefresh;
+import iris.playharmony.util.TypeUtils;
 import iris.playharmony.view.template.FormTemplate;
+import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TextFactory;
@@ -92,11 +97,33 @@ public class UpdateSongView extends FormTemplate {
     }
 
     private void updateSong() {
-        /*Song song = new Song(title.getText(), author.getText(), photoFile.toString(), dateDay.getText() + "-" + dateMonth.getText() + "-" + dateYear.getText(), pathFile.getText());
-        if (new DatabaseController().addSong(song)) {
-            NavController.get().popView();
+        if(allFieldsAreSet()) {
+            Song song = new Song(title.getText(), author.getText(), pathPhoto.getText(), dateDay.getText() + "-" + dateMonth.getText() + "-" + dateYear.getText(), pathFile.getText());
+            if(DatabaseController.get().updateSong(song, this.song.getTitle())) {
+                NavController.get().popView();
+                TypeUtils.callAnnotatedMethod(NavController.get().getCurrentView(), OnRefresh.class);
+            } else {
+                AlertFactory.errorAlert("ERROR! Song is already registered", "ERROR! Song is already registered");
+            }
         } else {
-            AlertFactory.errorAlert("ERROR! Song is already registered", "ERROR! Song is already registered");
-        }*/
+            AlertFactory.errorAlert("ERROR! Song is incorrect", "ERROR! All required fields must be filled");
+        }
+    }
+
+    private boolean allFieldsAreSet() {
+        return !isEmpty(title) && !isEmpty(author) && isNumber(dateDay) && isNumber(dateMonth) && isNumber(dateYear) && !isEmpty(pathPhoto) && !isEmpty(pathFile);
+    }
+
+    private boolean isEmpty(TextField textField) {
+        return textField.getText().isEmpty();
+    }
+
+    private boolean isNumber(TextField textField) {
+        try {
+            Integer.parseInt(textField.getText());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

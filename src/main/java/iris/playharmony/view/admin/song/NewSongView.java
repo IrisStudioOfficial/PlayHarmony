@@ -44,6 +44,8 @@ public class NewSongView extends FormTemplate {
         add(TextFactory.label("Year", DefaultStyle.label()));
         add(dateYear = TextFactory.textField(""));
         add(TextFactory.label("Photo", DefaultStyle.label()));
+        pathPhoto = new TextField();
+        pathFile = new TextField();
         add(ButtonFactory.buttonWithLabeledResource(pathPhoto, "Upload Image", event -> uploadImage(pathPhoto)));
         add(TextFactory.label("Song File", DefaultStyle.label()));
         add(ButtonFactory.buttonWithLabeledResource(pathFile, "Upload Song", event -> uploadSong(pathFile)));

@@ -6,23 +6,30 @@ import iris.playharmony.model.ObservableUser;
 import iris.playharmony.model.User;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
+import javafx.scene.Node;
 
 public class UpdateUserView extends UserFormView {
 
-    private final ObservableUser user;
+    private ObservableUser user;
 
-    public UpdateUserView(ObservableUser user) {
-        this.user = user;
-        name.setText(user.getName());
-        surname.setText(user.getSurname());
-        email.setText(user.getEmail());
-        category.setText(user.getCategory());
+    public UpdateUserView(Object baseElement) {
+        super("Update User", baseElement);
     }
 
     @Override
-    protected void initElements() {
-        super.initElements();
-        add(ButtonFactory.button("Update User", event -> updateUser()));
+    protected void initBaseElement(Object user) {
+        this.user = (ObservableUser) user;
+        name.setText(this.user.getName());
+        surname.setText(this.user.getSurname());
+        email.setText(this.user.getEmail());
+        category.setText(this.user.getCategory());
+    }
+
+    @Override
+    protected Node[] bottomButtonPanel() {
+        return new Node[] {
+                ButtonFactory.button("Update User", event -> updateUser())
+        };
     }
 
     private void updateUser() {

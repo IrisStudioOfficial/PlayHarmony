@@ -1,20 +1,16 @@
 package iris.playharmony.view.admin.user;
 
-import iris.playharmony.controller.NavController;
-import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import iris.playharmony.util.TypeUtils;
+import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.DefaultStyle;
 import iris.playharmony.view.util.TextFactory;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -23,9 +19,7 @@ import java.util.ArrayList;
 
 import static java.util.Objects.nonNull;
 
-public abstract class UserFormView extends VBox {
-
-    private static final int SPACING = 15;
+public abstract class UserFormView extends FormTemplate {
 
     protected File photoFile;
     protected TextField photo = new TextField();
@@ -35,12 +29,15 @@ public abstract class UserFormView extends VBox {
     protected TextField category = new TextField();
     protected ComboBox<Object> role = new ComboBox<>();
 
-    public UserFormView() {
-        super(SPACING);
-        initElements();
-        setPadding(new Insets(SPACING));
+    public UserFormView(String title) {
+        super(title);
     }
 
+    public UserFormView(String title, Object baseElement) {
+        super(title, baseElement);
+    }
+
+    @Override
     protected void initElements() {
         add(TextFactory.label("Update User", DefaultStyle.title()));
         add(TextFactory.label("Name", DefaultStyle.label()));
@@ -54,10 +51,6 @@ public abstract class UserFormView extends VBox {
         add(TextFactory.label("Role", DefaultStyle.label()));
         add(role = TextFactory.comboBox(Role.values()));
         add(ButtonFactory.buttonWithLabeledResource(photo, "Upload Image", event -> uploadImage(photo)));
-    }
-
-    protected void add(Node node) {
-        getChildren().add(node);
     }
 
     private void uploadImage(TextField textField) {
@@ -74,6 +67,8 @@ public abstract class UserFormView extends VBox {
         photoFile = fileChooser.showOpenDialog(new Stage());
         textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
     }
+
+
 
     protected User getUserFromForm() {
 
