@@ -5,16 +5,24 @@ import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.User;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
+import javafx.scene.Node;
 
 public class NewUserView extends UserFormView {
 
     public NewUserView() {
+        super("New User");
     }
 
     @Override
     protected void initElements() {
         super.initElements();
-        add(ButtonFactory.button("Add User", event -> createUser()));
+    }
+
+    @Override
+    protected Node[] bottomButtonPanel() {
+        return new Node[] {
+                ButtonFactory.button("Add User", event -> createUser())
+        };
     }
 
     private void createUser() {
