@@ -8,6 +8,7 @@ import iris.playharmony.session.Session;
 import iris.playharmony.view.template.ListTemplate;
 import iris.playharmony.view.user.playlist.CreatePlaylistView;
 import iris.playharmony.view.user.playlist.PlaylistView;
+import iris.playharmony.view.user.playlist.UpdatePlaylistView;
 import iris.playharmony.view.user.song.UserSongListView;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
@@ -80,8 +81,10 @@ public class UserView extends ListTemplate<Playlist> {
     }
 
     private void updatePlaylist(){
-
-
+        Playlist selectedItem = getSelectedItem();
+        if(selectedItem != null) {
+            NavController.get().pushView(new UpdatePlaylistView(selectedItem));
+        }
     }
 
 }
