@@ -19,7 +19,6 @@ public class SongDatabaseController extends AbstractDatabaseController implement
     private static final String SQL_QUERY_GET_ALL_SONGS = "SELECT * FROM SONGS";
 
     private static final String SONG_REVIEWS_TABLE_NAME = "SONG_REVIEWS";
-
     private static final SQLWriteQuery SQL_QUERY_INSERT_NEW_SONG = new SQLInsertQuery(SONGS_TABLE_NAME,
             "title", "author", "photo", "publication", "pathFile");
 
