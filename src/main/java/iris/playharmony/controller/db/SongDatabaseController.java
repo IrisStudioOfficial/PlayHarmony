@@ -1,13 +1,9 @@
 package iris.playharmony.controller.db;
 
 import iris.playharmony.controller.db.sql.*;
-import iris.playharmony.controller.handler.PathHandler;
 import iris.playharmony.model.Song;
 import iris.playharmony.model.SongReview;
-import iris.playharmony.model.User;
 import iris.playharmony.util.FileUtils;
-import iris.playharmony.util.Json;
-import iris.playharmony.util.Resources;
 
 import java.io.File;
 import java.sql.ResultSet;
@@ -15,8 +11,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
 
 public class SongDatabaseController extends AbstractDatabaseController implements ISongDatabaseController {
 
@@ -108,6 +102,7 @@ public class SongDatabaseController extends AbstractDatabaseController implement
 
     @Override
     public boolean addSong(Song song) {
+
         try(SQLStatement statement = SQL_QUERY_INSERT_NEW_SONG.prepareStatement(getDBConnection())) {
 
             File songPhoto = new File(song.getPhoto());
