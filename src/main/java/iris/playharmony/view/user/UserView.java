@@ -59,7 +59,8 @@ public class UserView extends ListTemplate<Playlist> {
                 ButtonFactory.button("Search Songs", e -> NavController.get().pushView(new UserSongListView())),
                 ButtonFactory.button("Add Playlist", e -> NavController.get().pushView(new CreatePlaylistView())),
                 ButtonFactory.button("See Playlist", event -> seePlaylist()),
-                ButtonFactory.button("Delete Playlist", event -> deletePlaylist())
+                ButtonFactory.button("Delete Playlist", event -> deletePlaylist()),
+                ButtonFactory.button("Update Playlist", event -> updatePlaylist())
         };
     }
 
@@ -76,6 +77,11 @@ public class UserView extends ListTemplate<Playlist> {
             DatabaseController.get().deletePlayList(selectedItem, Session.getSession().currentUser());
             refresh();
         }
+    }
+
+    private void updatePlaylist(){
+
+
     }
 
 }
