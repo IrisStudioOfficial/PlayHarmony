@@ -4,10 +4,13 @@ import iris.playharmony.session.Session;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.controlsfx.control.Rating;
+
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+
 
 public class ObservableSong {
 
@@ -17,6 +20,7 @@ public class ObservableSong {
     private SimpleStringProperty date = new SimpleStringProperty();
     private SimpleStringProperty path = new SimpleStringProperty();
     private ImageView fav = null;
+    private Rating rating = null;
 
     public ObservableSong photo(String photo) {
         System.out.println(new File(photo).toURI().toString());
@@ -61,12 +65,19 @@ public class ObservableSong {
     }
 
     public static ObservableSong from(Song song) {
+        Rating rating = new Rating();
+        rating.setUpdateOnHover(false);
+        rating.setPartialRating(false);
+        rating.setMaxHeight(20);
+
+        rating.setOnMouseClicked(event -> System.out.println(rating.getRating()));
         return new ObservableSong()
                 .title(song.getTitle())
                 .author(song.getAuthor())
                 .date(song.getDate())
                 .photo(song.getPhoto())
                 .path(song.getPathFile())
+                .rating(rating)
                 .fav(Session.getSession().currentUser().favourites().getSongList().contains(song) ? "C:\\Users\\omark\\OneDrive\\Desktop\\PlayHarmony\\src\\main\\resources\\icons\\star.png" : null);
     }
 
@@ -122,5 +133,14 @@ public class ObservableSong {
         } finally {
             return file;
         }
+    }
+
+    public ObservableSong rating(Rating rating) {
+        this.rating = rating;
+        return this;
+    }
+
+    public Rating getRating() {
+        return this.rating;
     }
 }

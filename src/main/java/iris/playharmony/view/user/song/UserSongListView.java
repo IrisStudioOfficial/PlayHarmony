@@ -57,7 +57,8 @@ public class UserSongListView extends ListTemplate<ObservableSong> {
                 TableFactory.tableColumnPhoto("Photo", "photo", 200),
                 TableFactory.tableColumn("Title", "title"),
                 TableFactory.tableColumn("Author", "author"),
-                TableFactory.tableColumn("Date", "date")
+                TableFactory.tableColumn("Date", "date"),
+                TableFactory.tableColumn("Rating", "rating")
         };
     }
 
