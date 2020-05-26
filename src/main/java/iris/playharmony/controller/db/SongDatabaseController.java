@@ -52,6 +52,7 @@ public class SongDatabaseController extends AbstractDatabaseController implement
         return songList;
     }
 
+    @Override
     public List<SongReview> getSongReviews() {
 
         try(Statement statement = getDBConnection().createStatement()) {
