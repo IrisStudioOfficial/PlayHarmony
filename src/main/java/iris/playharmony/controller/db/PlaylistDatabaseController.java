@@ -30,7 +30,18 @@ public class PlaylistDatabaseController extends AbstractDatabaseController imple
 
         user.addPlayList(playlist);
 
-        return updateUserPlaylists(SQL_QUERY_UPDATE_PLAYLIST, "playlist", Json.toJson(playlist), user);
+        return updateUserPlaylists(SQL_QUERY_UPDATE_PLAYLIST, "playlist", Json.toJson(user.getPlayLists()), user);
+    }
+
+    @Override
+    public boolean updatePlayList(String newName, Playlist playlist, User user){
+        removeUserPlaylist(playlist, user);
+
+        playlist.setName(newName);
+
+        user.addPlayList(playlist);
+
+        return updateUserPlaylists(SQL_QUERY_UPDATE_PLAYLIST, "playlist", Json.toJson(user.getPlayLists()), user);
     }
 
     @Override
@@ -38,7 +49,7 @@ public class PlaylistDatabaseController extends AbstractDatabaseController imple
 
         removeUserPlaylist(playList, user);
 
-        return updateUserPlaylists(SQL_QUERY_UPDATE_PLAYLIST, "playlist", Json.toJson(playList), user);
+        return updateUserPlaylists(SQL_QUERY_UPDATE_PLAYLIST, "playlist", Json.toJson(user.getPlayLists()), user);
     }
 
     @Override
