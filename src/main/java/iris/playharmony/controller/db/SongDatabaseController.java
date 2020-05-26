@@ -1,9 +1,6 @@
 package iris.playharmony.controller.db;
 
-import iris.playharmony.controller.db.sql.SQLDeleteByKeyQuery;
-import iris.playharmony.controller.db.sql.SQLInsertQuery;
-import iris.playharmony.controller.db.sql.SQLStatement;
-import iris.playharmony.controller.db.sql.SQLWriteQuery;
+import iris.playharmony.controller.db.sql.*;
 import iris.playharmony.model.Song;
 import iris.playharmony.model.SongReview;
 import iris.playharmony.util.FileUtils;
@@ -23,6 +20,10 @@ public class SongDatabaseController extends AbstractDatabaseController implement
 
     private static final String SONG_REVIEWS_TABLE_NAME = "SONG_REVIEWS";
     private static final SQLWriteQuery SQL_QUERY_INSERT_NEW_SONG = new SQLInsertQuery(SONGS_TABLE_NAME,
+            "title", "author", "photo", "publication", "pathFile");
+
+    private static final SQLWriteQuery SQL_QUERY_UPDATE_SONG = new SQLUpdateQuery(SONGS_TABLE_NAME,
+            "title",
             "title", "author", "photo", "publication", "pathFile");
 
     private static final SQLWriteQuery SQL_QUERY_DELETE_SONG_BY_TITLE = new SQLDeleteByKeyQuery(SONGS_TABLE_NAME, "title");
@@ -119,6 +120,38 @@ public class SongDatabaseController extends AbstractDatabaseController implement
         }
 
         return false;
+    }
+
+    @Override
+    public boolean updateSong(Song song, String key) {
+
+        if(songExists(song) && !song.getTitle().equals(key)) {
+            return false;
+        }
+
+        try(SQLStatement statement = SQL_QUERY_UPDATE_SONG.prepareStatement(getDBConnection())) {
+
+            File songPhoto = new File(song.getPhoto());
+
+            FileUtils.readFileBinary(songPhoto, inputStream -> statement.set("photo", inputStream, (int)songPhoto.length()));
+
+            statement.setKey("title", key)
+                    .set("title", song.getTitle())
+                    .set("author", song.getAuthor())
+                    .set("publication", song.getDate())
+                    .set("pathFile", song.getPathFile());
+
+            return statement.execute() != SQLStatement.ERROR_CODE;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private boolean songExists(Song song) {
+        return getSongs().contains(song);
     }
 
     @Override

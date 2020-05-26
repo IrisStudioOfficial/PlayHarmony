@@ -38,6 +38,11 @@ public class DatabaseController implements IUserDatabaseController, ISongDatabas
     }
 
     @Override
+    public boolean updateSong(Song song, String key) {
+        return songDatabaseController.updateSong(song, key);
+    }
+
+    @Override
     public boolean deleteSong(Song song) {
         return songDatabaseController.deleteSong(song);
     }

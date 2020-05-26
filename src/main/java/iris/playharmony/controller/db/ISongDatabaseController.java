@@ -11,6 +11,8 @@ public interface ISongDatabaseController {
 
     boolean addSong(Song song);
 
+    boolean updateSong(Song song, String key);
+
     boolean deleteSong(Song song);
 
     List<Song> getSongs();
