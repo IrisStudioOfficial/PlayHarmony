@@ -108,7 +108,6 @@ public class SongDatabaseController extends AbstractDatabaseController implement
 
     @Override
     public boolean addSong(Song song) {
-
         try(SQLStatement statement = SQL_QUERY_INSERT_NEW_SONG.prepareStatement(getDBConnection())) {
 
             File songPhoto = new File(song.getPhoto());
