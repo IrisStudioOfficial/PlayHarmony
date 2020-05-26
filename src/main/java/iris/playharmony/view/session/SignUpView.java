@@ -23,6 +23,7 @@ import static java.util.Objects.nonNull;
 
 public class SignUpView extends FormTemplate {
 
+    
     private File photoFile;
     private TextField photo;
     private TextField name;
