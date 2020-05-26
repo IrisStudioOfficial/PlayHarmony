@@ -78,6 +78,11 @@ public class DatabaseController implements IUserDatabaseController, ISongDatabas
     }
 
     @Override
+    public boolean updatePlayList(String newName, Playlist updatedPlaylist, User user) {
+        return playlistDatabaseController.updatePlayList(newName, updatedPlaylist, user);
+    }
+
+    @Override
     public boolean deletePlayList(Playlist playList, User user) {
         return playlistDatabaseController.deletePlayList(playList, user);
     }
