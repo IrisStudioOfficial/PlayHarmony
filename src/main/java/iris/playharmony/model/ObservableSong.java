@@ -78,7 +78,9 @@ public class ObservableSong {
                 .photo(song.getPhoto())
                 .path(song.getPathFile())
                 .rating(rating)
-                .fav(Session.getSession().currentUser().favourites().getSongList().contains(song) ? "C:\\Users\\omark\\OneDrive\\Desktop\\PlayHarmony\\src\\main\\resources\\icons\\star.png" : null);
+                .fav(Session.getSession().currentUser().favourites().getSongList().contains(song) ?
+                        new ImageView(new Image(getResource("icons/star.png").toURI().toString(),
+                                25, 25, false, false)) : null);
     }
 
     public ImageView getPhoto() {
@@ -117,14 +119,13 @@ public class ObservableSong {
         return fav;
     }
 
-    public ObservableSong fav(String fav) {
-        if(fav != null)
-            this.fav = new ImageView(new Image(getResource("icons/star.png").toURI().toString(), 25, 25, false, false));
+    public ObservableSong fav(ImageView fav) {
+        this.fav = fav;
         return this;
     }
 
-    private File getResource(String resourcesPath) {
-        URL url = this.getClass().getClassLoader().getResource(resourcesPath);
+    private static File getResource(String resourcesPath) {
+        URL url = ObservableSong.class.getClassLoader().getResource(resourcesPath);
         File file = null;
         try {
             file = new File(url.toURI());
