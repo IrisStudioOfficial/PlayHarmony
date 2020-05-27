@@ -96,4 +96,14 @@ public class DatabaseController implements IUserDatabaseController, ISongDatabas
     public List<SongReview> getSongReviews() {
         return songDatabaseController.getSongReviews();
     }
+
+    @Override
+    public boolean addSongReview(SongReview songReview) {
+        return songDatabaseController.addSongReview(songReview);
+    }
+
+    @Override
+    public boolean updateSongReview(SongReview songReview) {
+        return songDatabaseController.updateSongReview(songReview);
+    }
 }

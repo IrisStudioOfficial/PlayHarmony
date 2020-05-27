@@ -18,4 +18,8 @@ public interface ISongDatabaseController {
     List<Song> getSongs();
 
     List<SongReview> getSongReviews();
+
+    boolean addSongReview(SongReview songReview);
+
+    boolean updateSongReview(SongReview songReview);
 }

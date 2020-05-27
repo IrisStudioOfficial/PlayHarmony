@@ -19,8 +19,16 @@ public class SongDatabaseController extends AbstractDatabaseController implement
     private static final String SQL_QUERY_GET_ALL_SONGS = "SELECT * FROM SONGS";
 
     private static final String SONG_REVIEWS_TABLE_NAME = "SONG_REVIEWS";
+
     private static final SQLWriteQuery SQL_QUERY_INSERT_NEW_SONG = new SQLInsertQuery(SONGS_TABLE_NAME,
             "title", "author", "photo", "publication", "pathFile");
+
+    private static final SQLWriteQuery SQL_QUERY_INSERT_NEW_SONG_REVIEW = new SQLInsertQuery(SONG_REVIEWS_TABLE_NAME,
+            "user", "song_title", "rating");
+
+    private static final SQLUpdateQuery SQL_QUERY_UPDATE_SONG_REVIEW = new SQLUpdateQuery(SONG_REVIEWS_TABLE_NAME,
+            "pk",
+            "user", "song_title", "rating");
 
     private static final SQLWriteQuery SQL_QUERY_UPDATE_SONG = new SQLUpdateQuery(SONGS_TABLE_NAME,
             "title",
@@ -67,6 +75,42 @@ public class SongDatabaseController extends AbstractDatabaseController implement
         return null;
     }
 
+    @Override
+    public boolean addSongReview(SongReview songReview) {
+
+        try(SQLStatement statement = SQL_QUERY_INSERT_NEW_SONG_REVIEW.prepareStatement(getDBConnection())) {
+
+            statement.set("user", songReview.getUser())
+                    .set("song_title", songReview.getSongTitle())
+                    .set("rating", String.valueOf(songReview.getRating()));
+
+            return statement.execute() != SQLStatement.ERROR_CODE;
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean updateSongReview(SongReview songReview) {
+
+        try(SQLStatement statement = SQL_QUERY_UPDATE_SONG_REVIEW.prepareStatement(getDBConnection())) {
+
+            statement.setKey("pk", String.valueOf(songReview.getId()))
+                    .set("user", songReview.getUser())
+                    .set("song_title", songReview.getSongTitle())
+                    .set("rating", String.valueOf(songReview.getRating()));
+
+            return statement.execute() != SQLStatement.ERROR_CODE;
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
     private void readSongsDatabase(ResultSet resultSet, List<Song> songList) throws SQLException {
 

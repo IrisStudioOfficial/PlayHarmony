@@ -14,7 +14,7 @@ public class User {
     private Email email;
     private List<Playlist> playLists;
     private String password;
-    private Playlist favorites = null;
+    private Playlist favorites = new Playlist("favourites");
 
     public User() {}
 
