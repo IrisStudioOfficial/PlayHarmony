@@ -7,6 +7,8 @@ public interface IPlaylistDatabaseController {
 
     boolean addPlayList(Playlist updatedPlaylist, User user);
 
+    boolean updatePlayList(String newName, Playlist playlist, User user);
+
     boolean deletePlayList(Playlist playList, User user);
 
     boolean addToFavourites(Playlist favourites, User user);

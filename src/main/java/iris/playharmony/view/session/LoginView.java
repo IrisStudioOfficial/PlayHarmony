@@ -45,7 +45,6 @@ public class LoginView extends FormTemplate {
         Label label = new Label("Do not have an account yet?");
 
         Button signup = ButtonFactory.button("Sign up", event -> {
-            NavController.get().popView();
             NavController.get().pushView(new SignUpView());
         });
 

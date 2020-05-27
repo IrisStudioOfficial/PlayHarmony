@@ -134,7 +134,7 @@ public class HeaderView extends HBox {
     }
 
     private void onLoginButtonClicked(ActionEvent actionEvent) {
-        NavController.get().setView(new LoginView());
+        NavController.get().pushView(new LoginView());
     }
 
     private void onLogoutButtonClicked(ActionEvent actionEvent) {
@@ -164,13 +164,18 @@ public class HeaderView extends HBox {
     }
 
     private void onBackButtonClicked(ActionEvent actionEvent) {
+
         Parent view = NavController.get().getCurrentView();
-        if(view != null){
+
+        if(view != null) {
             if(!Objects.equals(view.getClass(), LobbyView.class)) {
                 NavController.get().popView();
                 TypeUtils.callAnnotatedMethod(NavController.get().getCurrentView(), OnRefresh.class);
             }
+        } else {
+            NavController.get().setView(new LobbyView());
         }
+
         refresh();
     }
 
