@@ -15,7 +15,6 @@ public class LobbyView extends FormTemplate {
 
     @Override
     protected void initElements() {
-
     }
 
     @Override
