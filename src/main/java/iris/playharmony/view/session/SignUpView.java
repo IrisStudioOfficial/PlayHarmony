@@ -117,8 +117,10 @@ public class SignUpView extends FormTemplate {
     }
 
     private boolean allRequiredFieldsAreSet(User user) {
-        return !TypeUtils.getAllFieldValues(user).stream()
-                .map(field -> field == null ? null : field.toString())
-                .allMatch(field -> nonNull(field) && !field.trim().isEmpty());
+        return !isEmpty(photo) && !isEmpty(name) && !isEmpty(surname) && !isEmpty(category) && !isEmpty(email) && !isEmpty(password);
+    }
+
+    private boolean isEmpty(TextField textField) {
+        return textField.getText().isEmpty();
     }
 }

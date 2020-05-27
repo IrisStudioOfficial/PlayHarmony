@@ -74,8 +74,10 @@ public class ObservableSong {
                 .rating(SongReviewUtils.getRatingElement(song))
                 .fav(null);
 
-        if(Session.getSession().currentUser().favourites() != null) {
-            observableSong.fav(isFavouriteSong(song) ? starIcon() : null);
+        if(Session.getSession().currentUser() != null) {
+            if (Session.getSession().currentUser().favourites() != null) {
+                observableSong.fav(isFavouriteSong(song) ? starIcon() : null);
+            }
         }
 
         return observableSong;

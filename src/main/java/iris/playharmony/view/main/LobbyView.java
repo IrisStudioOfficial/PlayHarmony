@@ -22,7 +22,6 @@ public class LobbyView extends FormTemplate {
         return new Node[] {
                 ButtonFactory.button("Admin", event -> NavController.get().pushView(new AdminView())),
                 ButtonFactory.button("User", event -> NavController.get().pushView(new UserView())),
-                ButtonFactory.button("SignUp", event -> NavController.get().pushView(new SignUpView()))
         };
     }
 }

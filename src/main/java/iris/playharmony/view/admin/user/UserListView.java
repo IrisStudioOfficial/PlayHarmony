@@ -4,6 +4,7 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.ObservableUser;
 import iris.playharmony.view.template.ListTemplate;
+import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.TableFactory;
 import javafx.collections.FXCollections;
@@ -65,8 +66,11 @@ public class UserListView extends ListTemplate<ObservableUser> {
         ObservableUser selection = getSelectedItem();
         if(selection == null)
             return;
-        DatabaseController.get().removeUser(selection.getEmail());
-        refresh();
+        if(AlertFactory.confirmAlert("Delete User", "Do you want to delete the user?")) {
+            if (!DatabaseController.get().removeUser(selection.getEmail()))
+                AlertFactory.errorAlert("ERROR! Couldn't remove user", "ERROR! Couldn't remove user");
+            refresh();
+        }
     }
 
     private void updateUser() {

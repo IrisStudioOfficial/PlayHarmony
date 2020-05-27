@@ -19,13 +19,17 @@ public class UpdatePlaylistView extends FormTemplate {
     private Playlist playlist;
 
     public UpdatePlaylistView(Playlist playlist) {
-        super("Update Playlist");
-        this.playlist = playlist;
+        super("Update Playlist", playlist);
+    }
+
+    @Override
+    protected void initBaseElement(Object playlist) {
+        this.playlist = (Playlist) playlist;
     }
 
     @Override
     protected void initElements() {
-        add(namePlayList = TextFactory.textField("New Name Of PlayList"));
+        add(namePlayList = TextFactory.textField(playlist.getName()));
     }
 
     @Override

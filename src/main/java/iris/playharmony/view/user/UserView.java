@@ -7,6 +7,7 @@ import iris.playharmony.model.User;
 import iris.playharmony.session.Session;
 import iris.playharmony.view.template.ListTemplate;
 import iris.playharmony.view.user.playlist.CreatePlaylistView;
+import iris.playharmony.view.user.playlist.FavouriteSongListView;
 import iris.playharmony.view.user.playlist.PlaylistView;
 import iris.playharmony.view.user.playlist.UpdatePlaylistView;
 import iris.playharmony.view.user.song.UserSongListView;
@@ -59,9 +60,10 @@ public class UserView extends ListTemplate<Playlist> {
         return new Node[] {
                 ButtonFactory.button("Search Songs", e -> NavController.get().pushView(new UserSongListView())),
                 ButtonFactory.button("Add Playlist", e -> NavController.get().pushView(new CreatePlaylistView())),
-                ButtonFactory.button("See Playlist", event -> seePlaylist()),
                 ButtonFactory.button("Delete Playlist", event -> deletePlaylist()),
-                ButtonFactory.button("Update Playlist", event -> updatePlaylist())
+                ButtonFactory.button("Update Playlist", event -> updatePlaylist()),
+                ButtonFactory.button("See Playlist", event -> seePlaylist()),
+                    ButtonFactory.button("See Favourites", event -> seeFavourites())
         };
     }
 
@@ -87,4 +89,7 @@ public class UserView extends ListTemplate<Playlist> {
         }
     }
 
+    private void seeFavourites() {
+        NavController.get().pushView(new FavouriteSongListView());
+    }
 }

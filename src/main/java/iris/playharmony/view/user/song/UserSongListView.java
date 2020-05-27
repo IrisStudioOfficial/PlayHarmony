@@ -90,6 +90,7 @@ public class UserSongListView extends ListTemplate<ObservableSong> {
 
         favourites.addSong(toBeAdded);
         DatabaseController.get().addToFavourites(favourites, Session.getSession().currentUser());
+        refresh();
     }
 
     private void playSong(ActionEvent actionEvent) {

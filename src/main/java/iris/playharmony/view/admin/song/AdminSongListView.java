@@ -74,9 +74,11 @@ public class AdminSongListView extends ListTemplate<ObservableSong> {
         ObservableSong selection = getSelectedItem();
         if (selection == null)
             return;
-        if (!DatabaseController.get().deleteSong(new Song().setTitle(selection.getTitle())))
-            AlertFactory.errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
-        refresh();
+        if(AlertFactory.confirmAlert("Delete Song", "Do you want to delete the song?")) {
+            if (!DatabaseController.get().deleteSong(new Song().setTitle(selection.getTitle())))
+                AlertFactory.errorAlert("ERROR! Couldn't remove song", "ERROR! Couldn't remove song");
+            refresh();
+        }
     }
 
     private void updateSong() {

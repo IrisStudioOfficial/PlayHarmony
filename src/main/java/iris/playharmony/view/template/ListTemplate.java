@@ -103,10 +103,11 @@ public abstract class ListTemplate<T> extends VBox {
     }
 
     private void searchCommand() {
+        data = getData();
         if(!searchField.getText().isEmpty()) {
             data = data.filtered(fieldData -> fieldToFilter(fieldData).toLowerCase().contains(searchField.getText().toLowerCase()));
-            TableFactory.updateTable(data, table);
-            TableFactory.updatePagination(data, table, pagination);
         }
+        TableFactory.updateTable(data, table);
+        TableFactory.updatePagination(data, table, pagination);
     }
 }

@@ -6,6 +6,7 @@ import iris.playharmony.model.Email;
 import iris.playharmony.model.User;
 import iris.playharmony.session.Session;
 import iris.playharmony.view.template.FormTemplate;
+import iris.playharmony.view.user.UserView;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.DefaultStyle;
@@ -83,6 +84,7 @@ public class LoginView extends FormTemplate {
         Session.getSession().setCurrentUser(user);
 
         NavController.get().popView();
+        NavController.get().pushView(new UserView());
     }
 
     private Optional<User> getUserByEmail(Email email) {
