@@ -59,7 +59,7 @@ public class UserSongListView extends ListTemplate<ObservableSong> {
                 TableFactory.tableColumn("Title", "title"),
                 TableFactory.tableColumn("Author", "author"),
                 TableFactory.tableColumn("Date", "date"),
-                TableFactory.tableColumn("Rating", "rating")
+                TableFactory.tableColumn("Avg. Rating", "rating")
         };
     }
 
