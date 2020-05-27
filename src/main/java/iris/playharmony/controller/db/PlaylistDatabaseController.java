@@ -51,6 +51,7 @@ public class PlaylistDatabaseController extends AbstractDatabaseController imple
 
         return updateUserPlaylists(SQL_QUERY_UPDATE_PLAYLIST, "playlist", Json.toJson(user.getPlayLists()), user);
     }
+    
 
     @Override
     public boolean addToFavourites(Playlist favourites, User user) {
