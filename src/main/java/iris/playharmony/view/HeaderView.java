@@ -18,17 +18,20 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class HeaderView extends HBox {
+public class HeaderView extends HBox implements NavigationViewChangedListener {
 
     private static final String TITLE = "PlayHarmony";
     private static final Font TITLE_FONT = new Font("Arial", 28);
@@ -101,7 +104,8 @@ public class HeaderView extends HBox {
 
     private Region createLoggedInUserRegion(User user) {
 
-        HBox region = new HBox(5);
+        HBox region = new HBox(100);
+        region.setAlignment(Pos.CENTER_LEFT);
 
         Parent userProfileView = createUserProfileView(user);
 
@@ -116,19 +120,18 @@ public class HeaderView extends HBox {
 
     private Parent createUserProfileView(User user) {
 
-        VBox container = new VBox();
+        VBox container = new VBox(4);
+        container.setAlignment(Pos.TOP_CENTER);
 
         Circle frame = new Circle();
+        frame.setRadius(32);
         frame.setFill(new ImagePattern(ImageFactory.loadFromFile(user.getPhoto().getAbsolutePath())));
-        frame.setEffect(new InnerShadow());
+        frame.setEffect(new DropShadow());
 
         Label nameLabel = new Label(user.getName());
-        nameLabel.setFont(Font.font(20));
+        nameLabel.setFont(Font.font(12));
 
-        Label roleLabel = new Label(user.getRole().toString());
-        roleLabel.setFont(Font.font(20));
-
-        container.getChildren().addAll(frame, nameLabel, roleLabel);
+        container.getChildren().addAll(frame, nameLabel);
 
         return container;
     }
@@ -176,7 +179,11 @@ public class HeaderView extends HBox {
             NavController.get().setView(new LobbyView());
         }
 
-        refresh();
+        // refresh();
     }
 
+    @Override
+    public void onViewChanged(Parent newView) {
+        refresh();
+    }
 }

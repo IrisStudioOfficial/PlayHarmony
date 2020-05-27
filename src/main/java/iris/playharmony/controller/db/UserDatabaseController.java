@@ -29,11 +29,11 @@ public class UserDatabaseController extends AbstractDatabaseController implement
     private static final String SQL_SELECT_ALL_USERS = "SELECT * FROM USERS";
 
     private static final SQLWriteQuery SQL_QUERY_INSERT_NEW_USER = new SQLInsertQuery(USERS_TABLE_NAME,
-            "photo", "name", "surname", "category", "user_role", "email");
+            "photo", "name", "surname", "category", "user_role", "email", "password");
 
     private static final SQLWriteQuery SQL_QUERY_UPDATE_USER = new SQLUpdateQuery(USERS_TABLE_NAME,
             "email",
-            "photo", "name", "surname", "category", "user_role", "email", "favourites");
+            "photo", "name", "surname", "category", "user_role", "email", "password", "favourites");
 
     private static final SQLWriteQuery SQL_QUERY_REMOVE_USER_BY_EMAIL = new SQLDeleteByKeyQuery(USERS_TABLE_NAME, "email");
 
@@ -80,8 +80,8 @@ public class UserDatabaseController extends AbstractDatabaseController implement
                     .mail(new Email(resultSet.getString("EMAIL")))
                     .photo(photo)
                     .favourites(favourites)
-                    .setPlayLists(playList);
-                    // .setPassword(resultSet.getString("PASSWORD"));
+                    .setPlayLists(playList)
+                    .setPassword(resultSet.getString("PASSWORD"));
 
             userList.add(user);
         }
@@ -106,7 +106,8 @@ public class UserDatabaseController extends AbstractDatabaseController implement
                     .set("surname", user.getSurname())
                     .set("email", user.getEmail().toString())
                     .set("category", user.getCategory())
-                    .set("user_role", user.getRole().toString());
+                    .set("user_role", user.getRole().toString())
+                    .set("password", user.getPassword());
 
             return statement.execute() != SQLStatement.ERROR_CODE;
 
@@ -153,7 +154,8 @@ public class UserDatabaseController extends AbstractDatabaseController implement
                     .set("email", user.getEmail().toString())
                     .set("category", user.getCategory())
                     .set("favourites", Json.toJson(user.favourites()))
-                    .set("user_role", user.getRole().toString());
+                    .set("user_role", user.getRole().toString())
+                    .set("password", user.getPassword());
 
             return statement.execute() != SQLStatement.ERROR_CODE;
 

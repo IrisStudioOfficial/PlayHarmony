@@ -28,6 +28,8 @@ public class MainView extends BorderPane {
 
         setBottom(footerView);
 
+        navigationView.getListeners().add(headerView);
+
         initSingleton(NavController.class, navController);
     }
 }
