@@ -1,5 +1,6 @@
 package iris.playharmony.model;
 
+import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.session.Session;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
@@ -10,6 +11,7 @@ import org.controlsfx.control.Rating;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 
 public class ObservableSong {
@@ -70,7 +72,11 @@ public class ObservableSong {
         rating.setPartialRating(false);
         rating.setMaxHeight(20);
 
-        rating.setOnMouseClicked(event -> System.out.println(rating.getRating()));
+        rating.setOnMouseClicked(event -> {
+            List<SongReview> songReviews = DatabaseController.get().getSongReviews();
+            
+            System.out.println(rating.getRating());
+        });
         return new ObservableSong()
                 .title(song.getTitle())
                 .author(song.getAuthor())
@@ -80,7 +86,8 @@ public class ObservableSong {
                 .rating(rating)
                 .fav(Session.getSession().currentUser().favourites().getSongList().contains(song) ?
                         new ImageView(new Image(getResource("icons/star.png").toURI().toString(),
-                                25, 25, false, false)) : null);
+                                25, 25, false, false))
+                        : null);
     }
 
     public ImageView getPhoto() {
