@@ -167,6 +167,38 @@ public class UserDatabaseController extends AbstractDatabaseController implement
     }
 
     @Override
+    public boolean updateMyAccount(User user, String key) {
+
+        try(SQLStatement statement = SQL_QUERY_UPDATE_USER.prepareStatement(getDBConnection())) {
+
+            File photo = user.getPhoto();
+
+            if(photo != null) {
+                FileUtils.readFileBinary(photo, inputStream -> statement.set("photo", inputStream, (int)photo.length()));
+            } else {
+                File defaultPhoto = new File(requireNonNull(Resources.get(PathHandler.DEFAULT_PHOTO_PATH)));
+                FileUtils.readFileBinary(defaultPhoto, inputStream -> statement.set("photo", inputStream, inputStream.available()));
+            }
+
+            statement.setKey("email", key)
+                    .set("name", user.getName())
+                    .set("surname", user.getSurname())
+                    .set("email", user.getEmail().toString())
+                    .set("category", user.getCategory())
+                    .set("favourites", Json.toJson(user.favourites()))
+                    .set("user_role", user.getRole().toString())
+                    .set("password", user.getPassword());
+
+            return statement.execute() != SQLStatement.ERROR_CODE;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean removeUser(String userEmail) {
 
         if(userEmail == null || userEmail.isEmpty()) {

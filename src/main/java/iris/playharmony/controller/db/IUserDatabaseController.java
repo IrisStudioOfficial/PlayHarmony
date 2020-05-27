@@ -12,5 +12,7 @@ public interface IUserDatabaseController {
 
     boolean updateUser(User user, String key);
 
+    boolean updateMyAccount(User user, String key);
+
     boolean removeUser(String key);
 }

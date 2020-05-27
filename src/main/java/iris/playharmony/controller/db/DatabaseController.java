@@ -68,6 +68,11 @@ public class DatabaseController implements IUserDatabaseController, ISongDatabas
     }
 
     @Override
+    public boolean updateMyAccount(User user, String key){
+        return userDatabaseController.updateUser(user, key);
+    }
+    
+    @Override
     public boolean removeUser(String key) {
         return userDatabaseController.removeUser(key);
     }
@@ -81,6 +86,8 @@ public class DatabaseController implements IUserDatabaseController, ISongDatabas
     public boolean updatePlayList(String newName, Playlist updatedPlaylist, User user) {
         return playlistDatabaseController.updatePlayList(newName, updatedPlaylist, user);
     }
+
+
 
     @Override
     public boolean deletePlayList(Playlist playList, User user) {
