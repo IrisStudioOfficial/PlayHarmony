@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 
 public abstract class FormTemplate extends VBox {
 
-    private static int SPACING = 15;
+    private static final int SPACING = 15;
 
     public FormTemplate(String title) {
         super(SPACING);

@@ -19,15 +19,10 @@ public class Session {
     private User user;
 
     private Session() {
-        this.user = DatabaseController.get().getUsers().stream()
-                .filter(user -> user.getName().equals("test"))
-                .findFirst().get();
+
     }
 
     public User currentUser() {
-        user = DatabaseController.get().getUsers().stream()
-                .filter(user -> user.getName().equals(this.user.getName()))
-                .findFirst().get();
         return user;
     }
 
