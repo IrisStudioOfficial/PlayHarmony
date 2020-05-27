@@ -1,6 +1,5 @@
 package iris.playharmony.model;
 
-import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.session.Session;
 import iris.playharmony.util.SongReviewUtils;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,8 +10,6 @@ import org.controlsfx.control.Rating;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
-import java.util.Optional;
 
 
 public class ObservableSong {
@@ -26,7 +23,6 @@ public class ObservableSong {
     private Rating rating = null;
 
     public ObservableSong photo(String photo) {
-        System.out.println(new File(photo).toURI().toString());
         this.photo = new ImageView(new Image(new File(photo).toURI().toString(), 100, 100, false, false));
         return this;
     }
@@ -68,12 +64,6 @@ public class ObservableSong {
     }
 
     public static ObservableSong from(Song song) {
-        Rating rating = new Rating();
-        rating.setUpdateOnHover(false);
-        rating.setPartialRating(true);
-        rating.setMaxHeight(20);
-        rating.setRating(SongReviewUtils.getAverageRating(song));
-        rating.setOnMouseClicked(event -> onRatingClick(song, rating));
 
         ObservableSong observableSong = new ObservableSong()
                 .title(song.getTitle())
@@ -81,39 +71,25 @@ public class ObservableSong {
                 .date(song.getDate())
                 .photo(song.getPhoto())
                 .path(song.getPathFile())
-                .rating(rating)
+                .rating(SongReviewUtils.getRatingElement(song))
                 .fav(null);
 
         if(Session.getSession().currentUser().favourites() != null) {
-            observableSong.fav(Session.getSession().currentUser().favourites().getSongList().contains(song) ?
-                            new ImageView(new Image(getResource("icons/star.png").toURI().toString(),
-                                    25, 25, false, false))
-                            : null);
+            observableSong.fav(isFavouriteSong(song) ? starIcon() : null);
         }
 
         return observableSong;
     }
 
-    private static void onRatingClick(Song song, Rating rating) {
-        List<SongReview> songReviews = DatabaseController.get().getSongReviews();
-        Optional<SongReview> first = songReviews.stream()
-                .filter(songReview -> songReview.getUser().equals(Session.getSession().currentUser().getName()))
-                .filter(songReview -> songReview.getSongTitle().equals(song.getTitle()))
-                .findFirst();
-
-        if (first.isPresent()) {
-            SongReview songReview = first.get();
-            songReview.setRating((int) rating.getRating());
-            DatabaseController.get().updateSongReview(songReview);
-        } else {
-            SongReview songReview = new SongReview()
-                    .setRating((int) rating.getRating())
-                    .setUser(Session.getSession().currentUser().getName())
-                    .setSongTitle(song.getTitle());
-            DatabaseController.get().addSongReview(songReview);
-        }
-        rating.setRating(SongReviewUtils.getAverageRating(song));
+    private static boolean isFavouriteSong(Song song) {
+        return Session.getSession().currentUser().favourites().getSongList().contains(song);
     }
+
+    private static ImageView starIcon() {
+        return new ImageView(new Image(getResource("icons/star.png").toURI().toString(),
+                25, 25, false, false));
+    }
+
 
     public ImageView getPhoto() {
         return photo;

@@ -68,6 +68,7 @@ public class SongDatabaseController extends AbstractDatabaseController implement
             ResultSet resultSet = statement.executeQuery(SQL_QUERY_GET_ALL_REVIEWS);
 
             return readSongReviewsDatabase(resultSet);
+
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -130,14 +131,16 @@ public class SongDatabaseController extends AbstractDatabaseController implement
     }
 
     private List<SongReview> readSongReviewsDatabase(ResultSet resultSet) throws SQLException {
+
         List<SongReview> songReviews = new ArrayList<>();
 
         while(resultSet.next()) {
+
             songReviews.add(new SongReview()
                     .setId(resultSet.getInt("PK"))
                     .setSongTitle(resultSet.getString("SONG_TITLE"))
                     .setUser(resultSet.getString("USER"))
-                    .setRating(resultSet.getInt("RATING")));
+                    .setRating(resultSet.getDouble("RATING")));
         }
 
         return songReviews;

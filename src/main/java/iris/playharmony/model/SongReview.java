@@ -1,9 +1,12 @@
 package iris.playharmony.model;
 
+import org.controlsfx.control.Rating;
+
 public class SongReview {
+
     private String user;
     private String songTitle;
-    private int rating;
+    private double rating;
     private int id;
 
     public String getUser() {
@@ -24,11 +27,11 @@ public class SongReview {
         return this;
     }
 
-    public int getRating() {
+    public double getRating() {
         return rating;
     }
 
-    public SongReview setRating(int rating) {
+    public SongReview setRating(double rating) {
         this.rating = rating;
         return this;
     }
@@ -40,5 +43,13 @@ public class SongReview {
     public SongReview setId(int id) {
         this.id = id;
         return this;
+    }
+
+    public static SongReview from(User user, Song song, Rating rating) {
+
+        return new SongReview()
+                .setRating(rating.getRating())
+                .setUser(user.getName())
+                .setSongTitle(song.getTitle());
     }
 }
