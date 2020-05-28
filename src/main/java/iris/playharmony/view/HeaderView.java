@@ -144,6 +144,7 @@ public class HeaderView extends HBox implements NavigationViewChangedListener {
         final boolean logout = AlertFactory.confirmAlert("Log out", "Are you sure you want to log out?");
         if(logout) {
             Session.getSession().setCurrentUser(null);
+            NavController.get().setView(new LobbyView());
             refresh();
         }
     }

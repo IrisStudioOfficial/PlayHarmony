@@ -19,6 +19,11 @@ public class UpdateUserView extends UserFormView {
     @Override
     protected void initBaseElement(Object user) {
         this.user = (ObservableUser) user;
+    }
+
+    @Override
+    protected void initElements() {
+        super.initElements();
         name.setText(this.user.getName());
         surname.setText(this.user.getSurname());
         email.setText(this.user.getEmail());

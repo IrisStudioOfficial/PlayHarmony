@@ -3,8 +3,10 @@ package iris.playharmony.view.session;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.Email;
+import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import iris.playharmony.session.Session;
+import iris.playharmony.view.admin.AdminView;
 import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.user.UserView;
 import iris.playharmony.view.util.AlertFactory;
@@ -83,8 +85,11 @@ public class LoginView extends FormTemplate {
 
         Session.getSession().setCurrentUser(user);
 
-        NavController.get().popView();
-        NavController.get().pushView(new UserView());
+        if(user.getRole().equals(Role.ADMIN)) {
+            NavController.get().setView(new AdminView());
+        } else {
+            NavController.get().setView(new UserView());
+        }
     }
 
     private Optional<User> getUserByEmail(Email email) {

@@ -50,6 +50,7 @@ public abstract class UserFormView extends FormTemplate {
         add(category = new TextField());
         add(TextFactory.label("Role", DefaultStyle.label()));
         add(role = TextFactory.comboBox(Role.values()));
+        photo = new TextField();
         add(ButtonFactory.buttonWithLabeledResource(photo, "Upload Image", event -> uploadImage(photo)));
     }
 
