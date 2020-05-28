@@ -72,7 +72,7 @@ public class DatabaseController implements IUserDatabaseController, ISongDatabas
         return userDatabaseController.updateUser(user, key);
     }
 
-    
+
     @Override
     public boolean removeUser(String key) {
         return userDatabaseController.removeUser(key);
