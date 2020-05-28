@@ -1,7 +1,7 @@
 package iris.playharmony.view.main;
 
 import iris.playharmony.controller.NavController;
-import iris.playharmony.view.session.SignUpView;
+import iris.playharmony.view.admin.AdminView;
 import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.user.UserView;
 import iris.playharmony.view.util.ButtonFactory;
