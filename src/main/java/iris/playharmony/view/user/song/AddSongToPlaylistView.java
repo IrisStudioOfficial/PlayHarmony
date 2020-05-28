@@ -44,8 +44,7 @@ public class AddSongToPlaylistView extends ListTemplate<ObservableSong> {
     protected ObservableList<ObservableSong> getData() {
         ObservableList<ObservableSong> lists = FXCollections.observableArrayList();
         for (Song song : DatabaseController.get().getSongs()) {
-            ObservableSong observableSong = new ObservableSong().title(song.getTitle()).author(song.getAuthor())
-                    .photo(song.getPhoto()).date(song.getDate()).path(song.getPathFile());
+            ObservableSong observableSong = ObservableSong.from(song);
             if(playlist.getSongList().stream().noneMatch(s -> s.getTitle().equals(observableSong.getTitle()))) {
                 lists.add(observableSong);
             }
@@ -61,10 +60,12 @@ public class AddSongToPlaylistView extends ListTemplate<ObservableSong> {
     @Override
     protected TableColumn[] initTable() {
         return new TableColumn[] {
+                TableFactory.tableColumnPhoto("", "fav", 40),
                 TableFactory.tableColumnPhoto("Photo", "photo", 100),
                 TableFactory.tableColumn("Title", "title"),
                 TableFactory.tableColumn("Author", "author"),
-                TableFactory.tableColumn("Date", "date")
+                TableFactory.tableColumn("Date", "date"),
+                TableFactory.tableColumn("Avg. Rating", "rating")
         };
     }
 

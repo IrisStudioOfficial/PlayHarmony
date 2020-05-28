@@ -52,12 +52,7 @@ public class PlaylistView extends ListTemplate<ObservableSong> {
     protected ObservableList<ObservableSong> getData() {
         ObservableList<ObservableSong> data = FXCollections.observableArrayList();
         playlist.getSongList().stream()
-                .map(song -> new ObservableSong()
-                        .title(song.getTitle())
-                        .author(song.getAuthor())
-                        .photo(song.getPhoto())
-                        .date(song.getDate())
-                        .path(song.getPathFile()))
+                .map(ObservableSong::from)
                 .forEach(data::add);
         return data;
     }
@@ -70,10 +65,12 @@ public class PlaylistView extends ListTemplate<ObservableSong> {
     @Override
     protected TableColumn[] initTable() {
         return new TableColumn[] {
+                TableFactory.tableColumnPhoto("", "fav", 40),
                 TableFactory.tableColumnPhoto("Photo", "photo", 100),
                 TableFactory.tableColumn("Title", "title"),
                 TableFactory.tableColumn("Author", "author"),
-                TableFactory.tableColumn("Date", "date")
+                TableFactory.tableColumn("Date", "date"),
+                TableFactory.tableColumn("Avg. Rating", "rating")
         };
     }
 
