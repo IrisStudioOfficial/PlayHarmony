@@ -35,11 +35,19 @@ public class UserView extends ListTemplate<Playlist> {
 
     @Override
     protected ObservableList<Playlist> getData() {
+
         ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+
         User user = Session.getSession().currentUser();
+
+        if(user == null) {
+            return FXCollections.emptyObservableList();
+        }
+
         if(user.getPlayLists() != null) {
             playlists.addAll(user.getPlayLists());
         }
+
         return playlists;
     }
 
