@@ -25,7 +25,7 @@ import javafx.scene.control.TableColumn;
 import java.util.Comparator;
 
 public class UserSongListView extends ListTemplate<ObservableSong> {
-
+    //Bienvenido a nuestra humilde morada, siéntase como en casa
     public UserSongListView() {
         super("Search Song");
     }
