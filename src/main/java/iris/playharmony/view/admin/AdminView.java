@@ -1,4 +1,4 @@
-package iris.playharmony.view.main;
+package iris.playharmony.view.admin;
 
 import iris.playharmony.controller.NavController;
 import iris.playharmony.view.admin.song.AdminSongListView;
