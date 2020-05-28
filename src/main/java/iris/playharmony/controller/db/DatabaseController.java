@@ -71,6 +71,7 @@ public class DatabaseController implements IUserDatabaseController, ISongDatabas
     public boolean updateMyAccount(User user, String key){
         return userDatabaseController.updateUser(user, key);
     }
+
     
     @Override
     public boolean removeUser(String key) {
