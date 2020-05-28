@@ -1,33 +1,27 @@
 package iris.playharmony.view.user.playlist;
 
-import iris.playharmony.controller.NavController;
 import iris.playharmony.controller.db.DatabaseController;
-import iris.playharmony.model.*;
-import iris.playharmony.model.player.MusicPlayer;
-import iris.playharmony.model.player.Spectrum;
+import iris.playharmony.model.ObservableSong;
+import iris.playharmony.model.Song;
+import iris.playharmony.model.SongPlayMode;
+import iris.playharmony.model.User;
 import iris.playharmony.session.Session;
-import iris.playharmony.view.player.MusicPlayerView;
 import iris.playharmony.view.player.MusicPlayerViewModel;
 import iris.playharmony.view.template.ListTemplate;
+import iris.playharmony.view.user.MusicPlayerController;
 import iris.playharmony.view.util.AlertFactory;
 import iris.playharmony.view.util.ButtonFactory;
 import iris.playharmony.view.util.TableFactory;
-import javafx.animation.Interpolator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 
 import java.util.Comparator;
-import java.util.Random;
 
 public class FavouriteSongListView extends ListTemplate<ObservableSong> {
 
-    private MusicPlayerViewModel musicPlayerViewModel;
-    private SongPlayMode songPlayMode = SongPlayMode.getDefault();
-    private int index = 0;
-
+    MusicPlayerController musicPlayerController;
     public FavouriteSongListView() {
         super("User favorite songs");
     }
@@ -69,44 +63,20 @@ public class FavouriteSongListView extends ListTemplate<ObservableSong> {
     @Override
     protected Node[] bottomButtonPanel() {
         return new Node[] {
-                ButtonFactory.button("Play all", this::playAll),
-                ButtonFactory.button("Play song", this::playSong),
+                ButtonFactory.button("Play all", e -> {
+                    musicPlayerController = new MusicPlayerController(Session.getSession().currentUser().favourites());
+                    try {
+                        musicPlayerController.playSong(ObservableSong.from(Session.getSession().currentUser().favourites().getSongList().get(0)));
+                    } catch(Exception ex) {}
+                }),
+                ButtonFactory.button("Play song", e -> {
+                    if(getSelectedItem() != null) {
+                        musicPlayerController = new MusicPlayerController(Session.getSession().currentUser().favourites());
+                        musicPlayerController.playSong(getSelectedItem());
+                    }
+                }),
                 ButtonFactory.button("Delete song", event -> deleteSong())
         };
-    }
-
-    private void playAll(ActionEvent actionEvent) {
-        Playlist favourites = Session.getSession().currentUser().favourites();
-        MusicPlayer musicPlayer = new MusicPlayer();
-        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
-        ObservableSong selectedItem = getSelectedItem();
-        Song song;
-        if (selectedItem == null)
-            song = favourites.getSongList().get(0);
-        else
-            song = DatabaseController.get().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
-
-        musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
-        musicPlayerViewModel.setSong(song);
-
-        musicPlayerViewModel.nextSongTriggeredProperty().addListener((a, b, c) -> nextSong());
-        musicPlayerViewModel.previousSongTriggeredProperty().addListener((a, b, c) -> previousSong());
-        musicPlayerViewModel.songPlayModeProperty().addListener((observable, oldValue, newValue) -> songPlayMode = newValue);
-        NavController.get().pushView(new MusicPlayerView(musicPlayerViewModel));
-        musicPlayer.play();
-    }
-
-    private void playSong(ActionEvent actionEvent) {
-        MusicPlayer musicPlayer = new MusicPlayer();
-        Spectrum spectrum = new Spectrum(Interpolator.LINEAR);
-        ObservableSong selectedItem = getSelectedItem();
-        Song song = DatabaseController.get().getSongs().stream().filter(s -> s.getTitle().equals(selectedItem.getTitle())).findFirst().get();
-
-        MusicPlayerViewModel musicPlayerViewModel = new MusicPlayerViewModel(musicPlayer, spectrum);
-        musicPlayerViewModel.setSong(song);
-
-        NavController.get().pushView(new MusicPlayerView(musicPlayerViewModel));
-        musicPlayer.play();
     }
 
     private void deleteSong() {
@@ -123,45 +93,5 @@ public class FavouriteSongListView extends ListTemplate<ObservableSong> {
                 refresh();
             }
         }
-    }
-
-    public void nextSong() {
-        Playlist favourites = Session.getSession().currentUser().favourites();
-        switch(songPlayMode) {
-            case SEQUENTIAL:
-                index++;
-                if(index >= favourites.getSongList().size())
-                    index = 0;
-
-                break;
-            case RANDOM:
-                index = new Random().nextInt(favourites.getSongList().size());
-                break;
-            case SELF:
-                break;
-        }
-
-        musicPlayerViewModel.setSong(favourites.getSongList().get(index));
-        musicPlayerViewModel.getMusicPlayer().play();
-    }
-
-    public void previousSong() {
-        Playlist favourites = Session.getSession().currentUser().favourites();
-        switch(songPlayMode) {
-            case SEQUENTIAL:
-                index--;
-                if(index < 0)
-                    index = favourites.getSongList().size() - 1;
-
-                break;
-            case RANDOM:
-                index = new Random().nextInt(favourites.getSongList().size());
-                break;
-            case SELF:
-                break;
-        }
-
-        musicPlayerViewModel.setSong(favourites.getSongList().get(index));
-        musicPlayerViewModel.getMusicPlayer().play();
     }
 }
