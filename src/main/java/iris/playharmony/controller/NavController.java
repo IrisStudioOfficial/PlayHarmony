@@ -73,6 +73,7 @@ public class NavController implements Iterable<Parent> {
 
     public void clear() {
         viewStack.clear();
+        navigationView.removeView();
     }
 
     public int count() {
