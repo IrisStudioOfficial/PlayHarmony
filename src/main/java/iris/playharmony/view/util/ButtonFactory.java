@@ -20,7 +20,7 @@ public class ButtonFactory {
     public static Node buttonWithLabeledResource(TextField textField, String buttonText, EventHandler<ActionEvent> event) {
         HBox panel = new HBox();
 
-        textField.setDisable(true);
+        textField.setEditable(false);
 
         Button button = new Button(buttonText);
         button.setOnAction(event);

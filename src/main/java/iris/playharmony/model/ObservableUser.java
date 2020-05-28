@@ -11,6 +11,7 @@ public class ObservableUser {
     private SimpleStringProperty category = new SimpleStringProperty();
     private SimpleStringProperty role = new SimpleStringProperty();
     private SimpleStringProperty email = new SimpleStringProperty();
+    private SimpleStringProperty password = new SimpleStringProperty();
 
     public ImageView getPhoto() {
         return photo;
@@ -86,6 +87,19 @@ public class ObservableUser {
         return this;
     }
 
+    public String getPassword() {
+        return password.get();
+    }
+
+    public SimpleStringProperty passwordProperty() {
+        return password;
+    }
+
+    public ObservableUser password(String password) {
+        this.password.set(password);
+        return this;
+    }
+
     public static ObservableUser from(User user) {
         return new ObservableUser()
                 .name(user.getName())
@@ -93,6 +107,7 @@ public class ObservableUser {
                 .email(user.getEmail().toString())
                 .role(user.getRole().name())
                 .category(user.getCategory())
+                .password(user.getPassword())
                 .photo(new ImageView(new Image(user.getPhoto().toURI().toString(), 100, 100, false, false)));
     }
 }

@@ -3,10 +3,7 @@ package iris.playharmony.view;
 import iris.playharmony.controller.NavController;
 import iris.playharmony.model.User;
 import iris.playharmony.session.Session;
-import iris.playharmony.util.ImageFactory;
-import iris.playharmony.util.OnRefresh;
-import iris.playharmony.util.Resources;
-import iris.playharmony.util.TypeUtils;
+import iris.playharmony.util.*;
 import iris.playharmony.view.main.LobbyView;
 import iris.playharmony.view.session.LoginView;
 import iris.playharmony.view.util.AlertFactory;
@@ -123,15 +120,12 @@ public class HeaderView extends HBox implements NavigationViewChangedListener {
         VBox container = new VBox(4);
         container.setAlignment(Pos.TOP_CENTER);
 
-        Circle frame = new Circle();
-        frame.setRadius(32);
-        frame.setFill(new ImagePattern(ImageFactory.loadFromFile(user.getPhoto().getAbsolutePath())));
-        frame.setEffect(new DropShadow());
+        CircleImage photo = new CircleImage(ImageFactory.loadFromFile(user.getPhoto().getAbsolutePath()));
 
         Label nameLabel = new Label(user.getName());
         nameLabel.setFont(Font.font(12));
 
-        container.getChildren().addAll(frame, nameLabel);
+        container.getChildren().addAll(photo, nameLabel);
 
         return container;
     }
