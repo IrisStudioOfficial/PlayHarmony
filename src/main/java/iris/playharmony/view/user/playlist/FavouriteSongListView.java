@@ -3,10 +3,8 @@ package iris.playharmony.view.user.playlist;
 import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.ObservableSong;
 import iris.playharmony.model.Song;
-import iris.playharmony.model.SongPlayMode;
 import iris.playharmony.model.User;
 import iris.playharmony.session.Session;
-import iris.playharmony.view.player.MusicPlayerViewModel;
 import iris.playharmony.view.template.ListTemplate;
 import iris.playharmony.view.user.MusicPlayerController;
 import iris.playharmony.view.util.AlertFactory;
@@ -20,7 +18,6 @@ import javafx.scene.control.TableColumn;
 import java.util.Comparator;
 
 public class FavouriteSongListView extends ListTemplate<ObservableSong> {
-    //Saludos
     MusicPlayerController musicPlayerController;
     public FavouriteSongListView() {
         super("User favorite songs");
