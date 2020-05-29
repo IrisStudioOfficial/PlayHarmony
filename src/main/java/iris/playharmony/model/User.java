@@ -28,6 +28,34 @@ public class User {
         this.playLists = playLists;
     }
 
+    public void setPhoto(File photo) {
+        this.photo = photo;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public void setEmail(Email email) {
+        this.email = email;
+    }
+
+    public void setFavorites(Playlist favorites) {
+        this.favorites = favorites;
+    }
+
     public File getPhoto() {
         return photo;
     }

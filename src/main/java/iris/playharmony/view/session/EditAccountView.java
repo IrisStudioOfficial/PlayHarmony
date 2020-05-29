@@ -5,6 +5,7 @@ import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.Email;
 import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
+import iris.playharmony.session.Session;
 import iris.playharmony.view.main.LobbyView;
 import iris.playharmony.view.template.FormTemplate;
 import iris.playharmony.view.util.AlertFactory;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 
 public class EditAccountView extends FormTemplate {
 
-    private File photoFile;
     private TextField photo;
     private TextField name;
     private TextField surname;
@@ -29,54 +29,44 @@ public class EditAccountView extends FormTemplate {
     private TextField password;
     private TextField category;
 
+    private User user;
+
     public EditAccountView() {
         super("Edit Account");
     }
 
     @Override
     protected void initElements() {
+        this.user = Session.getSession().currentUser();
         photo = new TextField();
+        
+        add(TextFactory.label(user.getEmail().toString(), DefaultStyle.label()));
 
         add(TextFactory.label("Name", DefaultStyle.label()));
-        add(name = TextFactory.textField(""));
+        add(name = TextFactory.textField(user.getName()));
+
         add(TextFactory.label("Surname", DefaultStyle.label()));
-        add(surname = TextFactory.textField(""));
-        add(TextFactory.label("Email", DefaultStyle.label()));
-        add(email = TextFactory.textField(""));
+        add(surname = TextFactory.textField(user.getSurname()));
+
         add(TextFactory.label("Password", DefaultStyle.label()));
-        add(password = TextFactory.textField(""));
+        add(password = TextFactory.textField(user.getPassword()));
+
         add(TextFactory.label("Category", DefaultStyle.label()));
-        add(category = TextFactory.textField(""));
-        add(TextFactory.label("Upload Image", DefaultStyle.label()));
-        add(ButtonFactory.buttonWithLabeledResource(photo, "Photo", event -> uploadImage(photo)));
+        add(category = TextFactory.textField(user.getCategory()));
     }
 
     @Override
     protected Node[] bottomButtonPanel() {
         return new Node[] {
-                ButtonFactory.button("Sign Up", event -> createUser())
+                ButtonFactory.button("Save Changes", event -> updateUser())
         };
     }
 
-    private void uploadImage(TextField textField) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Search Image");
-
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All Images", "*.*"),
-                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
-                new FileChooser.ExtensionFilter("PNG", "*.png")
-        );
-
-        photoFile = fileChooser.showOpenDialog(new Stage());
-        textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
-    }
-
-    private void createUser() {
-        User user = getUserFromForm();
-        if(user != null) {
+    private void updateUser() {
+        User useredited = getUserFromForm();
+        if(useredited != null) {
             try {
-                if (DatabaseController.get().addUser(user)) {
+                if (DatabaseController.get().updateMyAccount(useredited,user.getEmail().toString())) {
                     NavController.get().pushView(new LobbyView());
                 }
             } catch (Exception e) {
@@ -86,38 +76,12 @@ public class EditAccountView extends FormTemplate {
     }
 
     private User getUserFromForm() {
-        User user = new User()
-                .photo(photoFile)
-                .name(name.getText())
-                .surname(surname.getText())
-                .category(category.getText())
-                .role(Role.STUDENT)
-                .mail(getEmail())
-                .setPlayLists(new ArrayList<>())
-                .setPassword(password.getText());
+        user.setName(name.getText());
+        user.setSurname(surname.getText());
+        user.setPassword(password.getText());
+        user.setCategory(category.getText());
+        user.setRole(Role.STUDENT);
 
-        if(allRequiredFieldsAreSet(user)) {
-            return user;
-        } else {
-            AlertFactory.errorAlert("ERROR! User is incorrect", "ERROR! All required fields must be filled");
-            return null;
-        }
-    }
-
-    private Email getEmail() {
-        if(Email.check(email.getText())) {
-            return new Email(email.getText());
-        } else {
-            AlertFactory.errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
-            return null;
-        }
-    }
-
-    private boolean allRequiredFieldsAreSet(User user) {
-        return !isEmpty(photo) && !isEmpty(name) && !isEmpty(surname) && !isEmpty(category) && !isEmpty(email) && !isEmpty(password);
-    }
-
-    private boolean isEmpty(TextField textField) {
-        return textField.getText().isEmpty();
+        return user;
     }
 }
