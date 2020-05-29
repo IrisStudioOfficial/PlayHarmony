@@ -27,21 +27,21 @@ import static java.util.Objects.nonNull;
 
 public abstract class UserFormView extends FormTemplate {
 
-    protected File photoFile;
-    protected CircleImage photoView;
-    protected TextField photoFileField = new TextField();
+    private File photoFile;
+    private CircleImage photoView;
+    private TextField photoFileField = new TextField();
     protected TextField name = new TextField();
-    protected TextField surname = new TextField();
+    TextField surname = new TextField();
     protected TextField email = new TextField();
-    protected PasswordField passwordField = new PasswordField();
-    protected TextField category = new TextField();
+    PasswordField passwordField = new PasswordField();
+    TextField category = new TextField();
     protected ComboBox<Object> role = new ComboBox<>();
 
-    public UserFormView(String title) {
+    UserFormView(String title) {
         super(title);
     }
 
-    public UserFormView(String title, Object baseElement) {
+    UserFormView(String title, Object baseElement) {
         super(title, baseElement);
     }
 
@@ -66,7 +66,7 @@ public abstract class UserFormView extends FormTemplate {
         setPhoto(null);
     }
 
-    protected void setPhoto(Image image) {
+    void setPhoto(Image image) {
         if(image == null) {
             photoView.setImage(ImageFactory.loadFromFile(Resources.get(PathHandler.DEFAULT_PHOTO_PATH)));
         } else {
@@ -92,7 +92,7 @@ public abstract class UserFormView extends FormTemplate {
         setPhoto(ImageFactory.loadFromFile(photoFile.getAbsolutePath()));
     }
 
-    protected User getUserFromForm() {
+    User getUserFromForm() {
 
         Email email = getEmail();
 
@@ -118,7 +118,7 @@ public abstract class UserFormView extends FormTemplate {
         return user;
     }
 
-    protected boolean notAllFieldsAreSet(User user) {
+    private boolean notAllFieldsAreSet(User user) {
         return !TypeUtils.getAllFieldValues(user).stream().map(String::valueOf).allMatch(field -> nonNull(field) && !field.trim().isEmpty());
     }
 

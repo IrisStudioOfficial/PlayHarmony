@@ -1,6 +1,7 @@
 package iris.playharmony.view.player.spectrum.dancer;
 
 import iris.playharmony.model.player.Spectrum;
+import iris.playharmony.util.CircleImage;
 import iris.playharmony.view.player.MusicPlayerViewModel;
 import iris.playharmony.view.player.spectrum.SpectrumUpdatable;
 import javafx.animation.Interpolator;
@@ -28,7 +29,7 @@ public class SpectrumDancerView extends AnchorPane implements SpectrumUpdatable 
     private static final List<Color> COLORS = createColors();
 
     private final MusicPlayerViewModel viewModel;
-    private final Circle songImageFrame;
+    private final CircleImage songImage;
     private final SpectrumDancerArcGroup arcs;
 
     public SpectrumDancerView(ReadOnlyObjectProperty<Bounds> parentLayoutBounds, MusicPlayerViewModel viewModel) {
@@ -37,26 +38,26 @@ public class SpectrumDancerView extends AnchorPane implements SpectrumUpdatable 
 
         this.viewModel = viewModel;
 
-        songImageFrame = new Circle();
+        songImage = new CircleImage();
 
-        songImageFrame.setTranslateZ(-0.1);
+        songImage.setTranslateZ(-0.1);
 
-        songImageFrame.setStroke(Color.TRANSPARENT);
+        songImage.setStroke(Color.TRANSPARENT);
 
         parentLayoutBounds.addListener((observable, oldValue, newValue) -> {
-            songImageFrame.setTranslateX(newValue.getMaxX() / 2.0);
-            songImageFrame.setTranslateY(newValue.getMinY() + songImageFrame.getRadius() * 2.25);
+            songImage.setTranslateX(newValue.getMaxX() / 2.0);
+            songImage.setTranslateY(newValue.getMinY() + songImage.getRadius() * 2.25);
         });
 
-        viewModel.songImageProperty().addListener((observable, oldValue, newValue) -> songImageFrame.setFill(new ImagePattern(newValue)));
+        viewModel.songImageProperty().addListener((observable, oldValue, newValue) -> songImage.setImage(newValue));
 
-        songImageFrame.setRadius(MIN_RADIUS);
+        songImage.setRadius(MIN_RADIUS);
 
-        songImageFrame.setEffect(new InnerShadow());
+        songImage.setEffect(new InnerShadow());
 
         arcs = new SpectrumDancerArcGroup(this::onCreateSpectrumDancerBar);
 
-        getChildren().add(songImageFrame);
+        getChildren().add(songImage);
     }
 
     @Override
@@ -72,9 +73,9 @@ public class SpectrumDancerView extends AnchorPane implements SpectrumUpdatable 
 
         final double interpolationStep = 0.5;
 
-        songImageFrame.setRadius(interpolator.interpolate(songImageFrame.getRadius(), beat * 0.5 + MIN_RADIUS, 0.8));
+        songImage.setRadius(interpolator.interpolate(songImage.getRadius(), beat * 0.5 + MIN_RADIUS, 0.8));
 
-        final float minRadius = (float) songImageFrame.getRadius();
+        final float minRadius = (float) songImage.getRadius();
 
         float size = minRadius * 0.8f;
 
@@ -118,13 +119,13 @@ public class SpectrumDancerView extends AnchorPane implements SpectrumUpdatable 
 
         final Color color = COLORS.get(index % COLORS.size());
 
-        arc.centerXProperty().bind(songImageFrame.centerXProperty());
-        arc.centerYProperty().bind(songImageFrame.centerYProperty());
+        arc.centerXProperty().bind(songImage.centerXProperty());
+        arc.centerYProperty().bind(songImage.centerYProperty());
 
-        arc.setRadiusX(songImageFrame.getRadius() + index);
-        arc.setRadiusY(songImageFrame.getRadius() + index);
-        arc.translateXProperty().bind(songImageFrame.translateXProperty());
-        arc.translateYProperty().bind(songImageFrame.translateYProperty());
+        arc.setRadiusX(songImage.getRadius() + index);
+        arc.setRadiusY(songImage.getRadius() + index);
+        arc.translateXProperty().bind(songImage.translateXProperty());
+        arc.translateYProperty().bind(songImage.translateYProperty());
 
         arc.setStartAngle(0);
         arc.setLength(360);
