@@ -15,7 +15,7 @@ public class FileUtils {
         }
     }
 
-    public static File writeToFile(File file, InputStream inputStream) {
+    private static File writeToFile(File file, InputStream inputStream) {
 
         try(FileOutputStream outputStream = new FileOutputStream(file)) {
 
