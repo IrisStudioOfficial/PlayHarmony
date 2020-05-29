@@ -4,15 +4,9 @@ import iris.playharmony.controller.NavController;
 import iris.playharmony.controller.db.DatabaseController;
 import iris.playharmony.model.Song;
 import iris.playharmony.view.template.FormTemplate;
-import iris.playharmony.view.util.AlertFactory;
-import iris.playharmony.view.util.ButtonFactory;
-import iris.playharmony.view.util.DefaultStyle;
-import iris.playharmony.view.util.TextFactory;
+import iris.playharmony.view.util.*;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
 import java.io.File;
 
 public class NewSongView extends FormTemplate {
@@ -44,11 +38,15 @@ public class NewSongView extends FormTemplate {
         add(TextFactory.label("Year", DefaultStyle.label()));
         add(dateYear = TextFactory.textField(""));
         add(TextFactory.label("Photo", DefaultStyle.label()));
-        pathPhoto = new TextField();
-        pathFile = new TextField();
-        add(ButtonFactory.buttonWithLabeledResource(pathPhoto, "Upload Image", event -> uploadImage(pathPhoto)));
+        pathPhoto = ButtonFactory.buttonWithLabeledResource(this, "Upload Image", event -> {
+            photoFile = FileFactory.loadPhoto();
+            pathPhoto.setText(photoFile.getAbsolutePath());
+        });
         add(TextFactory.label("Song File", DefaultStyle.label()));
-        add(ButtonFactory.buttonWithLabeledResource(pathFile, "Upload Song", event -> uploadSong(pathFile)));
+        pathFile = ButtonFactory.buttonWithLabeledResource(this, "Upload Song", event -> {
+            songFile = FileFactory.loadSong();
+            pathFile.setText(songFile.getAbsolutePath());
+        });
     }
 
     @Override
@@ -56,33 +54,6 @@ public class NewSongView extends FormTemplate {
         return new Node[]{
                 ButtonFactory.button("Add Song", event -> createSong())
         };
-    }
-
-    private void uploadImage(TextField textField) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Search Image");
-
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All Images", "*.*"),
-                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
-                new FileChooser.ExtensionFilter("PNG", "*.png")
-        );
-
-        photoFile = fileChooser.showOpenDialog(new Stage());
-        textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
-    }
-
-    private void uploadSong(TextField textField) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Search Song");
-
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All Images", "*.*"),
-                new FileChooser.ExtensionFilter("MP3", "*.mp3")
-        );
-
-        songFile = fileChooser.showOpenDialog(new Stage());
-        textField.setText((songFile == null) ? "" : songFile.getAbsolutePath());
     }
 
     private void createSong() {

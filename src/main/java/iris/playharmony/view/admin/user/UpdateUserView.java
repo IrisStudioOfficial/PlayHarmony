@@ -28,6 +28,7 @@ public class UpdateUserView extends UserFormView {
         surname.setText(this.user.getSurname());
         email.setText(this.user.getEmail());
         category.setText(this.user.getCategory());
+        role.setValue(this.user.getRole());
         passwordField.setText(this.user.getPassword());
         setPhoto(user.getPhoto().getImage());
     }

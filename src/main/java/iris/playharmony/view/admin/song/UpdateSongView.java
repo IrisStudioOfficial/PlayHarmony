@@ -6,15 +6,9 @@ import iris.playharmony.model.Song;
 import iris.playharmony.util.OnRefresh;
 import iris.playharmony.util.TypeUtils;
 import iris.playharmony.view.template.FormTemplate;
-import iris.playharmony.view.util.AlertFactory;
-import iris.playharmony.view.util.ButtonFactory;
-import iris.playharmony.view.util.DefaultStyle;
-import iris.playharmony.view.util.TextFactory;
+import iris.playharmony.view.util.*;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
 import java.io.File;
 
 public class UpdateSongView extends FormTemplate {
@@ -54,12 +48,18 @@ public class UpdateSongView extends FormTemplate {
         add(dateMonth = TextFactory.textField(date[1]));
         add(TextFactory.label("Year", DefaultStyle.label()));
         add(dateYear = TextFactory.textField(date[2]));
-        pathPhoto = new TextField(song.getPhoto());
-        pathFile = new TextField(song.getPathFile());
         add(TextFactory.label("Photo", DefaultStyle.label()));
-        add(ButtonFactory.buttonWithLabeledResource(pathPhoto, "Upload Image", event -> uploadImage(pathPhoto)));
+        pathPhoto = ButtonFactory.buttonWithLabeledResource(this, "Upload Image", event -> {
+            photoFile = FileFactory.loadPhoto();
+            pathPhoto.setText(photoFile.getAbsolutePath());
+        });
         add(TextFactory.label("Song File", DefaultStyle.label()));
-        add(ButtonFactory.buttonWithLabeledResource(pathFile, "Upload Song", event -> uploadSong(pathFile)));
+        pathFile = ButtonFactory.buttonWithLabeledResource(this, "Upload Song", event -> {
+            songFile = FileFactory.loadSong();
+            pathFile.setText(songFile.getAbsolutePath());
+        });
+        pathPhoto.setText(song.getPhoto());
+        pathFile.setText(song.getPathFile());
     }
 
     @Override
@@ -67,33 +67,6 @@ public class UpdateSongView extends FormTemplate {
         return new Node[] {
                 ButtonFactory.button("Update Song", event -> updateSong())
         };
-    }
-
-    private void uploadImage(TextField textField) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Search Image");
-
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All Images", "*.*"),
-                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
-                new FileChooser.ExtensionFilter("PNG", "*.png")
-        );
-
-        photoFile = fileChooser.showOpenDialog(new Stage());
-        textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
-    }
-
-    private void uploadSong(TextField textField) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Search Song");
-
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All Images", "*.*"),
-                new FileChooser.ExtensionFilter("MP3", "*.mp3")
-        );
-
-        songFile = fileChooser.showOpenDialog(new Stage());
-        textField.setText((songFile == null) ? "" : songFile.getAbsolutePath());
     }
 
     private void updateSong() {

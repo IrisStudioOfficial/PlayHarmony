@@ -3,11 +3,11 @@ package iris.playharmony.view.util;
 import iris.playharmony.util.ImageFactory;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 
 public class ButtonFactory {
 
@@ -17,17 +17,19 @@ public class ButtonFactory {
         return button;
     }
 
-    public static Node buttonWithLabeledResource(TextField textField, String buttonText, EventHandler<ActionEvent> event) {
+    public static TextField buttonWithLabeledResource(Pane window, String buttonText, EventHandler<ActionEvent> event) {
         HBox panel = new HBox();
 
+        TextField textField = new TextField();
         textField.setEditable(false);
 
         Button button = new Button(buttonText);
         button.setOnAction(event);
 
         panel.getChildren().addAll(textField, button);
+        window.getChildren().add(panel);
 
-        return panel;
+        return textField;
     }
 
     public static Button imageButton(String imagePath) {

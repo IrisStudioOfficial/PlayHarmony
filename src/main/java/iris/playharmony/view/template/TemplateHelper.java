@@ -8,8 +8,10 @@ public class TemplateHelper {
 
     static HBox addPaddingTo(Node[] nodes) {
         HBox hBox = new HBox();
-        for (int i = 0; i < 2 * nodes.length - 1; i++) {
-            hBox.getChildren().add(i%2 == 0 ? nodes[i/2] : getNewPadding());
+        if(nodes != null) {
+            for (int i = 0; i < 2 * nodes.length - 1; i++) {
+                hBox.getChildren().add(i % 2 == 0 ? nodes[i / 2] : getNewPadding());
+            }
         }
         return hBox;
     }

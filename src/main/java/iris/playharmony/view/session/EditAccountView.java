@@ -7,14 +7,9 @@ import iris.playharmony.model.Role;
 import iris.playharmony.model.User;
 import iris.playharmony.view.main.LobbyView;
 import iris.playharmony.view.template.FormTemplate;
-import iris.playharmony.view.util.AlertFactory;
-import iris.playharmony.view.util.ButtonFactory;
-import iris.playharmony.view.util.DefaultStyle;
-import iris.playharmony.view.util.TextFactory;
+import iris.playharmony.view.util.*;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,7 +43,10 @@ public class EditAccountView extends FormTemplate {
         add(TextFactory.label("Category", DefaultStyle.label()));
         add(category = TextFactory.textField(""));
         add(TextFactory.label("Upload Image", DefaultStyle.label()));
-        add(ButtonFactory.buttonWithLabeledResource(photo, "Photo", event -> uploadImage(photo)));
+        photo = ButtonFactory.buttonWithLabeledResource(this, "Photo", event -> {
+            photoFile = FileFactory.loadPhoto();
+            photo.setText(photoFile.getAbsolutePath());
+        });
     }
 
     @Override
@@ -56,20 +54,6 @@ public class EditAccountView extends FormTemplate {
         return new Node[] {
                 ButtonFactory.button("Sign Up", event -> createUser())
         };
-    }
-
-    private void uploadImage(TextField textField) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Search Image");
-
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All Images", "*.*"),
-                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
-                new FileChooser.ExtensionFilter("PNG", "*.png")
-        );
-
-        photoFile = fileChooser.showOpenDialog(new Stage());
-        textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
     }
 
     private void createUser() {

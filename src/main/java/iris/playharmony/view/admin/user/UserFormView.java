@@ -9,16 +9,11 @@ import iris.playharmony.util.ImageFactory;
 import iris.playharmony.util.Resources;
 import iris.playharmony.util.TypeUtils;
 import iris.playharmony.view.template.FormTemplate;
-import iris.playharmony.view.util.AlertFactory;
-import iris.playharmony.view.util.ButtonFactory;
-import iris.playharmony.view.util.DefaultStyle;
-import iris.playharmony.view.util.TextFactory;
+import iris.playharmony.view.util.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,15 +22,16 @@ import static java.util.Objects.nonNull;
 
 public abstract class UserFormView extends FormTemplate {
 
-    private File photoFile;
     private CircleImage photoView;
-    private TextField photoFileField = new TextField();
-    protected TextField name = new TextField();
-    TextField surname = new TextField();
-    protected TextField email = new TextField();
-    PasswordField passwordField = new PasswordField();
-    TextField category = new TextField();
-    protected ComboBox<Object> role = new ComboBox<>();
+    protected File photoFile;
+
+    protected TextField name;
+    protected TextField surname;
+    protected TextField email;
+    protected PasswordField passwordField;
+    protected TextField category;
+    protected ComboBox<Object> role;
+    protected TextField photoFileField;
 
     UserFormView(String title) {
         super(title);
@@ -61,12 +57,15 @@ public abstract class UserFormView extends FormTemplate {
         add(category = new TextField());
         add(TextFactory.label("Role", DefaultStyle.label()));
         add(role = TextFactory.comboBox(Role.values()));
-        photoFileField = new TextField();
-        add(ButtonFactory.buttonWithLabeledResource(photoFileField, "Upload Image", event -> uploadImage(photoFileField)));
+        photoFileField = ButtonFactory.buttonWithLabeledResource(this, "Upload Image", event -> {
+            photoFile = FileFactory.loadPhoto();
+            photoFileField.setText(photoFile.getAbsolutePath());
+            setPhoto(ImageFactory.loadFromFile(photoFile.getAbsolutePath()));
+        });
         setPhoto(null);
     }
 
-    void setPhoto(Image image) {
+    protected void setPhoto(Image image) {
         if(image == null) {
             photoView.setImage(ImageFactory.loadFromFile(Resources.get(PathHandler.DEFAULT_PHOTO_PATH)));
         } else {
@@ -74,25 +73,7 @@ public abstract class UserFormView extends FormTemplate {
         }
     }
 
-    private void uploadImage(TextField textField) {
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Search Image");
-
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All Images", "*.*"),
-                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
-                new FileChooser.ExtensionFilter("PNG", "*.png")
-        );
-
-        photoFile = fileChooser.showOpenDialog(new Stage());
-
-        textField.setText((photoFile == null) ? "" : photoFile.getAbsolutePath());
-
-        setPhoto(ImageFactory.loadFromFile(photoFile.getAbsolutePath()));
-    }
-
-    User getUserFromForm() {
+    protected User getUserFromForm() {
 
         Email email = getEmail();
 
@@ -105,7 +86,7 @@ public abstract class UserFormView extends FormTemplate {
                 name.getText(),
                 surname.getText(),
                 category.getText(),
-                (Role) role.getValue(),
+                Role.valueOf(role.getValue().toString()),
                 email,
                 new ArrayList<>());
 
@@ -122,7 +103,7 @@ public abstract class UserFormView extends FormTemplate {
         return !TypeUtils.getAllFieldValues(user).stream().map(String::valueOf).allMatch(field -> nonNull(field) && !field.trim().isEmpty());
     }
 
-    protected Email getEmail() {
+    private Email getEmail() {
 
         String text = email.getText();
 

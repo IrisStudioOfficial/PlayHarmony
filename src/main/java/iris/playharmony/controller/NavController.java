@@ -48,27 +48,27 @@ public class NavController implements Iterable<Parent> {
     @SuppressWarnings("unchecked")
     public <T extends Parent> Optional<T> popView() {
 
-        if(viewStack.isEmpty()) {
-            return Optional.empty();
+        if(viewStack.size() > 1) {
+            final T currentView = (T) viewStack.pop();
+
+            if(viewStack.isEmpty()) {
+                navigationView.removeView();
+            } else {
+                navigationView.setView(viewStack.peek());
+            }
+
+            if(currentView != null) {
+                callAnnotatedMethod(currentView, OnFinish.class);
+            }
+
+            if(getCurrentView() != null) {
+                callAnnotatedMethod(getCurrentView(), OnRefresh.class);
+            }
+
+            return Optional.ofNullable(currentView);
         }
 
-        final T currentView = (T) viewStack.pop();
-
-        if(viewStack.isEmpty()) {
-            navigationView.removeView();
-        } else {
-            navigationView.setView(viewStack.peek());
-        }
-
-        if(currentView != null) {
-            callAnnotatedMethod(currentView, OnFinish.class);
-        }
-
-        if(getCurrentView() != null) {
-            callAnnotatedMethod(getCurrentView(), OnRefresh.class);
-        }
-
-        return Optional.ofNullable(currentView);
+        return Optional.empty();
     }
 
     public void clear() {
