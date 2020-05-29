@@ -173,8 +173,6 @@ public class HeaderView extends HBox implements NavigationViewChangedListener {
         } else {
             NavController.get().setView(new LobbyView());
         }
-
-        // refresh();
     }
 
     @Override
