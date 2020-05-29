@@ -127,7 +127,7 @@ public abstract class UserFormView extends FormTemplate {
         String text = email.getText();
 
         if(!Email.check(text)) {
-            AlertFactory.errorAlert("ERROR! Email is incorrect", "ERROR! Email is incorrect");
+            AlertFactory.errorAlert("ERROR! Email is incorrect", "ERROR! Email is invalid");
             return null;
         }
 
