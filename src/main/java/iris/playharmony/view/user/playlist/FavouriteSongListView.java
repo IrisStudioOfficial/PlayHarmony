@@ -20,7 +20,7 @@ import javafx.scene.control.TableColumn;
 import java.util.Comparator;
 
 public class FavouriteSongListView extends ListTemplate<ObservableSong> {
-
+    //Saludos
     MusicPlayerController musicPlayerController;
     public FavouriteSongListView() {
         super("User favorite songs");
